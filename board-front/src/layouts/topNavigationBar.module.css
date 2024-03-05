@@ -1,13 +1,13 @@
 .header {
   width: 100%;
-  height: 90px;
+  height: 150px;
   display: flex;
   justify-content: space-around;
   align-items: center;
   box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.1);
 }
 
-.inner {
+/* .inner {
   display: flex;
   align-items: center;
 }
@@ -21,38 +21,6 @@
 .inner .logo img {
   width: 124px;
   height: 38px;
-}
-
-.input_wrap {
-  position: relative;
-  width: 400px;
-  height: 46px;
-}
-
-.input_wrap input {
-  width: 400px;
-  height: 46px;
-  border: 2px solid #333;
-  border-radius: 50px;
-  padding: 13px 22px;
-  font-size: 16px;
-  line-height: 20px;
-  outline: none;
-}
-
-.input_wrap input::placeholder {
-  font-size: 16px;
-  line-height: 20px;
-  color: #767676;
-}
-
-.input_wrap img {
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-  width: 19px;
-  height: 19px;
 }
 
 .menu {
@@ -144,4 +112,40 @@
 
 .menu a:hover {
   color: #ff0000; /* 원하는 hover 색상으로 변경하세요 */
+
+  .input_wrap {
+    position: relative;
+    width: 400px;
+    height: 46px;
+    margin-right: 15px;
+  }
+  
+  .input_wrap input {
+    width: 400px;
+    height: 46px;
+    border: 2px solid #333;
+    border-radius: 50px;
+    padding: 13px 22px;
+    font-size: 16px;
+    line-height: 20px;
+    outline: none;
+  }
+  
+  .input_wrap input::placeholder {
+    font-size: 16px;
+    line-height: 20px;
+    color: #767676;
+  }
+  
+  .input_wrap img {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    width: 19px;
+    height: 19px;
+  }
+
+.logo {
+  margin-right: 30px; /* 원하는 간격으로 조정해주세요 */
 }

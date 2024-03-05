@@ -1,11 +1,15 @@
 import styles from "./topNavigationBar.module.css";
-import { Navbar, Container, Nav, NavDropdown, Button} from 'react-bootstrap';
+import { Navbar, Container, Nav, NavDropdown} from 'react-bootstrap';
+import logo from '../assets/logo.svg';
 
 export const TopNavigationBar = () => {
   return (
-    <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
+    <Navbar collapseOnSelect expand="lg" className={styles.header}>
       <Container>
-        <Navbar.Brand href="/">LOGO</Navbar.Brand>
+        <Navbar.Brand href="/" className={styles.logo}>
+          <img src={logo} alt="로고" width="100" height="100" />
+        </Navbar.Brand>
+
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
@@ -34,10 +38,6 @@ export const TopNavigationBar = () => {
 
       </Container>
     </Navbar>
-
-
-
-
 
   );
 };

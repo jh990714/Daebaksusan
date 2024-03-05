@@ -30,9 +30,9 @@ export const Footer = () => {
           </ul>
         </div>
       </div>
-      <div className={styles.bottomBar}>
+      {/* <div className={styles.bottomBar}>
         <p>&copy; 2023 your company. All rights reserved</p>
-      </div>
+      </div> */}
     </footer>
   );
 };

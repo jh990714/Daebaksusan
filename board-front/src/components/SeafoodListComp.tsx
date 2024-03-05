@@ -13,7 +13,7 @@ export const SeafoodListComp: React.FC<SeafoodListCompProps> = ({ seafood }) => 
       <Card.Body>
         <Card.Title>{seafood.id}</Card.Title>
         <Card.Text>{seafood.title}</Card.Text>
-        <Button variant="primary">Go somewhere</Button>
+        {/* <Button variant="primary">Go somewhere</Button> */}
       </Card.Body>
     </Card>
   );

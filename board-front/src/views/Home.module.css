@@ -1,22 +1,33 @@
- /* Home.css */
+/* 홈 컨테이너 스타일 */
 .homeContainer {
   justify-content: center;
   margin: 3rem 0 0 5rem; /* 좌우 여백 추가 */
 }
 
-.homeContainer ul{
+.seafoodList {
+  justify-content: center;
   list-style: none;
   padding: 0;
+  margin-right: 2rem;
 }
 
-.homeContainer li {
-  display: inline-block; 
+.seafoodList li {
+  display: inline-block;
   margin-left: 2rem;
-  margin-bottom: 1rem;
+  margin-top: 2rem;
 }
 
 .paginationContainer {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 5rem;
+}
+
+.carouselContainer {
+  width: 50%;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 5rem;
 }
