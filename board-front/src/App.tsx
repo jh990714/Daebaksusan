@@ -1,27 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './App.css';
-import axios from 'axios';
+
+import { TopNavigationBar } from 'layouts/topNavigationBar';
+import { Router } from 'views/Router';
+import { Footer } from 'layouts/Footer';
   
-function App() {
-
-  const [posts, setPosts] = useState<any[]>([]);
-
-  useEffect( () => {
-    axios({
-      method:'GET',
-      url:'https://jsonplaceholder.typicode.com/posts',
-    }).then(respose => setPosts(respose.data))
-  }, []);
-
+const App: React.FC = () => {
   return (
-    <ul>
-      {posts.map(post => (
-        <li key={post.id}>
-          <h3>{post.title}</h3>
-          <p>{post.body}</p>
-        </li>
-      ))}
-    </ul>
+    <div className="APP">
+      <TopNavigationBar />
+      <Router />
+      <Footer />
+    </div>
   );
 }
 

@@ -1,0 +1,22 @@
+ /* Home.css */
+.homeContainer {
+  justify-content: center;
+  margin: 3rem 0 0 5rem; /* 좌우 여백 추가 */
+}
+
+.homeContainer ul{
+  list-style: none;
+  padding: 0;
+}
+
+.homeContainer li {
+  display: inline-block; 
+  margin-left: 2rem;
+  margin-bottom: 1rem;
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}

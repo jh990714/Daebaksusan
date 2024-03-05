@@ -1,0 +1,33 @@
+/* header 시작 */
+.headerContainer {
+  background-color: rgba(3,37,65,1);
+}
+
+.headerWrap {
+  max-width: 1400px;
+  height: 64px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.headeLeftWrap{
+  display: flex;
+}
+
+.headeLeftWrap ul {
+  display: flex;
+  margin-left: 16px;
+}
+
+.headeLeftWrap li {
+  padding: 8px;
+  margin-right: 14px;
+}
+
+.header-nav-item {
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+}
+/* header 끝 */
