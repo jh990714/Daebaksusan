@@ -1,0 +1,35 @@
+.mainVisal {
+	background-image: url("../assets/testimg.jpg");
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 20px 30px;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.mainVisal h2 {
+	margin: 30px 0;
+}
+
+.mainVisal button {
+	margin-top: 20px;
+	border: none;
+	border-radius: 5px;
+	padding: 10px 20px;
+	background: red;
+	color: white;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.mainVisal button:hover {
+	color: red;
+	background: white;
+	transition: all 0.5s;
+	transform: scale(1.05);
+}
