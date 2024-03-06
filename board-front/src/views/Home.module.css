@@ -4,14 +4,14 @@
   margin: 3rem 0 0 5rem; /* 좌우 여백 추가 */
 }
 
-.seafoodList {
+.productList {
   justify-content: center;
   list-style: none;
   padding: 0;
   margin-right: 2rem;
 }
 
-.seafoodList li {
+.productList li {
   display: inline-block;
   margin-left: 2rem;
   margin-top: 2rem;

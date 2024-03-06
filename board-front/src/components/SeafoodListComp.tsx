@@ -1,3 +1,5 @@
+// 상품 목록 테스트
+
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
