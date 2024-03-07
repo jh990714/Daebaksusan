@@ -1,6 +1,3 @@
-.App {
-  text-align: center;
-}
 
 .App-logo {
   height: 40vmin;
@@ -35,4 +32,15 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@font-face {
+  font-family: "NanumSquareNeoOTF-Rg";
+  font-weight: normal;
+  src: url("./font/NanumSquareNeoOTF-Rg.otf") format("truetype");
+}
+
+.APP {
+  text-align: center;
+  font-family: "NanumSquareNeoOTF-Rg";
 }

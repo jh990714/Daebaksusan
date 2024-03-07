@@ -1,0 +1,35 @@
+.detailLink {
+    text-decoration: none;
+    color: inherit;
+    text-align: start;
+}
+.productInfoCard:hover {
+    color: #333;
+    transform: scale(1.1);
+  }
+
+.productImg {
+    width: 300px;
+    height: 255px;
+}
+
+.productTitle {
+    font-size: 17px;
+}
+
+.productPrice {
+    display: flex;
+    align-items: flex-end;
+}
+
+.productDiscount {
+    font-size: 21px;
+    font-weight: bold;
+}
+.productPriceBefore {
+    font-size: 14px;
+    color: #959595;
+    margin-left: 10px;
+    text-decoration: line-through;
+    text-decoration-color: #959595;
+}

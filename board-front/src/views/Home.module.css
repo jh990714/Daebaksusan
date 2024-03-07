@@ -1,13 +1,11 @@
 /* 홈 컨테이너 스타일 */
 .homeContainer {
   justify-content: center;
-  margin: 3rem 0 0 5rem; /* 좌우 여백 추가 */
 }
 
 .productList {
-  justify-content: center;
   list-style: none;
-  padding: 0;
+  padding: 10rem;
   margin-right: 2rem;
 }
 
@@ -24,10 +22,9 @@
 }
 
 .carouselContainer {
-  width: 70%;
+  width: 100%;
   height: auto;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 5rem;
+
 }
+

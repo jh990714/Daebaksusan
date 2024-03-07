@@ -18,8 +18,9 @@ export const Home: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<ProductList[]>('http://localhost:8080/product');
+        const response = await axios.get<ProductList[]>('http://175.215.44.128:8080/product');
         setproducts(response.data);
+        console.log(response);
       } catch (error) {
         console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
       }

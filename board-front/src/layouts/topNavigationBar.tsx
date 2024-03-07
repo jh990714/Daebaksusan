@@ -1,13 +1,13 @@
 import styles from "./topNavigationBar.module.css";
 import { Navbar, Container, Nav, NavDropdown} from 'react-bootstrap';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.jpg';
 
 export const TopNavigationBar = () => {
   return (
     <Navbar collapseOnSelect expand="lg" className={styles.header}>
       <Container>
         <Navbar.Brand href="/" className={styles.logo}>
-          <img src={logo} alt="로고" width="100" height="100" />
+          <img src={logo} alt="로고" width="200" height="200" />
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
