@@ -12,7 +12,9 @@ const App: React.FC = () => {
     <div className="APP">
       {/* <TopNavigationBar /> */}
       <NavigationBar />
-      <Router />
+      <div style={{marginTop: '180px'}}>
+        <Router />
+      </div>
       <Footer />
     </div>
   );
