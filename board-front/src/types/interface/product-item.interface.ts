@@ -1,5 +1,5 @@
 export default interface ProductList {
-    productID: number;
+    productId: number;
     productName: string;
     productPrice: number
     productDiscount: number;

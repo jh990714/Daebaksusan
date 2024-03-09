@@ -13,13 +13,27 @@
     height: 255px;
 }
 
+.productInfo {
+    margin: 0;
+}
 .productTitle {
     font-size: 17px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.productSp {
+    font-size: 14px;
+    color: #999;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .productPrice {
     display: flex;
     align-items: flex-end;
+    margin: 0;
 }
 
 .productDiscount {

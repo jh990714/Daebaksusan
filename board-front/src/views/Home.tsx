@@ -48,7 +48,7 @@ export const Home: React.FC = () => {
       </div>
       <ul className={styles.productList}>
         {getCurrentPageData().map((product: ProductList) => (
-          <li key={product.productID}>
+          <li key={product.productId}>
             <ProductListComp product={product} />
           </li>
         ))}

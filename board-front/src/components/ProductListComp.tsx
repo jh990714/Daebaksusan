@@ -4,20 +4,20 @@ import { ProductList } from 'types';
 import styles from './ProductListComp.module.css';
 
 interface ProductListCompProps {
-    product: ProductList;
-  }
+  product: ProductList;
+}
 
 export const ProductListComp: React.FC<ProductListCompProps> = ({ product }) => {
   
   return (
-    <Link to={`/detail/${product.productID}`} className={styles.detailLink}>
+    <Link to={`/detail/${product.productId}`} className={styles.detailLink}>
       <div className={styles.productInfoCard} >
         <img src={`./upload/${product.productImgPath}`} alt="사진" className={styles.productImg}></img>
 
         <hr/>
         <div className={styles.productInfo}>
           <p className={styles.productTitle}>{product.productName}</p>
-
+          <p className={styles.productSp}>1kg(순살400g내외)</p>
           <div className={styles.productPrice}>
             <p className={styles.productDiscount}>{product.productDiscount.toLocaleString()}원</p>
 

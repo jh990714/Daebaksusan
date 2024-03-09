@@ -22,10 +22,7 @@
 }
 
 .carouselContainer {
-  width: 100%;
-  height: auto;
   display: block;
-
 }
 
 @media (max-width: 1450px) {
