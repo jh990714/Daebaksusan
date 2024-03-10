@@ -4,27 +4,57 @@
     display: flex;
     justify-content: center;
     align-items: center; 
-    
 }
 
 
-.myCarListComp table thead tr {
+.myCartListComp table thead tr th  {
     border-bottom: 2px solid #ccc;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #004393;
 }
 
-.myCarListComp table tbody tr {
+.myCartListComp table tbody tr td {
     border-bottom: 1px solid #ccc;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 
 table {
-    width: 70%;
+    width: 100%;
     margin-right: auto;
     margin-left: auto;
-    border-top: 3px solid #d9d9d9;
+    border-top: 3px solid #004393;
     border-collapse: collapse;
 }
 
+.orderName {
+    padding-left: 7rem;
+    text-align: start;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.orderPrice {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.orderTotal {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.quantityContainer {
+    justify-content: center;
+    display: flex;
+}
+
+.quantityInput {
+    width: 30%;
+    text-align: center;
+}
 .quantityButton {
     margin: 0 0.2rem 0 0.2rem;
     padding: 5px 10px;

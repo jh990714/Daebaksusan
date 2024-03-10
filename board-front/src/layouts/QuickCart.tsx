@@ -22,6 +22,7 @@ export const QuickCart = () => {
   const [startIndex, setStartIndex] = useState(0);
   const [cartItems, setCartItems] = useState<CartItem[]>([])
 
+  const filteredCartItems = cartItems.filter(item => item.isSelected === true);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,10 +65,8 @@ export const QuickCart = () => {
     
     const updatedItems = cartItems.map(item => {
         if (item.product.productId === id) {
-          console.log('true');
             return { ...item, isSelected: !item.isSelected };
         } else {
-          console.log('false');
           return item;
         }
     });
@@ -103,12 +102,10 @@ export const QuickCart = () => {
   };
 
   const selectDelete = () => {
-    // isSelected가 false인 항목들만 필터링하여 남깁니다.
     const remainingItems = cartItems.filter(item => !item.isSelected);
     // 남은 항목들로 cartItems 상태를 업데이트합니다.
-    const updatedItems = remainingItems.map(item => ({ ...item, isSelected: true }));
-    setCartItems(updatedItems);
-    setStartIndex(0);
+    // isSelected 상태를 재설정할 필요가 없으므로, 이 부분을 제거합니다.
+    setCartItems(remainingItems);
   };
 
   const renderListItems = () => {
@@ -174,7 +171,7 @@ export const QuickCart = () => {
             <div className={styles.totalPriceTitle}>장바구니 총 주문 금액</div>
             <span className={styles.totalPrice}>{calculateTotal()}</span>원
             <div>
-              <Link to='' className={styles.quickOrderbutton}> 구매하러 가기 </Link>
+              <Link to='/order' state={{ cartItems: filteredCartItems }} className={styles.quickOrderbutton}> 구매하러 가기 </Link>
             </div>
 
             <div className={styles.quickCartBtns}>

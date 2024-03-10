@@ -28,8 +28,8 @@ export const NavigationBar = () => {
             </div>
             <div className={styles.userCategory}>
                 <ul>
-                    <li><Link to=''> 로그인 </Link></li>
-                    <li><Link to=''> 장바구니 </Link></li>
+                    <li><Link to='/login'> 로그인 </Link></li>
+                    <li><Link to='/cart'> 장바구니 </Link></li>
                 </ul>
             </div>
         </div>

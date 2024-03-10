@@ -3,6 +3,8 @@ import styles from './MyCart.module.css'
 import { CartItem, ProductList } from 'types';
 import axios from 'axios';
 import { MyCartListComp } from 'components/MyCartListComp';
+import { OrderFlow } from 'components/OrderFlow';
+import { Link } from 'react-router-dom';
 
 export const MyCart = () => {
     const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -27,11 +29,23 @@ export const MyCart = () => {
         fetchData();
     }, []);
 
-    useEffect(() => {
-        // cartItems가 변경될 때마다 전체 선택 상태를 업데이트합니다.
-        const updateSelectAll = cartItems.every(item => item.isSelected);
-        setSelectAll(updateSelectAll);
-    }, [selectAll]);
+
+
+    const handleQuantityChange = (id: number, quantity: number) => {
+        setCartItems(prevItems =>
+            prevItems.map(item =>
+            item.product.productId === id ? { ...item, quantity } : item
+            )
+        );
+    };
+    
+    const handleSelectedChange = (id: number, isSelected: boolean) => {
+        setCartItems(prevItems =>
+            prevItems.map(item =>
+            item.product.productId === id ? { ...item, isSelected } : item
+            )
+        );
+    };
 
     const toggleSelectAll = () => {
         const newCartItems = cartItems.map(item => ({
@@ -42,25 +56,24 @@ export const MyCart = () => {
         setSelectAll(!selectAll);
     };
 
+    const deleteSelectedItems = () => {
+        const remainingItems = cartItems.filter(item => !item.isSelected);
+        // 남은 항목들로 cartItems 상태를 업데이트합니다.
+        // isSelected 상태를 재설정할 필요가 없으므로, 이 부분을 제거합니다.
+        setCartItems(remainingItems);
+    };
+
     const calculateTotal = () => {
         return cartItems
           .filter(item => item.isSelected)
           .reduce((total, item) => total + (item.product.productDiscount * item.quantity), 0).toLocaleString();
     };
+    
     const total = calculateTotal();
+    const filteredCartItems = cartItems.filter(item => item.isSelected === true);
 
   return (
     <div className={styles.myCartContainer}>
-        <div className={styles.selectAllContainer}>
-            <label>
-            <input
-                type="checkbox"
-                checked={selectAll}
-                onChange={toggleSelectAll}
-            />
-                전체 선택
-            </label>
-        </div>
         <div className={styles.myCartPath}>
             <ul>
                 <li>홈</li>
@@ -69,10 +82,26 @@ export const MyCart = () => {
             </ul>
         </div>
 
+        <div className={styles.orderFlow}>
+            <OrderFlow currentStep = {1}/>
+        </div>
+        <div className={styles.selectAllContainer}>
+            <label>
+                <input
+                    type="checkbox"
+                    checked={selectAll}
+                    onChange={toggleSelectAll}
+                />
+                전체 선택
+            </label>
+            <button onClick={deleteSelectedItems} className={styles.deleteSelectedBtn}>선택상품 삭제</button>
+
+        </div>
+
         <ul className={styles.cartItemList}>
             {cartItems.map((cartItem: CartItem) => (
                 <li key={cartItem.product.productId}>
-                    <MyCartListComp cartItem={cartItem} selectAll={selectAll} />
+                    <MyCartListComp cartItem={cartItem} selectAll={selectAll} onQuantityChange={handleQuantityChange} onSelectedChange={handleSelectedChange}/>
                 </li>
             ))}
         </ul>
@@ -83,17 +112,34 @@ export const MyCart = () => {
                     <div className={styles.priceTitle}>총 상품 합계 금액</div>
                     <div className={styles.price}>{total.toLowerCase()}원</div>
                 </li>
+
+                <li>
+                    <div className={styles.op}>+</div>
+                </li>
+
                 <li>
                     <div className={styles.priceTitle}>배송비 합계 금액</div>
                     <div className={styles.price}>0원</div>
                 </li>
+
+                <li>
+                    <div className={styles.op}>=</div>
+                </li>
+
                 <li>
                     <div className={styles.priceTitle}>총 주문 합계 금액</div>
                     <div className={styles.price}>{total.toLowerCase()}원</div>
                 </li>
             </ul>
+            
+            <Link to='/order' state={{ cartItems: filteredCartItems }} >
+                <div className={styles.orderBtn}>
+                    선택상품 주문하기
+                </div>
+            </Link>
         </div>
         
+
     </div>
   )
 }

@@ -1,0 +1,129 @@
+.orderContainer {
+    width: 70%;
+    margin: 0 auto;
+}
+
+.scrollableList {
+    max-height: 400px; /* 원하는 높이로 조정 */
+    overflow-y: auto;
+}
+.orderItems ul{
+    margin: 0;
+    padding: 0;
+
+}
+.orderItems li{
+    margin: 0;
+    padding: 0;
+    transform: scale(0.9);
+}
+.totalPriceContainer {
+    text-align: right;
+    font-size: 13px;
+}
+.itemTotalPrice {
+    font-size: 17px;
+    font-weight: 600;
+}
+.totalPrice{
+    font-size: 25px;
+    font-weight: bold;
+}
+.orderTitle {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 26px 0 16px 0;
+    border-bottom: 1px solid #999;
+}
+
+.orderInfo {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ccc;
+}
+.orderInfoTitle {
+    font-size: 17px;
+    font-weight: bold;
+    padding: 26px 0 16px 0;
+}
+
+.userName {
+    width: 15%;
+    height: 40px;
+    font-size: 15px;
+    padding: 10px 0 10px 1rem;
+    border: 1px solid #ccc;
+}
+
+.orderPhonNum {
+    margin: 1rem 0;
+    width: 100%;
+    height: 40px;
+    justify-content: space-between;
+}
+.phoneNumFirst {
+    width: 8%;
+    height: 40px;
+    font-size: 15px;
+    padding: 10px 0 10px 1rem;
+    border: 1px solid #ccc;
+    margin-right: 0.5rem;
+}
+
+.phoneNum {
+    width: 10%;
+    height: 40px;
+    font-size: 15px;
+    padding: 10px 0 10px 1rem;
+    border: 1px solid #ccc;
+    margin: 0 0.5rem;
+}
+
+.addressContainer {
+    width: 30%;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+.address {
+    width: 100%;
+    height: 40px;
+    font-size: 15px;
+    padding: 10px 0 10px 1rem;
+    border: 1px solid #ccc;
+    margin: 0.5rem 0;
+}
+
+.totalPriceContainer {
+    justify-content: right;
+    display: flex;
+    margin: auto;
+    text-align: center;
+}
+
+.totalPriceContainer ul {
+    border: 2px solid #d9d9d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.totalPriceContainer li {
+    padding: 15px 25px;
+}
+
+.op {
+    font-size: 20px;
+}
+
+
+.priceTitle {
+    font-size: 17px;
+    font-weight: bold;
+
+}
+
+.price {
+    font-size: 20px;
+    font-weight: bold;
+    color: #004393
+}
