@@ -1,0 +1,62 @@
+.myCartContainer {
+
+}
+
+/* MyCart.module.css */
+
+.myCartPath {
+    padding: 5rem;
+}
+
+.myCartPath ul {
+  padding: 0;
+  margin: 0;
+  display: flex; /* flexbox를 사용하여 항목들을 가로로 정렬 */
+  gap: 20px; /* 항목 사이의 간격 조정 */
+}
+
+.myCartPath li {
+    font-size: 14px;
+    color: #999;
+}
+
+.myCartPath li:not(:last-child)::after {
+    content: '>'; /* 가상 요소의 내용으로 '>' 추가 */
+    margin-left: 10px; /* '>'와 항목 사이의 간격 조정 */
+    margin-right: 10px; /* '>'와 다음 항목 사이의 간격 조정 */
+}
+
+.cartItemList {
+    margin: 0;
+    padding: 0;
+}
+
+.cartItemList li {
+    margin-bottom: 3rem;
+}
+
+.orderContainer {
+    width: 70%;
+    margin: auto;
+}
+.orderContainer ul {
+    border: 3px solid #d9d9d9;
+    display: flex;
+    justify-content: center;
+}
+
+.orderContainer li {
+    padding: 30px 90px;
+}
+
+.priceTitle {
+    font-size: 20px;
+    font-weight: bold;
+
+}
+
+.price {
+    font-size: 23px;
+    font-weight: bold;
+    color: #004393
+}
