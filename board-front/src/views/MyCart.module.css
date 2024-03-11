@@ -1,31 +1,10 @@
 .myCartContainer {
-    width: 70%;
+    width: 60%;
     margin: 5rem auto;
 }
 
 /* MyCart.module.css */
 
-.myCartPath {
-    padding: 3rem 0;
-}
-
-.myCartPath ul {
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 20px; 
-}
-
-.myCartPath li {
-    font-size: 14px;
-    color: #999;
-}
-
-.myCartPath li:not(:last-child)::after {
-    content: '>'; /* 가상 요소의 내용으로 '>' 추가 */
-    margin-left: 10px; /* '>'와 항목 사이의 간격 조정 */
-    margin-right: 10px; /* '>'와 다음 항목 사이의 간격 조정 */
-}
 
 .selectAllContainer {
     text-align: start;

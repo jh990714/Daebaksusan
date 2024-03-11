@@ -74,17 +74,7 @@ export const MyCart = () => {
 
   return (
     <div className={styles.myCartContainer}>
-        <div className={styles.myCartPath}>
-            <ul>
-                <li>홈</li>
-                <li>마이페이지</li>
-                <li>장바구니</li>
-            </ul>
-        </div>
-
-        <div className={styles.orderFlow}>
-            <OrderFlow currentStep = {1}/>
-        </div>
+        <OrderFlow currentStep = {1}/>
         <div className={styles.selectAllContainer}>
             <label>
                 <input

@@ -14,20 +14,29 @@ export const OrderFlow: React.FC<OrderFlowProps> = ({ currentStep }) => {
   ];
 
   return (
-    <ul className={styles.orderFlow}>
-      {steps.map((step, index) => (
-        <li key={step.number} className={index + 1 === currentStep ? styles.active : styles.inactive}>
-          <div className={styles.stepContent}>
-            <span className={index + 1 === currentStep ? styles.activeText : styles.inactiveText}>STEP {step.number}</span>
-            <div className={index + 1 === currentStep ? styles.activeText : styles.inactiveText}>{step.description}</div>
-          </div>
-          {index < 2 && (
-            <span className={index + 1 < currentStep ? styles.inactiveArrow : (index + 1 === currentStep ? styles.activeArrow : styles.inactiveArrow)}>
-              {' >'}
-            </span>
-          )}
-        </li>
-      ))}
-    </ul>
+    <>
+      <div className={styles.myCartPath}>
+          <ul>
+              <li>홈</li>
+              <li>마이페이지</li>
+              <li>장바구니</li>
+          </ul>
+        </div>
+      <ul className={styles.orderFlow}>
+        {steps.map((step, index) => (
+          <li key={step.number} className={index + 1 === currentStep ? styles.active : styles.inactive}>
+            <div className={styles.stepContent}>
+              <span className={index + 1 === currentStep ? styles.activeText : styles.inactiveText}>STEP {step.number}</span>
+              <div className={index + 1 === currentStep ? styles.activeText : styles.inactiveText}>{step.description}</div>
+            </div>
+            {index < 2 && (
+              <span className={index + 1 < currentStep ? styles.inactiveArrow : (index + 1 === currentStep ? styles.activeArrow : styles.inactiveArrow)}>
+                {' >'}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </>
   );
 };

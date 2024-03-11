@@ -9,8 +9,9 @@ interface CartItemCompProps {
     onQuantityChange: (id: number, quantity: number) => void;
     onSelectedChange: (id: number, isSelected: boolean) => void;
   }
+  
 
-  export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAll, onQuantityChange, onSelectedChange }) => {
+export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAll, onQuantityChange, onSelectedChange }) => {
     const [myCartItem, setCartItem] = useState(cartItem);
     const handleQuantityChange = (id: number, delta: number) => {
         const newQuantity = Math.max(1, myCartItem.quantity + delta);
@@ -65,7 +66,7 @@ interface CartItemCompProps {
                         <th data-label="이미지"></th>
                         <th data-label="주문 상품 정보">주문 상품 정보</th>
                         <th data-label="상품가격">상품가격</th>
-                        <th data-label="수량">수량</th>
+                        <th data-label="수량" style={{textAlign: 'center'}}>수량</th>
                         <th data-label="합계">합계</th>
                     </tr>
                 </thead>

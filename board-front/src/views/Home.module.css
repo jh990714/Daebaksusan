@@ -4,6 +4,7 @@
 }
 
 .productList {
+  text-align: center;
   list-style: none;
   padding: 5rem 15rem 0 15rem;
   margin-right: 2rem;

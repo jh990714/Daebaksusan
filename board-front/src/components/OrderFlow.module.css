@@ -1,11 +1,11 @@
 .orderFlow {
     display: flex;
     align-items: center; /* 세로 중앙 정렬 */
+    text-align: center;
     list-style: none; /* 기본 리스트 스타일 제거 */
     padding: 3rem; /* 기본 패딩 제거 */
     justify-content: center;
     background-color: #004393;
-    color: white;
     font-size: 30px;
     margin-bottom: 3rem;
 }
@@ -40,4 +40,27 @@
 
 .activeArrow {
     color: white;
+}
+
+
+.myCartPath {
+    padding: 3rem 0;
+}
+
+.myCartPath ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px; 
+}
+
+.myCartPath li {
+    font-size: 14px;
+    color: #999;
+}
+
+.myCartPath li:not(:last-child)::after {
+    content: '>'; /* 가상 요소의 내용으로 '>' 추가 */
+    margin-left: 10px; /* '>'와 항목 사이의 간격 조정 */
+    margin-right: 10px; /* '>'와 다음 항목 사이의 간격 조정 */
 }

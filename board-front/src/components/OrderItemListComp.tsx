@@ -23,7 +23,7 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({orderItem}) => {
                         <th data-label="이미지"></th>
                         <th data-label="주문 상품 정보">주문 상품 정보</th>
                         <th data-label="상품가격">상품가격</th>
-                        <th data-label="수량">수량</th>
+                        <th data-label="수량" style={{textAlign: 'center'}}>수량</th>
                         <th data-label="합계">합계</th>
                     </tr>
                 </thead>
