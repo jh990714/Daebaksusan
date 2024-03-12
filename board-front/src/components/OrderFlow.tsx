@@ -15,7 +15,7 @@ export const OrderFlow: React.FC<OrderFlowProps> = ({ currentStep }) => {
 
   return (
     <>
-      <div className={styles.myCartPath}>
+      <div className={styles.path}>
           <ul>
               <li>홈</li>
               <li>마이페이지</li>

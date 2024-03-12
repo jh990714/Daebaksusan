@@ -8,40 +8,57 @@ export const Detail:React.FC = () => {
             <main className="container mx-auto my-8 p-4">
                 <div className="flex flex-wrap md:flex-nowrap items-stretch">
                     <div className="w-full md:w-1/2 p-4">
-                        <img src="https://source.unsplash.com/random/600x600?abalone" alt="대전복" className="rounded shadow-lg" />
+                        <img src="../upload/1.jpg" alt="대전복" className="w-full h-96 object-cover m-auto rounded shadow-lg " />
                     </div>
-                    <div className="w-full md:w-1/2 p-4">
-                        <h1 className="text-2xl font-bold">대전복 12-13미 1kg(마리당 77g 내외)</h1>
-                        <p className="text-xl my-2">38,000원</p>
-                        <div className="my-4">
-                            <p><strong>원산지:</strong> 완도군</p>
-                            <p><strong>배송방법:</strong> 택배</p>
-                            <p><strong>배송비:</strong> 무료</p>
+                    <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
+                        <h1 className="text-2xl font-bold border-b-2 border-gray-200 p-4">대전복 12-13미 1kg(마리당 77g 내외)</h1>
+                        <div className="text-start border-b-2 border-gray-200 px-4 py-1">
+                            <div className="grid grid-cols-5">
+                                <div className="font-bold">판매가</div>
+                                <div className="col-span-4 text-xl">38,000원</div>
+                            </div>
                         </div>
-                        <div className="my-4">
-                            <label htmlFor="option-select"><strong>[필수]</strong> 12-13 옵션 선택</label>
-                            <select id="option-select" className="border border-gray-300 rounded p-2">
+                        <div className="grid grid-rows-3 text-start border-b-2 border-gray-200 px-4 py-1">
+                            <div className="grid grid-cols-5">
+                                <div className="font-bold">원산지</div>
+                                <div className="col-span-4">완도군</div>
+                            </div>
+                            <div className="grid grid-cols-5">
+                                <div className="font-bold">배송</div>
+                                <div className="col-span-4">택배</div>
+                            </div>
+                            <div className="grid grid-cols-5">
+                                <div className="font-bold">배송 비</div>
+                                <div className="col-span-4">무료</div>
+                            </div>
+                            
+                        </div>
+                        <div className="border-b-2 border-gray-200 px-4 py-2">
+                            <label htmlFor="option-select" className="mb-2"><strong>[필수]</strong> 옵션 선택</label>
+                            <select id="option-select" className="w-full border border-gray-300 rounded p-2">
                                 <option>12-13미 옵션</option>
                             </select>
                         </div>
-                        <div className="my-4">
-                            <p>TOTAL : 0(0개)</p>
+                        <div className="border-b-2 border-gray-200 px-4 py-1">
+                            <div className="text-end">총 : 38,000 원(1개)</div>
                         </div>
-                        <div className="flex space-x-2 my-4">
-                            <button className="bg-blue-500 text-white px-4 py-2 rounded">BUY NOW</button>
+                        <div className="flex justify-center space-x-2 py-4">
+                            <button className="bg-blue-700 text-white px-4 py-2 rounded">BUY NOW</button>
                             <button className="border border-gray-300 px-4 py-2 rounded">ADD CART</button>
                             <button className="border border-gray-300 px-4 py-2 rounded">WISH</button>
                         </div>
                     </div>
                 </div>
 
-                <div className="my-8">
+                <div className="my-8 w-full ">
                     <h2 className="text-2xl font-bold my-4">오늘의 추천 상품 !</h2>
                     <div className="flex overflow-x-auto gap-4">
-                        <div className="min-w-max">
-                            <img src="https://source.unsplash.com/random/200x200?squid" alt="오징어" className="rounded shadow-lg" />
-                            <p className="text-center">오징어 1KG</p>
-                            <p className="text-center">40,000 원</p>
+                        <div className=''>
+                            <div className="w-48 ">
+                                <img src="../upload/1.jpg" alt="오징어" className="w-full h-48 object-fill rounded shadow-lg" />
+                            </div>
+                            <div className="text-center">오징어 1KG</div>
+                            <div className="text-center">40,000 원</div>
                         </div>
                     </div>
                 </div>
@@ -54,13 +71,13 @@ export const Detail:React.FC = () => {
                         <button className="tab-inactive px-4 py-2 rounded">후기</button>
                         <button className="tab-inactive px-4 py-2 rounded">QnA</button>
                     </div>
-                    <div className="border p-4 rounded">
-                        <p>해당 내용</p>
+                    <div className="flex justify-center border p-4 rounded">
+                        <img src="../detail/1.jpg" alt="오징어" className="" />
                     </div>
                 </div>
             </main>
 
         
         </div>
-  );
+    );
 }

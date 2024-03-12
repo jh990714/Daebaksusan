@@ -25,13 +25,13 @@
 .moreButton {
   text-decoration: none;
   display: inline-block;
-  padding: 10px 20px;
+  padding: 7px 15px;
+  border-radius: 30px;
   background-color: #007bff;
   color: white;
   text-align: center;
-  border-radius: 5px;
   border: none; 
-  font-size: 16px;
+  font-size: 13px;
   transition: background-color 0.3s;
 }
 
@@ -40,15 +40,24 @@
   background-color: #0056b3; /* 호버 시 배경 색상 변경 */
 }
 
+.wrapScorll {
+  width: 100%; /* 부모 요소에 대해 전체 너비를 차지하도록 설정 */
+  overflow-y: hidden; /* 스크롤바 숨기기 */
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
 .productList {
   border-top: 2px solid #007bff;
-  text-align: center;
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3열의 그리드를 생성 */
+  display: flex;
   padding: 0;
-  justify-content: center;
 }
+
+.productList ul{
+  display: flex;
+  padding: 0;
+}
+
 
   
 .productList li {
@@ -56,3 +65,4 @@
   margin-left: 2rem;
   margin-top: 2rem;
 }
+

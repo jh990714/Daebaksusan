@@ -1,0 +1,64 @@
+.timeline-container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .timeline-item {
+    display: flex;
+    align-items: center;
+  }
+  
+  .circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin-left: 10px;
+    z-index: 50;
+  }
+  
+  .completed .circle {
+    background-color: blue; /* 완료된 스텝의 동그라미 색상 변경 */
+  }
+  
+  .step {
+    display: flex; /* Flexbox 사용 */
+    align-items: center; /* 수직 중앙 정렬 */
+    position: relative; /* 선을 그리기 위해 필요 */
+    padding: 20px 0; /* 상하 여백 */
+    justify-content: flex-start;
+  
+  }
+  .text {
+    /* 필요한 경우 텍스트 스타일링 */
+    margin-right: 20px; /* 동그라미와의 간격 조정 */
+  }
+  
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    
+    left: 81px; /* 동그라미 중앙에 맞추기 */
+    top: 0px; /* 동그라미 바닥에서 시작 */
+    bottom: 0px; /* 다음 동그라미 꼭대기까지 */
+    width: 1px; /* 선의 굵기 */
+    background-image: linear-gradient(to bottom, gray 50%, transparent 50%);
+    background-size: 1px 4px;
+  }
+  .description {
+    font-size: 12px; /* 설명의 글꼴 크기 */
+    color: #666; /* 설명의 글꼴 색상 */
+    margin-top: -15px; /* 스텝 이름과의 간격 */
+  }
+  
+  /* 추가된 위치 조정을 위한 클래스 */
+  .fixedPosition {
+    position: fixed;
+    bottom: 20px;
+  }
+  
+  .absolutePosition {
+    position: absolute;
+    bottom: 100px; /* 실제 사용 환경에 맞게 조정 */
+  }

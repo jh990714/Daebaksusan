@@ -10,7 +10,7 @@ interface ProductListCompProps {
 export const ProductListComp: React.FC<ProductListCompProps> = ({ product }) => {
   
   return (
-    <Link to={`/detail/${product.productId}`} className={styles.detailLink}>
+    <Link to={`/detail/`} className={styles.detailLink}>
       <div className={styles.productInfoCard} >
         <img src={`./upload/${product.productImgPath}`} alt="사진" className={styles.productImg}></img>
 

@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './BestProduct.module.css';
+import leftArrow from '../assets/leftArrow.png'
+import rightArrow from '../assets/rightArrow.png'
 import { ProductList } from 'types';
 import { ProductListComp } from 'components/ProductListComp';
 import { Link } from 'react-router-dom';
@@ -11,6 +13,19 @@ interface CategoryProductProp {
 
 export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
   const [products, setProducts] = useState<ProductList[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null); // 타입스크립트를 사용하여 ref의 타입을 HTMLDivElement로 지정합니다.
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -500 }); // 왼쪽으로 100px 스크롤
+    }
+  };
+  
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 500 }); // 오른쪽으로 100px 스크롤
+    }
+  };
 
   let pageTitle;
 
@@ -43,7 +58,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
         }
 
           const response = await axios.get<ProductList[]>(url);
-          setProducts(response.data.slice(0, 6));
+          setProducts(response.data.slice(0, 10));
 
       } catch (error) {
           console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
@@ -53,6 +68,20 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (scrollRef.current) {
+        if (scrollRef.current.scrollWidth <= scrollRef.current.scrollLeft + scrollRef.current.clientWidth) {
+          scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          scrollRef.current.scrollBy({ left: 500, behavior: 'smooth' });
+        }
+      }
+    }, 7000);
+
+    return () => clearInterval(timer); // 컴포넌트가 언마운트 될 때 타이머 정리
+  }, []);
+
   return (
     <div className={styles.homeContainer}>
       <div className={styles.productListContainer}>
@@ -60,17 +89,27 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
           <Link to={category} className={styles.productListTitle}> {pageTitle} </Link>
           <Link to={category} className={styles.moreButton}> 더보기 </Link>
         </div>
-        <div>
-          <ul className={styles.productList}>
-            {products.map((product: ProductList) => (
-              <li key={product.productId}>
-                <ProductListComp product={product} />
-              </li>
-            ))}
-          </ul>
+        <div className={styles.productList}>
+          <button className={styles.moveButton}>
+            <img width="35" height="35" src={leftArrow} onClick={scrollLeft}/>
+          </button>
+          <div className={styles.wrapScorll} ref={scrollRef}>
+            <ul>
+              {products.map((product: ProductList) => (
+                <li key={product.productId}>
+                  <ProductListComp product={product} />
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <button className={styles.moveButton}>
+            <img width="35" height="35" src={rightArrow} onClick={scrollRight}/>
+          </button>
+          
         </div>
       </div>
-
+              
     </div>
   );
 };

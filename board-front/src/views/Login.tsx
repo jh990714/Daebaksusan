@@ -2,6 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import { FormEvent } from 'react';
 import styles from './Login.module.css';
+import { Link } from 'react-router-dom';
 
 export const Login:React.FC = () => {
     const [id, setId] = useState('');
@@ -66,7 +67,7 @@ export const Login:React.FC = () => {
           </form>
           <div className="text-sm flex justify-end">
             <div className="font-medium hover:text-blue-500">계정이 없으신가요?&nbsp;&nbsp;</div>
-            <a href="#" className="font-medium text-blue-600 hover:text-blue-500">가입하기</a>
+            <Link to='/joinstep1' className="font-medium text-blue-600 hover:text-blue-500">가입하기</Link>
         </div>
         <div className="grid grid-cols-3 text-sm">
             <div className="border-b-2 border-blue-700 h-3"></div>

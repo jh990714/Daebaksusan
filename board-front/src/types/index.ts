@@ -6,6 +6,7 @@ import CartItem from "./interface/cart-item.interface";
 import AddressData from "./interface/address-item.interface";
 import AddressObj from "./interface/addressObject-item.interface";
 import InputErrors from "./interface/OrderInputError.interface";
+import PaymentItem from "./interface/payment-item.interface";
 
 export type{
     ResponseCode,
@@ -15,5 +16,6 @@ export type{
     CartItem,
     AddressObj,
     AddressData,
-    InputErrors
+    InputErrors,
+    PaymentItem,
 }

@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from "./Mypage.module.css";
+import { Link } from 'react-router-dom';
 
 
 
@@ -20,11 +21,11 @@ export const Mypage:React.FC = () => {
                 <div className="flex justify-between">
                     <div className="w-1/6 border-r text-l font-semibold" >
                         <ul className="space-y-6">
-                            <li><a href="#" className={styles.myPageCategory}>주문 내역 {'>'}</a></li>
-                            <li><a href="#" className={styles.myPageCategory}>장바구니 {'>'}</a></li>
-                            <li><a href="#" className={styles.myPageCategory}>상품 후기 {'>'}</a></li>
-                            <li><a href="#" className={styles.myPageCategory}>1:1 문의 {'>'}</a></li>
-                            <li><a href="#" className={styles.myPageCategory}>회원 탈퇴 {'>'}</a></li>
+                            <li><Link to='/paymentDetails' className={styles.myPageCategory}>주문 내역 {'>'}</Link></li>
+                            <li><Link to='/cart' className={styles.myPageCategory}>장바구니 {'>'}</Link></li>
+                            <li><Link to="#" className={styles.myPageCategory}>상품 후기 {'>'}</Link></li>
+                            <li><Link to="#" className={styles.myPageCategory}>1:1 문의 {'>'}</Link></li>
+                            <li><Link to="#" className={styles.myPageCategory}>회원 탈퇴 {'>'}</Link></li>
                         </ul>
                     </div>
                     <div className="w-3/4">
