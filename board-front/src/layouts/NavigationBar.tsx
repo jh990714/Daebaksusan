@@ -13,9 +13,9 @@ export const NavigationBar = () => {
 
             <div className={styles.productCategory}>
                 <ul>
-                    <li><Link to=''> 인기 상품 </Link></li>
-                    <li><Link to=''> 최신 상품 </Link></li>
-                    <li><Link to=''> 상품 </Link></li>
+                    <li><Link to='/bestProducts'> 인기 상품 </Link></li>
+                    <li><Link to='/newProducts'> 최신 상품 </Link></li>
+                    <li><Link to='/allProducts'> 상품 </Link></li>
                 </ul>
             </div> 
         </div>

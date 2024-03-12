@@ -106,6 +106,7 @@ export const QuickCart = () => {
     // 남은 항목들로 cartItems 상태를 업데이트합니다.
     // isSelected 상태를 재설정할 필요가 없으므로, 이 부분을 제거합니다.
     setCartItems(remainingItems);
+    setStartIndex(0)
   };
 
   const renderListItems = () => {

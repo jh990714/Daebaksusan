@@ -1,33 +1,7 @@
 /* 홈 컨테이너 스타일 */
 .homeContainer {
+  position: relative;
+  margin-bottom: 3rem;
   justify-content: center;
-}
-
-.productList {
-  text-align: center;
-  list-style: none;
-  padding: 5rem 15rem 0 15rem;
-  margin-right: 2rem;
-}
-
-.productList li {
-  display: inline-block;
-  margin-left: 2rem;
-  margin-top: 2rem;
-}
-
-.paginationContainer {
-  display: flex;
-  justify-content: center;
-  margin-top: 5rem;
-}
-
-.carouselContainer {
-  display: block;
-}
-
-@media (max-width: 1450px) {
-  .productList {
-    padding: 5rem 0 0 0;
-  }
+  height: 100%;
 }

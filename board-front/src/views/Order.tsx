@@ -6,6 +6,11 @@ import { useLocation } from 'react-router-dom';
 import { AddressObj, CartItem, InputErrors } from 'types';
 import { OrderItemListComp } from 'components/OrderItemListComp';
 
+declare global {
+    interface Window {
+      IMP: any; // 아임포트 타입 정의
+    }
+}
 
   // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
@@ -15,7 +20,7 @@ export const Order: React.FC = () => {
     const [receiverName, setReceiverName] = useState<string>('');
     const [receiverPhoneMid, setReceiverPhoneMid] = useState<string>('');
     const [receiverPhoneLast, setReceiverPhoneLast] = useState<string>('');
-
+    const { IMP } = window; // 아임포트 라이브러리 추출
     const [addressObj, setAddressObj] = useState<AddressObj>({
         areaAddress: '',
         townAddress: '',
@@ -64,7 +69,8 @@ export const Order: React.FC = () => {
           alert('모든 정보를 입력해주세요.');
           return;
         }
-    
+        
+        // requestPay();
         console.log('결제 진행');
       };
 
@@ -92,6 +98,30 @@ export const Order: React.FC = () => {
     }
 
     const postcodeScriptUrl = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    
+    // useEffect(() => {
+    //     IMP.init('imp02022068'); // 가맹점 식별코드 초기화
+    // }, []);
+    
+    // const requestPay = () => {
+    //     IMP.request_pay({
+    //         pg: 'nictest00m',
+    //         merchant_uid: `상품명_${new Date()}`,
+    //         name: '테스트 상품',
+    //         amount: 10,
+    //         buyer_email: 'test@example.com',
+    //         buyer_name: '홍길동',
+    //         buyer_tel: '010-1234-5678',
+    //         buyer_addr: '서울특별시 강남구 삼성동',
+    //         buyer_postcode: '123-456'
+    //     }, (rsp: any) => { // 콜백 함수의 파라미터에 타입을 any로 지정
+    //         if (rsp.success) {
+    //             alert('결제가 완료되었습니다.');
+    //         } else {
+    //             alert(`결제 실패: ${rsp.error_msg}`);
+    //         }
+    //     });
+    // };
 
     return (
         <div className='orderContainer'>
