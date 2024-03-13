@@ -57,7 +57,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({category}) => {
     };
 
     const handleMoreClick = () => {
-        setVisibleCount(prevCount => Math.min(prevCount + 9, products.length));
+        setVisibleCount(prevCount => Math.min(prevCount + 6, products.length));
     }
     return (
         <div className='homeContainer'>

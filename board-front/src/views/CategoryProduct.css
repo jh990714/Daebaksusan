@@ -77,8 +77,13 @@
   display: block;
 }
 
-@media (max-width: 1450px) {
+@media (max-width: 1280px) {
   .productList {
-    padding: 5rem 0 0 0;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .productList {
+    grid-template-columns: repeat(1, 1fr);
   }
 }

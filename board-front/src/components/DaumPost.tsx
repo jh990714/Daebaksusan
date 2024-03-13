@@ -59,19 +59,20 @@ export const DaumPost: React.FC<DaumPostProps> = ({ setAddressObj, postcodeScrip
 
   return (
     <>
-      <div className='findAddress' onClick={handleOpenPostcodePopup}>
-        주소 찾기
+      <div className="addresContainer">
+        <input
+          type="text"
+          className={`address ${inputErrors.zip ? 'error' : ''}`}
+          placeholder="우편 번호"
+          title="우편 번호"
+          id="zipCode"
+          value={addressObj.zip}
+          readOnly
+        />
+        <div className="findAddress" onClick={handleOpenPostcodePopup}>
+          주소 찾기
+        </div>
       </div>
-
-      <input
-        type='text'
-        className={`address ${inputErrors.zip ? 'error' : ''}`}
-        placeholder='우편 번호'
-        title='우편 번호'
-        id='zipCode'
-        value={addressObj.zip}
-        readOnly
-      />
       <input
         type='text'
         className={`address ${inputErrors.areaAddress ? 'error' : ''}`}

@@ -88,3 +88,30 @@
 .orderBtn:hover {
     background-color: #45a049; /* 호버 시 색상 변경 */
 }
+
+@media (max-width: 1280px) {
+    .orderContainer ul {
+        flex-direction: column;
+        padding: 0;
+    }
+    
+    .orderContainer li {
+        padding: 0;
+    }
+
+    .op {
+        transform: rotate(90deg);
+    }
+    
+}
+
+@media (max-width: 780px) {
+    .myCartContainer {
+        width: 100%;
+        padding: 0 3rem;
+    }
+    
+    .cartItemList li {
+        margin: 0;
+    }
+}

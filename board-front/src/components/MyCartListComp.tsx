@@ -1,7 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { CartItem, ProductList } from 'types';
-import styles from './MyCartListComp.module.css'
+import styles from './MyCartListComp.module.css';
+import styles_m from './MyCartMobile.module.css';
 
 interface CartItemCompProps {
     cartItem: CartItem;
@@ -92,7 +93,7 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                                     type="text"
                                     value={myCartItem.quantity.toLocaleString()}
                                     onChange={handleQuantityInputChange}
-                                    className={styles.quantityInput} // 수량 입력란 스타일을 적용하려면 CSS 모듈에 이 클래스를 추가해야 합니다.
+                                    className={styles.quantityInput} 
                                 />
                                 <button className={styles.quantityButton} onClick={() => handleQuantityChange(myCartItem.product.productId, 1)}>+</button>
                             </div>
@@ -101,7 +102,43 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                     </tr>
                 </tbody>
             </table>
+            <div className={styles_m.mobileContainer}>
+                <div className="checkBox">
+                    <input
+                        id={myCartItem.product.productId.toString()}
+                        type="checkbox"
+                        checked={myCartItem.isSelected}
+                        onChange={handleCheckboxChange}
+                        className={styles_m.custom_checkbox} // CSS 클래스 추가
+                    />
+                    <label htmlFor={myCartItem.product.productId.toString()} className={styles_m.checkbox_icon}></label> {/* label에 클래스 추가 */}
+                </div>
 
+                
+                <img src={`./upload/${myCartItem.product.productImgPath}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
+                <div className={styles_m.orderInfo}>
+                    <div className={styles_m.orderName}>
+                        {myCartItem.product.productName}
+
+                    </div>
+
+                    <div className={styles_m.orderOption}>
+                        옵션
+                    </div>
+                    <div className={styles_m.quantityContainer}>
+                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(myCartItem.product.productId, -1)}>-</button>
+                        <input
+                            type="text"
+                            value={myCartItem.quantity.toLocaleString()}
+                            onChange={handleQuantityInputChange}
+                            className={styles_m.quantityInput}
+                        />
+                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(myCartItem.product.productId, 1)}>+</button>
+                    </div>
+        
+                    <div className={styles_m.orderTotal}>{(myCartItem.product.productDiscount * myCartItem.quantity).toLocaleString()}원</div>
+                </div>
+            </div>
         </div>
     )
 }

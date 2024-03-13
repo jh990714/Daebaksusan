@@ -142,57 +142,52 @@ export const QuickCart = () => {
   return (
     <div className={styles.quickCartBar}>
       <img className={styles.btnQuickCart} onClick={handelClick} src={buttonImage} alt="버튼 이미지" width="60" height="60" />
-      {isVisible && (
-        <div className={styles.quickCartOn}>
-
-          {cartItems.length > 0 ? (
-            <div className={styles.cartListContainer}>
-              <div className={styles.moveButton}>
-                <img width="35" height="35" src={leftArrow} onClick={handlePrev}/>
-              </div>
-
-              <div className={styles.cartList}>
-                <ul className={styles.productList}>
-                  {renderListItems()}
-                </ul>
-                
-              </div>
-              <div className={styles.moveButton}>
-                <img width="35" height="35" src={rightArrow} onClick={handleNext}/>
-              </div>
-            </div>
-          ) : (
-            <div className={styles.emptyCartMessage}>
-              장바구니에 상품이 없습니다
-            </div>
-          )}
-
-
-          <div className={styles.totalPriceContainer}>
-            <div className={styles.totalPriceTitle}>장바구니 총 주문 금액</div>
-            <span className={styles.totalPrice}>{calculateTotal()}</span>원
-            <div>
-              <Link to='/order' state={{ cartItems: filteredCartItems }} className={styles.quickOrderbutton}> 구매하러 가기 </Link>
-            </div>
-
-            <div className={styles.quickCartBtns}>
-              <div>
-                <div className={styles.quickCartbutton} onClick={selectAll}> 모두 선택 / 해제 </div>
-              </div>
-              <div>
-                <div className={styles.quickCartbutton} onClick={selectDelete}> 선택 상품 삭제 </div>
-              </div>
-              </div>
+        <div className={`${styles.quickCartContainer} ${isVisible ? styles.show : ''}`}>
+          <div className={`${styles.quickCartOff} ${!isVisible ? styles.show : styles.hidden}`}>
+            간편 장바구니
           </div>
-          
-        </div>
-      )}
-      {!isVisible && (
-        <div className={styles.quickCartOff}>
-          간편 장바구니
-        </div>
-      )}
+          <div className={styles.quickCartOn}>
+            {cartItems.length > 0 ? (
+              <div className={styles.cartListContainer}>
+                <div className={styles.moveButton}>
+                  <img width="35" height="35" src={leftArrow} onClick={handlePrev}/>
+                </div>
 
+                <div className={styles.cartList}>
+                  <ul className={styles.productList}>
+                    {renderListItems()}
+                  </ul>
+                  
+                </div>
+                <div className={styles.moveButton}>
+                  <img width="35" height="35" src={rightArrow} onClick={handleNext}/>
+                </div>
+              </div>
+            ) : (
+              <div className={styles.emptyCartMessage}>
+                장바구니에 상품이 없습니다
+              </div>
+            )}
+
+
+            <div className={styles.totalPriceContainer}>
+              <div className={styles.totalPriceTitle}>장바구니 총 주문 금액</div>
+              <div className={styles.totalPrice}>{calculateTotal()}원 </div>
+              <div className={styles.quickCartBtns}>
+                <Link to='/order' state={{ cartItems: filteredCartItems }} style={{textDecoration: 'none'}}>
+                  <div className={styles.quickOrderbutton}> 구매하러 가기</div>
+                </Link>
+                <div>
+                  <div className={styles.quickCartbutton} onClick={selectAll}> 모두 선택 / 해제 </div>
+                </div>
+                <div>
+                  <div className={styles.quickCartbutton} onClick={selectDelete}> 선택 상품 삭제 </div>
+                </div>
+                </div>
+            </div>
+            
+          </div>
+        </div>
     </div>
   );
 };

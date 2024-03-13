@@ -64,3 +64,18 @@
     margin-left: 10px; /* '>'와 항목 사이의 간격 조정 */
     margin-right: 10px; /* '>'와 다음 항목 사이의 간격 조정 */
 }
+
+@media (max-width: 768px) {
+    .orderFlow {
+        display: none;
+
+    }
+    
+}
+
+@media (max-width: 1280px) {
+    .orderFlow {
+        font-size: 15px;
+    }
+    
+}

@@ -35,6 +35,8 @@
 }
 
 .orderInfo {
+    width: 100%;
+    margin: 0;
     margin-bottom: 1rem;
     border-bottom: 1px solid #ccc;
 }
@@ -135,4 +137,25 @@
 
 .error {
     border-color: red;
+}
+
+@media (max-width: 780px) {
+    .orderContainer {
+        width: 90%;
+    }
+    .userName {
+        width: 20%;
+    }
+    .phoneNumFirst {
+        width: 20%;
+    }
+    .phoneNum {
+        width: 20%
+    }
+    .addressContainer {
+        width: 80%;
+    }
+    .totalPriceContainer {
+        position: relative;
+    }
 }

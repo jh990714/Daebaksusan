@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { PaymentItem, ProductList } from 'types';
 import { PaymentItemComp } from './PaymentItemComp';
-import './PaymentShowList.css'
+import styles from './PaymentShowList.module.css';
 
 export const PaymentShowList = () => {
     const [paymentItems, setPaymentLists] = useState<PaymentItem[]>([]);
@@ -32,7 +32,7 @@ export const PaymentShowList = () => {
     }, []);
 
     return (
-        <div className='paymentItemList'>
+        <div className={styles.paymentItemList}>
             <table>
                 <thead>
                     <tr>
