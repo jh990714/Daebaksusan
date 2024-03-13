@@ -2,14 +2,14 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { ProductList } from 'types';
 import { ProductListComp } from '../components/ProductListComp';
-import './CategoryProduct.css';
+import styles from './CategoryProduct.module.css';
 
 interface CategoryProductProp {
     category: string;
 }
 
 export const CategoryProduct: React.FC<CategoryProductProp> = ({category}) => {
-    const [visibleCount, setVisibleCount] = useState<number>(9);
+    const [visibleCount, setVisibleCount] = useState<number>(12);
     const [products, setProducts] = useState<ProductList[]>([])
     let pageTitle;
 
@@ -57,18 +57,18 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({category}) => {
     };
 
     const handleMoreClick = () => {
-        setVisibleCount(prevCount => Math.min(prevCount + 6, products.length));
+        setVisibleCount(prevCount => Math.min(prevCount + 4, products.length));
     }
     return (
-        <div className='homeContainer'>
-          <div className='productListContainer'>
-            <div className='productListHeader'>
-              <div className='productListTitle'>{pageTitle}</div>
+        <div className={styles.homeContainer}>
+          <div className={styles.productListContainer}>
+            <div className={styles.productListHeader}>
+              <div className={styles.productListTitle}>{pageTitle}</div>
             </div>
             <div>
-              <ul className='productList'>
+              <ul className={styles.productList}>
                 {getCurrentPageData().map((product: ProductList, index: number) => (
-                  <li key={product.productId} className={index >= visibleCount - 3 && visibleCount < products.length ? 'blurEffect' : ''}>
+                  <li key={product.productId} className={index >= visibleCount - 4 && visibleCount < products.length ? `${styles.blurEffect}` : ''}>
                     <ProductListComp product={product} />
                   </li>
                 ))}
@@ -76,7 +76,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({category}) => {
             </div>
           </div>
           {visibleCount < products.length && (
-              <button className='moreButtonContainer' onClick={handleMoreClick}>더 보 기</button>
+              <button className={styles.moreButtonContainer} onClick={handleMoreClick}>더 보 기</button>
             )}
         </div>
       )

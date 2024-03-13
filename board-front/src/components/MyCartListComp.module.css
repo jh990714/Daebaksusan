@@ -4,6 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: center; 
+    margin-bottom: 1rem;
 }
 
 
@@ -30,7 +31,11 @@ table {
 }
 
 .orderName {
-    padding-left: 7rem;
+    padding-left: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100px;
     text-align: start;
     font-size: 17px;
     font-weight: bold;

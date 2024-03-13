@@ -34,7 +34,7 @@
   text-align: center;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3열의 그리드를 생성 */
+  grid-template-columns: repeat(4, 1fr); /* 4열의 그리드를 생성 */
 }
 
 .productList li {
@@ -79,11 +79,34 @@
 
 @media (max-width: 1280px) {
   .productList {
+    padding: 0;
     grid-template-columns: repeat(2, 1fr);
   }
+
 }
 @media (max-width: 768px) {
   .productList {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    
+  }
+
+  .productList li{
+    margin: 10px;
+
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .homeContainer {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .productListContainer {
+    width: 100%;
+    margin: 0;
+  }
+  .productListTitle {
+    font-size: 30px;
   }
 }

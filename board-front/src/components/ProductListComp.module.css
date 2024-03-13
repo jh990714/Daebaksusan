@@ -2,6 +2,7 @@
     text-decoration: none;
     color: inherit;
     text-align: start;
+    width: 100%;
 }
 .detailLink:hover{
     color: inherit;
@@ -9,8 +10,8 @@
 
 .productInfoCard {
     width: 300px;
-    white-space: nowrap;
     overflow: hidden;
+    white-space: nowrap;
     text-overflow: ellipsis;
 }
 
@@ -20,7 +21,7 @@
 
 .productImg {
     border-radius: 20px;
-    width: 100%;
+    width: 255px;
     height: 255px;
 }
 
@@ -61,15 +62,45 @@
 }
 
 
-@media (max-width: 1024px) {
+@media screen and  (max-width: 1024px) {
+    .productImg {
+        width: 180px;
+        height: 180px;
+    }
     .productInfoCard {
         width: 180px;
     }
 }
 
-@media (max-width: 768px) {
+@media screen and (max-width: 768px) {
     .productInfoCard {
         justify-content: center;
-        width: 100%;
+        width: 200px;
+    }
+    .productTitle {
+        font-size: 10px;
+    }
+    .productSp {
+        font-size: 8px;
+    }
+
+    .productDiscount {
+        font-size: 13px;
+        font-weight: bold;
+    }
+    
+    .productPriceBefore {
+        font-size: 10px;
+        margin-left: 5px;
+    }
+}
+
+@media screen and (max-width: 540px) {
+    .productImg {
+        width: 100px;
+        height: 100px;
+    }
+    .productInfoCard {
+        width: 100px; 
     }
 }
