@@ -52,8 +52,9 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({orderItem}) => {
                 
             </div>
 
-            
-            <img src={`./upload/${orderItem.product.productImgPath}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
+            <div>
+                <img src={`./upload/${orderItem.product.productImgPath}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
+            </div>
             <div className={styles_m.orderInfo}>
                 <div className={styles_m.orderName}>
                     {orderItem.product.productName}

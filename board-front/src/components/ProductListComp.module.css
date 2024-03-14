@@ -2,14 +2,15 @@
     text-decoration: none;
     color: inherit;
     text-align: start;
-    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 .detailLink:hover{
     color: inherit;
 }
 
 .productInfoCard {
-    width: 300px;
+    width: 255px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -61,12 +62,13 @@
     text-decoration-color: #959595;
 }
 
-
-@media screen and  (max-width: 1024px) {
-    .productImg {
+@media (max-width: 1280px) {
+    .productInfoCard {
         width: 180px;
-        height: 180px;
     }
+  
+}
+@media screen and  (max-width: 1024px) {
     .productInfoCard {
         width: 180px;
     }
@@ -74,7 +76,6 @@
 
 @media screen and (max-width: 768px) {
     .productInfoCard {
-        justify-content: center;
         width: 200px;
     }
     .productTitle {
@@ -97,10 +98,10 @@
 
 @media screen and (max-width: 540px) {
     .productImg {
-        width: 100px;
-        height: 100px;
+        width: 150px;
+        height: 150px;
     }
     .productInfoCard {
-        width: 100px; 
+        width: 150px; 
     }
 }

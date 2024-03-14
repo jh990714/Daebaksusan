@@ -114,12 +114,12 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                     <label htmlFor={myCartItem.product.productId.toString()} className={styles_m.checkbox_icon}></label> {/* label에 클래스 추가 */}
                 </div>
 
-                
-                <img src={`./upload/${myCartItem.product.productImgPath}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
+                <div className={styles_m.orderImg}>
+                    <img src={`./upload/${myCartItem.product.productImgPath}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
+                </div>
                 <div className={styles_m.orderInfo}>
                     <div className={styles_m.orderName}>
                         {myCartItem.product.productName}
-
                     </div>
 
                     <div className={styles_m.orderOption}>

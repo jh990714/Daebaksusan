@@ -13,10 +13,10 @@ const App: React.FC = () => {
     <div className="APP">
       {/* <TopNavigationBar /> */}
       <NavigationBar />
-      <div style={{marginTop: '180px'}}>
+      <div className='Router'>
         <Router />
       </div>
-      <div style={{marginBottom: '50px'}}>
+      <div className='Footer'>
         <Footer />
       </div>
       <QuickCart />

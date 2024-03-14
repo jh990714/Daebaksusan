@@ -18,6 +18,7 @@
 }
 
 .menuIcon {
+    margin-right: 1rem;
     display: none;
     cursor: pointer;
 }
