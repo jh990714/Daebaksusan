@@ -28,6 +28,7 @@ export const JoinStep1: React.FC = () => {
                 behavior: 'smooth',
             });
         } else {
+            window.location.href = "/joinStep2";
             console.log("회원가입 로직 처리", memberType);
         }
     };

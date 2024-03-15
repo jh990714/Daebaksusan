@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 
 interface TermsProps {
+  agreement: boolean | null;
   onSubmit: (agreement: boolean) => void;
+
   content: string; // 약관 내용을 위한 prop 추가
 }
 
-const TermsOfServiceComp: React.FC<TermsProps> = ({ onSubmit, content }) => {
-  const [agreement, setAgreement] = useState<boolean | null>(null);
+const TermsOfServiceComp: React.FC<TermsProps> = ({ agreement, onSubmit, content }) => {
 
+  
   return (
     <>
       <form className='mt-20'>
@@ -19,11 +21,11 @@ const TermsOfServiceComp: React.FC<TermsProps> = ({ onSubmit, content }) => {
 
         <div>
           <label className="inline-flex items-center mr-4">
-            <input type="radio" name="agreement" value="agree" className="form-radio" checked={agreement === true} onChange={() => setAgreement(true)}></input>
+            <input type="radio" name="agreement" value="agree" className="form-radio" checked={agreement === true} onChange={() => onSubmit(true)}></input>
             <span className="ml-2">동의함</span>
           </label>
           <label className="inline-flex items-center">
-            <input type="radio" name="agreement" value="disagree" className="form-radio" checked={agreement === false} onChange={() => setAgreement(false)}></input>
+            <input type="radio" name="agreement" value="disagree" className="form-radio" checked={agreement === false} onChange={() => onSubmit(false)}></input>
             <span className="ml-2">동의안함</span>
           </label>
         </div>
