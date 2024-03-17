@@ -7,18 +7,21 @@
   justify-content: space-between;
   display: flex;
   align-items: center;
+  margin-bottom: 1rem;
 }
 
 .productListContainer {
-  width: 80%;
+  width: 70%;
   margin: 2rem auto 0 auto;
 }
 
+.productListTitleContainer {
+  display: flex;
+}
 .productListTitle {
   text-decoration: none;
   font-size: 30px;
   font-weight: bold;
-  margin-bottom: 1rem;
   color: inherit;
 }
 

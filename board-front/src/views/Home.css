@@ -1,7 +1,10 @@
 /* 홈 컨테이너 스타일 */
 .homeContainer {
-  position: relative;
   margin-bottom: 3rem;
-  justify-content: center;
-  height: 100%;
+
+}
+
+.HomeBanner1 {
+  width: 60%;
+  margin: 5rem auto;
 }
