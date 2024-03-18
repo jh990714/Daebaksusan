@@ -5,7 +5,7 @@ interface JoinTimeLineProps {
   currentStep: number;
 }
 
-const JoinTimeLine: React.FC<JoinTimeLineProps> = ({ currentStep }) => {
+const JoinTimeLineComp: React.FC<JoinTimeLineProps> = ({ currentStep }) => {
     // 스텝과 설명을 포함하는 객체 배열
     const steps = [
       { name: 'STEP.01', description: '본인 확인' },
@@ -58,4 +58,4 @@ const JoinTimeLine: React.FC<JoinTimeLineProps> = ({ currentStep }) => {
     );
 };
 
-export default JoinTimeLine;
+export default JoinTimeLineComp;

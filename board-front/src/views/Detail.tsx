@@ -1,7 +1,30 @@
-import React from 'react'
+import { DetailTabComp } from 'components/DetailTabComp';
+import React, { useEffect, useState } from 'react'
 
 
 export const Detail:React.FC = () => {
+
+    const [isSticky, setIsSticky] = useState(false);
+
+    // 스크롤 이벤트 핸들러
+    const handleScroll = () => {
+        const scrollTop = window.scrollY;
+        const sticky = scrollTop > 100; // 100px 이상 스크롤되었을 때 sticky 상태로 변경
+        setIsSticky(sticky);
+    };
+
+    // 컴포넌트가 마운트되었을 때 스크롤 이벤트 리스너 추가
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+
+        // 컴포넌트가 언마운트되기 전에 이벤트 리스너 제거
+        return () => {
+        window.removeEventListener('scroll', handleScroll);
+        };
+    }, []); // 빈 배열로 의존성 배열을 설정하여 컴포넌트가 마운트될 때만 이벤트 리스너가 추가되도록 함
+
+
+
   return (
     <div className="bg-white text-gray-700">
 
@@ -43,9 +66,8 @@ export const Detail:React.FC = () => {
                             <div className="text-end">총 : 38,000 원(1개)</div>
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-white px-4 py-2 rounded">BUY NOW</button>
-                            <button className="border border-gray-300 px-4 py-2 rounded">ADD CART</button>
-                            <button className="border border-gray-300 px-4 py-2 rounded">WISH</button>
+                            <button className="bg-blue-700 text-white px-4 py-2 rounded">구매하기</button>
+                            <button className="border border-gray-300 px-4 py-2 rounded">장바구니 담기</button>
                         </div>
                     </div>
                 </div>
@@ -63,21 +85,12 @@ export const Detail:React.FC = () => {
                     </div>
                 </div>
 
-                <div className="my-8">
-                    <div className="flex justify-center space-x-2 mb-4">
-                        <button className="tab-active px-4 py-2 rounded">상품정보</button>
-                        <button className="tab-inactive px-4 py-2 rounded">구매안내</button>
-                        <button className="tab-inactive px-4 py-2 rounded">관련상품</button>
-                        <button className="tab-inactive px-4 py-2 rounded">후기</button>
-                        <button className="tab-inactive px-4 py-2 rounded">QnA</button>
-                    </div>
-                    <div className="flex justify-center border p-4 rounded">
-                        <img src="../detail/1.jpg" alt="오징어" className="" />
-                    </div>
+                <div className={"my-8 w-full"}>
+                    <DetailTabComp />
                 </div>
             </main>
 
-        
+
         </div>
     );
 }

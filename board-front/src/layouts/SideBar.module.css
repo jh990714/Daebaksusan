@@ -1,0 +1,9 @@
+
+.sideBarContainer {
+    position: absolute;
+    z-index: 99;
+}
+
+.sideBar1 {
+    margin-bottom: 50px;
+}

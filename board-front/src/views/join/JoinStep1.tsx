@@ -1,4 +1,4 @@
-import JoinTimeLine from 'components/JoinTimeLineComp';
+import JoinTimeLineComp from 'components/JoinTimeLineComp';
 import React, { useState } from 'react';
 
 
@@ -28,6 +28,7 @@ export const JoinStep1: React.FC = () => {
                 behavior: 'smooth',
             });
         } else {
+            window.location.href = "/joinStep2";
             console.log("회원가입 로직 처리", memberType);
         }
     };
@@ -42,7 +43,7 @@ export const JoinStep1: React.FC = () => {
                     <div className="w-1/5 border-r text-l font-semibold">
                         <div className="space-y-6 mt-10">
                             <div className="">
-                                <JoinTimeLine currentStep={1} />
+                                <JoinTimeLineComp currentStep={1} />
                             </div>
                         </div>
                     </div>
