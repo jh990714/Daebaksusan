@@ -28,6 +28,7 @@ export const Router:React.FC = () => {
       <Route path="/cart" element={<MyCart />} />
       <Route path="/order" element={<Order />} />
       <Route path="/paymentDetails" element={<PaymentDetails />} />
+      <Route path="/paymentDetails" element={<PaymentDetails />} />
     </Routes>
   )
 }
