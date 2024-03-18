@@ -17,9 +17,7 @@ export const Home: React.FC = () => {
       <div className='HomeBanner1'>
         <HomeBanner1 />
       </div>
-      <div className='HomeBanner'>
-        <HomeBanner2 />
-      </div>
+      <div>ss</div>
       
       <BestProduct category='./bestProducts'/>
       <BestProduct category='./newProducts'/>
