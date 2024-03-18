@@ -11,6 +11,7 @@ export const Home: React.FC = () => {
         <CarouselComp img={img} />
       </div>
       <div>123</div>
+      <div>dd</div>
       <BestProduct category='./bestProducts'/>
       <BestProduct category='./newProducts'/>
       <BestProduct category='./allProducts'/>
