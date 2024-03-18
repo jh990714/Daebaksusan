@@ -30,7 +30,7 @@
   display: inline-block;
   padding: 7px 15px;
   border-radius: 30px;
-  background-color: #007bff;
+  background-color: blue;
   color: white;
   text-align: center;
   border: none; 
@@ -40,7 +40,7 @@
 
 .moreButton:hover {
   color: white;
-  background-color: #0056b3; /* 호버 시 배경 색상 변경 */
+  background-color: #1787ff; /* 호버 시 배경 색상 변경 */
 }
 
 .wrapScorll {
@@ -51,7 +51,7 @@
 }
 
 .productList {
-  border-top: 2px solid #007bff;
+  border-top: 2px solid blue;
   display: flex;
   padding: 0;
   

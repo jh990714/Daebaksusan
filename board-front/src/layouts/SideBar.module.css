@@ -1,14 +1,7 @@
 
 .sideBarContainer {
     position: absolute;
-    top: 40%;
-    left: 3%;
     z-index: 99;
-}
-
-.sideBarContainer.fixed {
-    position: fixed; /* 고정 위치 */
-    top: 200px; /* 상단에서 50% 위치 */
 }
 
 .sideBar1 {

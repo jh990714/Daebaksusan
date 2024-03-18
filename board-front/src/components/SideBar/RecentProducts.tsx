@@ -14,8 +14,9 @@ const RecentProducts: React.FC = () => {
             setRecentProducts(JSON.parse(products));
         }
 
-    }, [recentProducts]);
+    }, []);
 
+    
     const scrollProductList = (direction: 'up' | 'down') => {
         if (productListRef.current) {
             const { current: list } = productListRef;

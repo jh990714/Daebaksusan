@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
 import { ProductList } from 'types';
 import styles from './ProductListComp.module.css';
+import saleIcon from 'assets/bestProductIcon.png';
 
 interface ProductListCompProps {
   product: ProductList;
@@ -10,7 +11,7 @@ interface ProductListCompProps {
 
 export const ProductListComp: React.FC<ProductListCompProps> = ({ product }) => {
   const addToRecentProducts = (product: ProductList) => {
-    const maxRecentProducts = 5; // 최대 저장할 최근 본 상품의 수
+    const maxRecentProducts = 7; // 최대 저장할 최근 본 상품의 수
     const recentProducts = Cookies.get('recentProducts') ? JSON.parse(Cookies.get('recentProducts')!) : [];
     
     const updatedRecentProducts = recentProducts.filter((p: ProductList) => p.productId !== product.productId);
@@ -20,14 +21,20 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product }) => 
         updatedRecentProducts.pop(); // 배열의 최대 크기를 초과하는 경우, 가장 오래된 상품을 제거
     }
     
-    Cookies.set('recentProducts', JSON.stringify(updatedRecentProducts), { expires: 7 }); // 쿠키에 저장, 유효 기간은 7일
+    Cookies.set('recentProducts', JSON.stringify(updatedRecentProducts), { expires: 1 }); // 쿠키에 저장, 유효 기간은 1일
+
   };
 
   
   return (
     <Link to={`/detail/`} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
       <div className={styles.productInfoCard} >
-        <img src={`./upload/${product.productImgPath}`} alt="사진" className={styles.productImg}></img>
+        <div className={styles.productImgWrapper}>
+          {product.productPrice !== product.productDiscount && (
+              <img src={saleIcon} alt="세일 아이콘" className={styles.saleIcon} />
+          )}
+          <img src={`./upload/${product.productImgPath}`} alt="사진" className={styles.productImg} />
+        </div>
 
         <hr/>
         <div className={styles.productInfo}>

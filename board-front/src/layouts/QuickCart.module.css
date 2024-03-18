@@ -3,7 +3,7 @@
     bottom: 0;
     background-color: whitesmoke;
     position: fixed;
-    border-top: 3px solid #007bff;
+    border-top: 3px solid blue;
     z-index: 999;
 }
 
@@ -20,7 +20,7 @@
 }
 
 .btnQuickCart {
-    background-color: #007bff;
+    background-color: blue;
     cursor: pointer;
     border-radius: 50%;
     position: absolute;

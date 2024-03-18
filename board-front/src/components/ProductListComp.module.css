@@ -9,6 +9,7 @@
     color: inherit;
 }
 
+
 .productInfoCard {
     width: 255px;
     overflow: hidden;
@@ -20,10 +21,21 @@
     transform: scale(1.1);
 }
 
+.productImgWrapper {
+    position: relative;
+    display: inline-block; /* 또는 다른 레이아웃에 맞게 조정 */
+}
 .productImg {
     border-radius: 10px;
     width: 255px;
     height: 255px;
+}
+
+.saleIcon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 25%;
 }
 
 .productInfo {

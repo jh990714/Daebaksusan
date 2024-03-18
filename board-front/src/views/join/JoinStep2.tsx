@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import TermsOfServiceComp from 'components/TermsOfServiceComp';
-import JoinTimeLine from 'components/JoinTimeLineComp';
+import JoinTimeLineComp from 'components/JoinTimeLineComp';
 
 export const JoinStep2: React.FC = () => {
     const [agreement1, setAgreement1] = useState<boolean | null>(null);
@@ -26,7 +26,7 @@ export const JoinStep2: React.FC = () => {
                     <div className="w-1/5 border-r text-l font-semibold relative">
                         <div className="space-y-6 mt-10">
                             <div className="">
-                                <JoinTimeLine currentStep={2} />
+                                <JoinTimeLineComp currentStep={2} />
                             </div>
                         </div>
                     </div>

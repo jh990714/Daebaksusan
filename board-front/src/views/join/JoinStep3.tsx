@@ -1,4 +1,4 @@
-import JoinTimeLine from 'components/JoinTimeLineComp';
+import JoinTimeLineComp from 'components/JoinTimeLineComp';
 import React, { useState, FormEvent } from 'react';
 
 export const JoinStep3: React.FC = () => {
@@ -33,7 +33,7 @@ export const JoinStep3: React.FC = () => {
                     <div className="w-1/5 border-r text-l font-semibold relative">
                         <div className="space-y-6 mt-10">
                             <div className="">
-                                <JoinTimeLine currentStep={3} />
+                                <JoinTimeLineComp currentStep={3} />
                             </div>
                         </div>
                     </div>
