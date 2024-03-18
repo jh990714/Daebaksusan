@@ -110,28 +110,26 @@ export const QuickCart = () => {
   };
 
   const renderListItems = () => {
-    return cartItems.slice(startIndex, startIndex + 4).map((item, index) => (
+    return cartItems.slice(startIndex, startIndex + 5).map((item, index) => (
       <div className={styles.cartItemContainer}>
-        <li key={item.product.productId}>
-          <ProductListComp product={item.product} />
-        </li>
-
-        <div className={styles.quantityContainer}>
-          <div>
+        <span className={styles.checkboxContainer}>
+          <input
+            id={`checkbox-${item.product.productId}`}
+            type="checkbox"
+            className={styles.customCheckbox}
+            checked={item.isSelected}
+            onChange={() => handleSelectChange(item.product.productId)}
+          />
+          
+        </span>
+        <div>
+          <li key={item.product.productId}>
+            <ProductListComp product={item.product} size='110px' fontSize='4px'/>
+          </li>
+          <div className={styles.quantityContainer}>
             <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.product.productId, -1)}>-</button>
             {item.quantity}
             <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.product.productId, 1)}>+</button>
-          </div>
-
-          <div className={styles.checkboxContainer}>
-            <input
-              id={`checkbox-${item.product.productId}`}
-              type="checkbox"
-              className={styles.customCheckbox}
-              checked={item.isSelected}
-              onChange={() => handleSelectChange(item.product.productId)}
-            />
-            <label htmlFor={`checkbox-${item.product.productId}`} className={styles.checkboxLabel}></label>
           </div>
         </div>
       </div>
@@ -141,7 +139,7 @@ export const QuickCart = () => {
 
   return (
     <div className={styles.quickCartBar}>
-      <img className={styles.btnQuickCart} onClick={handelClick} src={buttonImage} alt="버튼 이미지" width="60" height="60" />
+      <img className={styles.btnQuickCart} onClick={handelClick} src={buttonImage} alt="버튼 이미지" />
         <div className={`${styles.quickCartContainer} ${isVisible ? styles.show : ''}`}>
           <div className={`${styles.quickCartOff} ${!isVisible ? styles.show : styles.hidden}`}>
             간편 장바구니

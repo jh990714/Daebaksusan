@@ -120,7 +120,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
             <ul>
               {products.map((product: ProductList) => (
                 <li key={product.productId}>
-                  <ProductListComp product={product} />
+                  <ProductListComp product={product} size='255px' fontSize='7px'/>
                 </li>
               ))}
             </ul>

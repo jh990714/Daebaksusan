@@ -5,12 +5,12 @@
     display: flex;
     justify-content: center;
 }
+
 .detailLink:hover{
     color: inherit;
 }
-
-
 .productInfoCard {
+    font-size: 7px;
     width: 255px;
     overflow: hidden;
     white-space: nowrap;
@@ -43,13 +43,14 @@
     
 }
 .productTitle {
-    font-size: 17px;
+    font-size: 2.5em;
     font-weight: bold;
     margin: 0;
 }
 
 .productSp {
-    font-size: 14px;
+    font-size: 2em;
+    margin-bottom: 5px;
     color: #999;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -63,12 +64,12 @@
 }
 
 .productDiscount {
-    font-size: 21px;
+    font-size: 3em;
     font-weight: bold;
 }
 
 .productPriceBefore {
-    font-size: 14px;
+    font-size: 2em;
     color: #959595;
     margin-left: 10px;
     text-decoration: line-through;
@@ -91,20 +92,11 @@
     .productInfoCard {
         width: 200px;
     }
-    .productTitle {
-        font-size: 10px;
-    }
-    .productSp {
-        font-size: 8px;
-    }
-
-    .productDiscount {
-        font-size: 13px;
-        font-weight: bold;
+    .productInfoCard {
+        font-size: 5px;
     }
     
     .productPriceBefore {
-        font-size: 10px;
         margin-left: 5px;
     }
 }

@@ -69,7 +69,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({category}) => {
               <ul className={styles.productList}>
                 {getCurrentPageData().map((product: ProductList, index: number) => (
                   <li key={product.productId} className={index >= visibleCount - 4 && visibleCount < products.length ? `${styles.blurEffect}` : ''}>
-                    <ProductListComp product={product} />
+                    <ProductListComp product={product} size='255px' fontSize='7px'/>
                   </li>
                 ))}
               </ul>
