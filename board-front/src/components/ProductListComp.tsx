@@ -7,9 +7,11 @@ import saleIcon from 'assets/bestProductIcon.png';
 
 interface ProductListCompProps {
   product: ProductList;
+  size: string;
+  fontSize: string;
 }
 
-export const ProductListComp: React.FC<ProductListCompProps> = ({ product }) => {
+export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size, fontSize }) => {
   const addToRecentProducts = (product: ProductList) => {
     const maxRecentProducts = 7; // 최대 저장할 최근 본 상품의 수
     const recentProducts = Cookies.get('recentProducts') ? JSON.parse(Cookies.get('recentProducts')!) : [];
@@ -28,12 +30,12 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product }) => 
   
   return (
     <Link to={`/detail/`} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
-      <div className={styles.productInfoCard} >
+      <div style={{width: size, fontSize: fontSize}} className={styles.productInfoCard} >
         <div className={styles.productImgWrapper}>
           {product.productPrice !== product.productDiscount && (
               <img src={saleIcon} alt="세일 아이콘" className={styles.saleIcon} />
           )}
-          <img src={`./upload/${product.productImgPath}`} alt="사진" className={styles.productImg} />
+          <img src={`./upload/${product.productImgPath}`} alt="사진" style={{width: size, height: size}} className={styles.productImg} />
         </div>
 
         <hr/>
