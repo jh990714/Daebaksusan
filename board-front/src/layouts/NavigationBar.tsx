@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import logo from '../assets/logo.jpg'
 import styles from  './NavigationBar.module.css'
 import cartIcon from '../assets/Cart.png'

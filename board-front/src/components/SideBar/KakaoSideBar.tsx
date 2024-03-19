@@ -1,4 +1,4 @@
-import React from 'react';
+
 import icon from 'assets/kakaoLogo.png';
 import styles from './KakaoSideBar.module.css';
 

@@ -1,6 +1,5 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { CartItem, ProductList } from 'types';
+import { CartItem } from 'types';
 import styles from './MyCartListComp.module.css';
 import styles_m from './MyCartMobile.module.css';
 

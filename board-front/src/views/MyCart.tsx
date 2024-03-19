@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './MyCart.module.css'
 import { CartItem, ProductList } from 'types';
 import axios from 'axios';

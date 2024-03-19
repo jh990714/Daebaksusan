@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './QuickCart.module.css'
 import topArrow from '../assets/topArrow.png'
 import bottomArrow from '../assets/bottomArrow.png'
