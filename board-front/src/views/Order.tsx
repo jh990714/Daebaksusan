@@ -4,7 +4,7 @@ import { OrderFlow } from 'components/OrderFlow';
 import './Order.css';
 import { useLocation } from 'react-router-dom';
 import { AddressObj, CartItem, InputErrors } from 'types';
-import { OrderItemListComp } from 'components/OrderItemListComp';
+import { OrderItemListComp } from 'components/product/OrderItemListComp';
 
 declare global {
     interface Window {
