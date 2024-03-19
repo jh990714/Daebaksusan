@@ -4,23 +4,42 @@ import CarouselComp from 'components/CarouselComp';
 import img from '../assets/testimg.jpg'
 import { BestProduct } from 'components/BestProduct';
 import { HomeBanner1 } from 'components/HomeBanner/HomeBanner1';
+import { useAnimateOnScroll } from 'hook/useAnimateOnScroll '
+import './Home.css'
 import { HomeBanner2 } from 'components/HomeBanner/HomeBanner2';
 
-import './Home.css'
-
 export const Home: React.FC = () => {
+  const ref1 = useAnimateOnScroll();
+  const ref2 = useAnimateOnScroll();
+  const ref3 = useAnimateOnScroll();
+  const ref4 = useAnimateOnScroll();
+  const ref5 = useAnimateOnScroll();
+  
   return (
     <div className='homeContainer'>
       <div className='carouselContainer'>
         <CarouselComp img={img} />
       </div>
-      <div className='HomeBanner1'>
+
+      <div ref={ref1} className='HomeBanner'>
         <HomeBanner1 />
       </div>
-      
-      <BestProduct category='./bestProducts'/>
-      <BestProduct category='./newProducts'/>
-      <BestProduct category='./allProducts'/>
+
+      <div ref={ref2} className='HomeBanner'>
+        <HomeBanner2 />
+      </div>
+
+      <div ref={ref3}>
+        <BestProduct category='./bestProducts'/>
+      </div>
+
+      <div ref={ref4}>
+        <BestProduct category='./newProducts'/>
+      </div>
+
+      <div ref={ref5}>
+        <BestProduct category='./allProducts'/>
+      </div>
     </div>
   );
 };

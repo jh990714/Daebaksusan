@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { ProductList } from 'types';
-import { ProductListComp } from '../components/ProductListComp';
+import { ProductListComp } from '../components/product/ProductListComp';
 import styles from './CategoryProduct.module.css';
 
 interface CategoryProductProp {
@@ -69,7 +69,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({category}) => {
               <ul className={styles.productList}>
                 {getCurrentPageData().map((product: ProductList, index: number) => (
                   <li key={product.productId} className={index >= visibleCount - 4 && visibleCount < products.length ? `${styles.blurEffect}` : ''}>
-                    <ProductListComp product={product} />
+                    <ProductListComp product={product} size='255px' fontSize='7px'/>
                   </li>
                 ))}
               </ul>
