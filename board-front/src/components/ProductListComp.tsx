@@ -30,12 +30,24 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
   
   return (
     <Link to={`/detail/`} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
-      <div style={{width: size, fontSize: fontSize}} className={styles.productInfoCard} >
+      <div style={{
+          '--card-size': size,
+          '--card-font-size': fontSize,
+        } as React.CSSProperties} 
+        className={styles.productInfoCard} 
+      >
         <div className={styles.productImgWrapper}>
           {product.productPrice !== product.productDiscount && (
               <img src={saleIcon} alt="세일 아이콘" className={styles.saleIcon} />
           )}
-          <img src={`./upload/${product.productImgPath}`} alt="사진" style={{width: size, height: size}} className={styles.productImg} />
+          <img src={`./upload/${product.productImgPath}`} alt="사진" 
+            style={{
+              '--card-size': size,
+              '--card-height': size,
+            } as React.CSSProperties} 
+            className={styles.productImg} 
+          />
+
         </div>
 
         <hr/>
