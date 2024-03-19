@@ -75,5 +75,5 @@
 }
 
 .animateSlideUp {
-  animation: slideUp 2s ease-out forwards;
+  animation: slideUp 1.5s ease-out forwards;
 }
