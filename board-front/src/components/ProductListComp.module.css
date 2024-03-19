@@ -10,8 +10,8 @@
     color: inherit;
 }
 .productInfoCard {
-    font-size: 7px;
-    width: 255px;
+    width: var(--card-size, 255px); /* 기본값 100% */
+    font-size: var(--card-font-size, 7px); /* 기본값 16px */
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -27,8 +27,8 @@
 }
 .productImg {
     border-radius: 10px;
-    width: 255px;
-    height: 255px;
+    width: var(--card-size, 255px);
+    height: var(--card-size, 255px);
 }
 
 .saleIcon {
