@@ -5,7 +5,7 @@ import { Router } from 'views/Router';
 import { Footer } from 'layouts/Footer';
 import { NavigationBar } from 'layouts/NavigationBar';
 import { QuickCart } from 'layouts/QuickCart';
-// import { SideBar } from 'layouts/SideBar';
+import { SideBar } from 'layouts/SideBar';
 
   
 const App: React.FC = () => {
@@ -15,7 +15,7 @@ const App: React.FC = () => {
       <div className='Router'>
         <Router />
       </div>
-      {/* <SideBar /> */}
+      <SideBar />
       <div className='Footer'>
         <Footer />
       </div>

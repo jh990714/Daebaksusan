@@ -18,7 +18,7 @@ export const Router:React.FC = () => {
       <Route path="/" element={<Home />} />
       <Route path="/bestProducts" element={<CategoryProduct category='./bestProducts'/>} />
       <Route path="/newProducts" element={<CategoryProduct category='./newProducts'/>} />
-      {/* <Route path="/allProducts" element={<CategoryProduct category='./allProducts'/>} /> */}
+      <Route path="/allProducts" element={<CategoryProduct category='./allProducts'/>} />
       <Route path="/detail" element={<Detail />} />
       <Route path="/login" element={<Login />} />
       <Route path="/allProducts" element={<Mypage />} />
