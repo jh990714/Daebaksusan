@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { ProductList } from 'types';
-import { ProductListComp } from '../components/ProductListComp';
+import { ProductListComp } from '../components/product/ProductListComp';
 import styles from './CategoryProduct.module.css';
 
 interface CategoryProductProp {

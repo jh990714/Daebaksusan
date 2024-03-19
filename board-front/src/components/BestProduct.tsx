@@ -4,7 +4,7 @@ import styles from './BestProduct.module.css';
 import leftArrow from '../assets/leftArrow.png'
 import rightArrow from '../assets/rightArrow.png'
 import { ProductList } from 'types';
-import { ProductListComp } from 'components/ProductListComp';
+import { ProductListComp } from 'components/product/ProductListComp';
 import { Link } from 'react-router-dom';
 import { CategoryMenuBar } from 'layouts/CategoryMenuBar';
 

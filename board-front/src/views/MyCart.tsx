@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from './MyCart.module.css'
 import { CartItem, ProductList } from 'types';
 import axios from 'axios';
-import { MyCartListComp } from 'components/MyCartListComp';
+import { MyCartListComp } from 'components/product/MyCartListComp';
 import { OrderFlow } from 'components/OrderFlow';
 import { Link } from 'react-router-dom';
 
