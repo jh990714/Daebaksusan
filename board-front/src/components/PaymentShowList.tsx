@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PaymentItem, ProductList } from 'types';
 import { PaymentItemComp } from './PaymentItemComp';
 import styles from './PaymentShowList.module.css';

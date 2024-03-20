@@ -1,4 +1,4 @@
-import React from 'react'
+
 import styles from './RcmndProductComp.module.css'
 import tag from 'assets/bestProductIcon.png'
 

@@ -50,12 +50,12 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
       try {
           let url = '';
           if (category === './bestProducts') {
-            url = 'http://175.215.44.128:8080/product';
+            url = 'https://175.215.44.128:8080/product';
           } else if (category === './newProducts') {
-            url = 'http://175.215.44.128:8080/product';
+            url = 'https://175.215.44.128:8080/product';
           }
           else if (category === './allProducts') {
-            url = 'http://175.215.44.128:8080/product';
+            url = 'https://175.215.44.128:8080/product';
         }
 
           const response = await axios.get<ProductList[]>(url);
