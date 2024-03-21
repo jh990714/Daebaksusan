@@ -21,7 +21,7 @@ export const Router:React.FC = () => {
       <Route path="/allProducts" element={<CategoryProduct category='./allProducts'/>} />
       <Route path="/detail" element={<Detail />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/allProducts" element={<Mypage />} />
+      <Route path="/mypage" element={<Mypage />} />
       <Route path="/joinStep1" element={<JoinStep1 />} />
       <Route path="/joinStep2" element={<JoinStep2 />} />
       <Route path="/joinStep3" element={<JoinStep3 />} />

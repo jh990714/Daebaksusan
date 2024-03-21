@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+
+
 public class MemberServiceImple implements MemberService {
 
     private final MemberRepository memberRepository;
@@ -40,9 +42,10 @@ public class MemberServiceImple implements MemberService {
         
     }
 
+    @Override
+    public MemberEntity registerNewMember(MemberEntity member) {
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
+        return memberRepository.save(member);
+    }
 
-
-    
-   
-    
 }

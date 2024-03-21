@@ -6,4 +6,6 @@ import com.seafood.back.entity.ProductEntity;
 
 public interface ProductService {
     public List<ProductEntity> findProductAll();
+    public List<ProductEntity> findProductBest();
+    public List<ProductEntity> findProductNew();
 }

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.seafood.back.dto.LoginRequest;
+import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,11 @@ public class MemberController {
             return ResponseEntity.ok().body(token);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패"); // 실패 시 401 반환
-
-
+    }
+    
+    @PostMapping("/signUp")
+    public ResponseEntity<MemberEntity> registerMember(@RequestBody MemberEntity member) {
+        MemberEntity registeredMember = memberService.registerNewMember(member);
+        return ResponseEntity.ok(registeredMember);
     }
 }
