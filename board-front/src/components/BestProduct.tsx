@@ -50,12 +50,12 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
       try {
           let url = '';
           if (category === './bestProducts') {
-            url = 'http://175.215.44.128:8080/product';
+            url = 'http://175.215.44.128:8080/product/new';
           } else if (category === './newProducts') {
-            url = 'http://175.215.44.128:8080/product';
+            url = 'http://175.215.44.128:8080/product/new';
           }
           else if (category === './allProducts') {
-            url = 'http://175.215.44.128:8080/product';
+            url = 'http://175.215.44.128:8080/product/all';
         }
 
           const response = await axios.get<ProductList[]>(url);
@@ -92,13 +92,13 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
   }, []);
 
   const handleCategoryChange = async (newCategory: string) => {
-    try {
-      let url = `http://175.215.44.128:8080/product/${newCategory}`; // URL을 새 카테고리에 맞게 조정
-      const response = await axios.get<ProductList[]>(url);
-      setProducts(response.data.slice(0, 10));
-    } catch (error) {
-      console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
-    }
+    // try {
+    //   let url = `http://175.215.44.128:8080/product/${newCategory}`; // URL을 새 카테고리에 맞게 조정
+    //   const response = await axios.get<ProductList[]>(url);
+    //   setProducts(response.data.slice(0, 10));
+    // } catch (error) {
+    //   console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+    // }
   };
 
   return (
