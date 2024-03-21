@@ -1,14 +1,12 @@
 package com.seafood.back.respository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import com.seafood.back.entity.MemberEntity;
 
-
-@Repository
-public interface MemberRepository extends JpaRepository<MemberEntity, String>{
-
-    MemberEntity findByMemberId(String memberId);
-
+public interface MemberRepository extends JpaRepository<MemberEntity, String> {
+    Optional<MemberEntity> findByMemberId(String memberId);
+    // MemberEntity findByMemberId(String memberId);
 }

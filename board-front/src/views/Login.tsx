@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 export const Login:React.FC = () => {
     const [id, setId] = useState('');
@@ -10,15 +11,27 @@ export const Login:React.FC = () => {
     const [showPasswordInput, setShowPasswordInput] = useState(false);
     const [inputShake, setInputShake] = useState(false);
   
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
+
       if (id === '') {
         setInputShake(true);
         setTimeout(() => setInputShake(false), 500);
-      } else if (id === 'lgd') {
-        setShowPasswordInput(true);
+      } else {
+        try {
+          const response = await axios.post('http://localhost:8080/members/login', {
+            userName: id,
+            password: password,
+          });
+          const token = response.data;
+          window.location.href = "/";
+        } catch (error) {
+          console.error('로그인 실패:', error);
+          alert('로그인에 실패했습니다. 아이디 또는 비밀번호를 확인해주세요.');
+          // 로그인 실패 처리
+        }
       }
-    };
+    }
   
     const handleIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setId(e.target.value);
@@ -46,7 +59,7 @@ export const Login:React.FC = () => {
                 <input id="id-input" name="id" type="text" autoComplete="id" required className={`appearance-none rounded-lg relative block w-full px-3 py-2 border-2 ${inputShake ? 'border-red-500' : 'border-gray-300'} placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`} placeholder="ID를 입력하세요." value={id} onChange={handleIdChange} />
                 <div className="absolute -top-3 left-4 bg-white z-50">ID</div>
               </div>
-              {showPasswordInput && (
+              {/* {showPasswordInput && ( */}
                 <div className="space-y-3 relative" id="password-field">
                   <label htmlFor="password-input" className="sr-only">비밀번호</label>
                   <input id="password-input" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password" required className="appearance-none rounded-lg relative block w-full px-3 py-2 border-2 border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm" placeholder="비밀번호" value={password} onChange={handlePasswordChange} />
@@ -55,7 +68,7 @@ export const Login:React.FC = () => {
                   </button>
                   <div className="absolute -top-5 left-4 bg-white z-50">비밀번호</div>
                 </div>
-              )}
+              {/* )} */}
             </div>
             <div>
               <button type="submit" className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
