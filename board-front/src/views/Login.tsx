@@ -23,7 +23,7 @@ export const Login:React.FC = () => {
             userName: id,
             password: password,
           });
-          console.log(response.data); // 여기서 JWT 토큰을 얻을 수 있습니다.
+          const token = response.data;
           window.location.href = "/";
         } catch (error) {
           console.error('로그인 실패:', error);
