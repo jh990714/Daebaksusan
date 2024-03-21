@@ -1,3 +1,4 @@
+import axios from 'axios';
 import JoinTimeLineComp from 'components/JoinTimeLineComp';
 import React, { useState, FormEvent } from 'react';
 
@@ -13,16 +14,34 @@ export const JoinStep3: React.FC = () => {
     const [phone3, setPhone3] = useState('');
     const [email, setEmail] = useState('');
     const [emailDomain, setEmailDomain] = useState('');
+    const [postalCode, setPostalCode] = useState('');
     const [address, setAddress] = useState('');
+    const [detailAddress, setDetailAddress] = useState('');
 
-    const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    // 폼 제출 로직
-    alert('Form submitted successfully!');
-    // 예: 서버로 데이터 전송
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const fullPhone = `${phone1}-${phone2}-${phone3}`;
+        const fullEmail = `${email}@${emailDomain}`;
+
+        try {
+            const response = await axios.post('http://175.215.44.128:8080/members/signUp', {
+                memberId: memberId, 
+                password: password, 
+                name: name, 
+                phone: fullPhone, 
+                email: fullEmail, 
+                postalCode: postalCode, 
+                address: address, 
+                detailAddress: detailAddress
+            });
+            console.log(response.data);
+            // 성공적인 응답 처리
+        } catch (error) {
+            console.error('회원가입 실패:', error);
+            // 오류 처리
+        }
+
     };
-    
-
     return (
         <div className="container mx-auto mt-10 p-5 rounded-lg">
             <div className="flex justify-between items-center border-b pb-4">
@@ -126,9 +145,9 @@ export const JoinStep3: React.FC = () => {
                                             <label htmlFor="address" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">배송 주소</label>
                                             <div className="grid grid-rows-3">
                                                 <div className="col-span-5 flex">
-                                                    <input type="text" id="address" name="address" required
+                                                    <input type="text" id="postal_code" name="postal_code" required
                                                         className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                                        placeholder="우편 번호" value={address} onChange={(e) => setAddress(e.target.value)} />
+                                                        placeholder="우편 번호" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
                                                     <button className="text-white text-xs bg-blue-600 hover:bg-blue-400 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-2 m-2 text-center">주소찾기</button>
                                                 </div>
                                                 <div className="col-span-5 flex">
@@ -137,9 +156,9 @@ export const JoinStep3: React.FC = () => {
                                                         placeholder="주소" value={address} onChange={(e) => setAddress(e.target.value)} />
                                                 </div>
                                                 <div className="col-span-5 flex">
-                                                    <input type="text" id="address" name="address" required
+                                                    <input type="text" id="detail_address" name="detail_address" required
                                                         className="m-2 w-64 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                                        placeholder="상세 주소" value={address} onChange={(e) => setAddress(e.target.value)} />
+                                                        placeholder="상세 주소" value={detailAddress} onChange={(e) => setDetailAddress(e.target.value)} />
                                                 </div>
                                             </div>
                                         </div>
