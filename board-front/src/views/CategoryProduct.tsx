@@ -30,26 +30,28 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({category}) => {
 
     useEffect(() => {
         const fetchData = async () => {
-        try {
-            let url = '';
-            if (category === './bestProducts') {
-                url = 'http://175.215.44.128:8080/product/new';
-            } else if (category === './newProducts') {
-                url = 'http://175.215.44.128:8080/product/new';
+          try {
+              let url = '';
+              if (category === './bestProducts') {
+                  url = 'http://175.215.44.128:8080/product/new';
+              } else if (category === './newProducts') {
+                  url = 'http://175.215.44.128:8080/product/new';
+              }
+              else if (category === './allProducts') {
+                url = 'http://175.215.44.128:8080/product/all';
             }
-            else if (category === './allProducts') {
-              url = 'http://175.215.44.128:8080/product/all';
-          }
-
+            
             const response = await axios.get<ProductList[]>(url);
             setProducts(response.data);
-        } catch (error) {
+
+            console.log('Product 데이터를 가져오는 것에 성공하였습니다.')
+          } catch (error) {
             console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
-        }
+          }
         };
 
         fetchData();
-    }, []);
+    }, [category]);
 
     // 현재 페이지에 보여줄 상품 데이터 계산
     const getCurrentPageData = () => {
