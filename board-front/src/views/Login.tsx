@@ -1,7 +1,5 @@
 import React from 'react'
 import { useState } from 'react';
-import { FormEvent } from 'react';
-import styles from './Login.module.css';
 import { Link } from 'react-router-dom';
 
 export const Login:React.FC = () => {

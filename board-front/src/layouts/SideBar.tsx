@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import RecentProducts from '../components/SideBar/RecentProducts'
 import styles from './SideBar.module.css'
