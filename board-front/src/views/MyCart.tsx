@@ -13,7 +13,7 @@ export const MyCart = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get<ProductList[]>('http://localhost:8080/product');
+                const response = await axios.get<ProductList[]>('http://localhost:8080/product/all');
                 const cartItems = response.data.map(product => ({
                     product,
                     isSelected: true,
