@@ -3,11 +3,11 @@ import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 
 
-export const Detail:React.FC = () => {
+export const Detail: React.FC = () => {
     const product = useLocation().state.product;
-
-
     const [isSticky, setIsSticky] = useState(false);
+    const [options, setOptions] = useState<string[]>([]);
+    const [quantity, setQuantity] = useState<number>(1);
 
     // 스크롤 이벤트 핸들러
     const handleScroll = () => {
@@ -22,26 +22,63 @@ export const Detail:React.FC = () => {
 
         // 컴포넌트가 언마운트되기 전에 이벤트 리스너 제거
         return () => {
-        window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('scroll', handleScroll);
         };
     }, []); // 빈 배열로 의존성 배열을 설정하여 컴포넌트가 마운트될 때만 이벤트 리스너가 추가되도록 함
 
 
 
-  return (
-    <div className="bg-white text-gray-700">
+    // 옵션 분리
+    useEffect(() => {
+        if (product.options) {
+            setOptions(product.options.split('/'));
+        }
+    }, [product]);
+
+    const handleQuantityChange = (value: number) => {
+        const newQuantity = quantity + value;
+        if (newQuantity >= 1 && newQuantity <= product.stockQuantity) {
+            setQuantity(newQuantity);
+        } else if (newQuantity < 1) {
+            setQuantity(1); // 최소 수량은 1로 유지
+        } else {
+            setQuantity(product.stockQuantity); // 재고 수량으로 수량 조정
+        }
+    };
+    
+
+    const handleQuantityInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        if (value === "" || value === "0") {
+            setQuantity(0); // 빈 문자열 또는 0 입력 시 최소 수량 1로 설정
+        } else {
+            const newValue = parseInt(value);
+            if (!isNaN(newValue) && newValue >= 1 && newValue <= product.stockQuantity) {
+                setQuantity(newValue);
+            } else if (newValue > product.stockQuantity) {
+                setQuantity(product.stockQuantity); // 재고 수량으로 수량 조정
+            }
+        }
+    };
+    
+
+
+    return (
+        <div className="bg-white text-gray-700">
 
             <main className="container mx-auto my-8 p-4">
                 <div className="flex flex-wrap md:flex-nowrap items-stretch">
                     <div className="w-full md:w-1/2 p-4">
-                        <img src={`../upload/${product.productImgPath}`} alt={product.productImgPath} className="w-full h-96 object-cover m-auto rounded shadow-lg " />
+                        <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded shadow-lg " />
                     </div>
                     <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
-                        <h1 className="text-2xl font-bold border-b-2 border-gray-200 p-4">{product.productName}</h1>
+                        <h1 className="text-2xl font-bold p-3">{product.name}</h1>
+                        <h1 className="text-xl font-bold border-b-2 border-gray-200 p-2">{product.description}</h1>
+                        
                         <div className="text-start border-b-2 border-gray-200 px-4 py-1">
                             <div className="grid grid-cols-5">
                                 <div className="font-bold">판매가</div>
-                                <div className="col-span-4 text-xl">{(product.productPrice-product.productDiscount).toLocaleString()}</div>
+                                <div className="col-span-4 text-xl">{(product.regularPrice - product.salePrice).toLocaleString()}원</div>
                             </div>
                         </div>
                         <div className="grid grid-rows-3 text-start border-b-2 border-gray-200 px-4 py-1">
@@ -55,23 +92,36 @@ export const Detail:React.FC = () => {
                             </div>
                             <div className="grid grid-cols-5">
                                 <div className="font-bold">배송 비</div>
-                                <div className="col-span-4">무료</div>
+                                <div className="col-span-4">{product.shippingCost.toLocaleString()}원</div>
                             </div>
-                            
+
                         </div>
                         <div className="border-b-2 border-gray-200 px-4 py-2">
-                            <label htmlFor="option-select" className="mb-2"><strong>[필수]</strong> 옵션 선택</label>
+                            <label htmlFor="option-select" className="mb-2"><strong>[필수]</strong> 옵션 선택 </label>
                             <select id="option-select" className="w-full border border-gray-300 rounded p-2">
-                                <option>12-13미 옵션</option>
+                                {options.map((option, index) => (
+                                    <option key={index}>{option}</option>
+                                ))}
                             </select>
                         </div>
                         <div className="border-b-2 border-gray-200 px-4 py-1">
-                            <div className="text-end">총 : {(product.productPrice-product.productDiscount).toLocaleString()} 원(1개)</div>
+                            <div className="text-end">총 : {((product.regularPrice - product.salePrice) * quantity + product.shippingCost).toLocaleString()} 원({quantity}개)</div>
+                        </div>
+                        <div className="flex justify-center space-x-2 py-4">
+                            <button className="bg-blue-700 text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)}>-</button>
+                            <input
+                                type="text"
+                                value={quantity.toLocaleString()}
+                                onChange={handleQuantityInputChange}
+                                className="w-16 text-center border border-gray-300 rounded"
+                            />
+                            <button className="bg-blue-700 text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(1)}>+</button>
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
                             <button className="bg-blue-700 text-white px-4 py-2 rounded">구매하기</button>
                             <button className="border border-gray-300 px-4 py-2 rounded">장바구니 담기</button>
                         </div>
+            
                     </div>
                 </div>
 

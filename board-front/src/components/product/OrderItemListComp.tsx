@@ -34,16 +34,16 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({orderItem}) => {
 
                     </td>
                     <td className={styles.orderImg}  data-label="이미지">
-                        <img src={`./upload/${orderItem.product.productImgPath}`} alt="사진" style={{ width: 140, height: 140 }}></img>
+                        <img src={`./upload/${orderItem.product.imageUrl}`} alt="사진" style={{ width: 140, height: 140 }}></img>
                     </td>
-                    <td className={styles.orderName} data-label="주문 상품 정보">{orderItem.product.productName}</td>
-                    <td className={styles.orderPrice} data-label="상품가격">{orderItem.product.productDiscount.toLocaleString()}원</td>
+                    <td className={styles.orderName} data-label="주문 상품 정보">{orderItem.product.name}</td>
+                    <td className={styles.orderPrice} data-label="상품가격">{(orderItem.product.regularPrice - orderItem.product.salePrice).toLocaleString()}원</td>
                     <td className={styles.orderQuantity} data-label="수량">
                         <div className={styles.quantityContainer}>
                             {orderItem.quantity}
                         </div>
                     </td>
-                    <td className={styles.orderTotal} data-label="합계">{(orderItem.product.productDiscount * orderItem.quantity).toLocaleString()}원</td>
+                    <td className={styles.orderTotal} data-label="합계">{((orderItem.product.regularPrice - orderItem.product.salePrice) * orderItem.quantity).toLocaleString()}원</td>
                 </tr>
             </tbody>
         </table>
@@ -53,11 +53,11 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({orderItem}) => {
             </div>
 
             <div>
-                <img src={`./upload/${orderItem.product.productImgPath}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
+                <img src={`./upload/${orderItem.product.imageUrl}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
             </div>
             <div className={styles_m.orderInfo}>
                 <div className={styles_m.orderName}>
-                    {orderItem.product.productName}
+                    {orderItem.product.name}
 
                 </div>
 
@@ -68,7 +68,7 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({orderItem}) => {
                     수량: {orderItem.quantity}
                 </div>
     
-                <div className={styles_m.orderTotal}>{(orderItem.product.productDiscount * orderItem.quantity).toLocaleString()}원</div>
+                <div className={styles_m.orderTotal}>{((orderItem.product.regularPrice - orderItem.product.salePrice) * orderItem.quantity).toLocaleString()}원</div>
             </div>
         </div>
     </div>

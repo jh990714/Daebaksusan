@@ -81,10 +81,10 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
 
                         </td>
                         <td className={styles.orderImg}  data-label="이미지">
-                            <img src={`./upload/${myCartItem.product.productImgPath}`} alt="사진" style={{ width: 140, height: 140 }}></img>
+                            <img src={`./upload/${myCartItem.product.imageUrl}`} alt="사진" style={{ width: 140, height: 140 }}></img>
                         </td>
-                        <td className={styles.orderName} data-label="주문 상품 정보">{myCartItem.product.productName}</td>
-                        <td className={styles.orderPrice} data-label="상품가격">{myCartItem.product.productDiscount.toLocaleString()}원</td>
+                        <td className={styles.orderName} data-label="주문 상품 정보">{myCartItem.product.name}</td>
+                        <td className={styles.orderPrice} data-label="상품가격">{(myCartItem.product.regularPrice - myCartItem.product.salePrice).toLocaleString()}원</td>
                         <td className={styles.orderQuantity} data-label="수량">
                             <div className={styles.quantityContainer}>
                                 <button className={styles.quantityButton} onClick={() => handleQuantityChange(myCartItem.product.productId, -1)}>-</button>
@@ -97,7 +97,11 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                                 <button className={styles.quantityButton} onClick={() => handleQuantityChange(myCartItem.product.productId, 1)}>+</button>
                             </div>
                         </td>
-                        <td className={styles.orderTotal} data-label="합계">{(myCartItem.product.productDiscount * myCartItem.quantity).toLocaleString()}원</td>
+                        <td data-label="합계">
+                            <p className={styles.orderTotal}>{((myCartItem.product.regularPrice - myCartItem.product.salePrice) * myCartItem.quantity + myCartItem.product.shippingCost).toLocaleString()}원</p>
+                            <p className={styles.shippingCostTotal}> 배송비 {myCartItem.product.shippingCost.toLocaleString()}원 포함 </p>
+                        
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -114,11 +118,11 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                 </div>
 
                 <div className={styles_m.orderImg}>
-                    <img src={`./upload/${myCartItem.product.productImgPath}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
+                    <img src={`./upload/${myCartItem.product.imageUrl}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10}}/>
                 </div>
                 <div className={styles_m.orderInfo}>
                     <div className={styles_m.orderName}>
-                        {myCartItem.product.productName}
+                        {myCartItem.product.name}
                     </div>
 
                     <div className={styles_m.orderOption}>
@@ -135,7 +139,12 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                         <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(myCartItem.product.productId, 1)}>+</button>
                     </div>
         
-                    <div className={styles_m.orderTotal}>{(myCartItem.product.productDiscount * myCartItem.quantity).toLocaleString()}원</div>
+                    <div className={styles_m.orderTotal}>
+                        <p>{((myCartItem.product.regularPrice - myCartItem.product.salePrice) * myCartItem.quantity + myCartItem.product.shippingCost).toLocaleString()}원</p>
+                        <p className={styles.shippingCostTotal}> 배송비 {myCartItem.product.shippingCost.toLocaleString()}원 포함 </p>
+    
+                        
+                    </div>
                 </div>
             </div>
         </div>

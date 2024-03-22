@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DaumPost from 'components/DaumPost';
 import { OrderFlow } from 'components/OrderFlow';
 import './Order.css';
-import { useLocation } from 'react-router-dom';
-import { AddressObj, CartItem, InputErrors } from 'types';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { AddressObj, CartItem, InputErrors, OrdererInfo,   } from 'types';
 import { OrderItemListComp } from 'components/product/OrderItemListComp';
+import sendRequestWithToken from 'apis/sendRequestWithToken';
 
 declare global {
     interface Window {
@@ -22,12 +23,46 @@ export const Order: React.FC = () => {
     const [receiverPhoneLast, setReceiverPhoneLast] = useState<string>('');
     const { IMP } = window; // 아임포트 라이브러리 추출
     const [addressObj, setAddressObj] = useState<AddressObj>({
-        areaAddress: '',
-        townAddress: '',
+        address: '',
         zip: '',
         details: ''
     });
 
+    const url = '/info';
+    const post = 'GET';
+    const data = null;
+    const navigate = useNavigate();
+    const [ordererInfo, setOrdererInfo] = useState<OrdererInfo>();
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await sendRequestWithToken(url, post, data, navigate);
+                setOrdererInfo(response.data);
+
+                if (response.data) {
+                    const { name, phone, postalCode, address, details } = response.data;
+                    const [phoneFirst, phoneMid, phoneLast] = phone.split('-');
+
+                    setOrdererName(name || '');
+                    setOrdererPhoneMid(phoneMid || '');
+                    setOrdererPhoneLast(phoneLast || '');
+                    setAddressObj({
+                        address: address,
+                        zip: postalCode,
+                        details: details
+                    });
+                    
+                    
+                }
+                
+            } catch (error) {
+                console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const [inputErrors, setInputErrors] = useState<InputErrors>({
         ordererName: false,
@@ -36,15 +71,18 @@ export const Order: React.FC = () => {
         receiverName: false,
         receiverPhoneMid: false,
         receiverPhoneLast: false,
-        areaAddress: false,
-        townAddress: false,
+        address: false,
         zip: false,
       });
 
    
     const orderItems = useLocation().state.cartItems;
     const totalPrice: number = orderItems.reduce((accumulator: number, orderItem: CartItem) => {
-        return accumulator + orderItem.product.productDiscount * orderItem.quantity;
+        return accumulator + (orderItem.product.regularPrice - orderItem.product.salePrice) * orderItem.quantity;
+    }, 0); 
+
+    const totalShippingCost: number = orderItems.reduce((accumulator: number, orderItem: CartItem) => {
+        return accumulator + orderItem.product.shippingCost;
     }, 0); 
 
 
@@ -57,8 +95,7 @@ export const Order: React.FC = () => {
             receiverName: !receiverName,
             receiverPhoneMid: !receiverPhoneMid,
             receiverPhoneLast: !receiverPhoneLast,
-            areaAddress: !addressObj.areaAddress,
-            townAddress: !addressObj.townAddress,
+            address: !addressObj.address,
             zip: !addressObj.zip
         };
     
@@ -99,6 +136,7 @@ export const Order: React.FC = () => {
 
     const postcodeScriptUrl = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     
+
     // useEffect(() => {
     //     IMP.init('imp02022068'); // 가맹점 식별코드 초기화
     // }, []);
@@ -224,7 +262,7 @@ export const Order: React.FC = () => {
                 </div>
 
                 <div className='addressContainer'>
-                    <DaumPost setAddressObj={setAddressObj} postcodeScriptUrl={postcodeScriptUrl} inputErrors={inputErrors} setInputErrors={setInputErrors}/>
+                    <DaumPost addressObj={addressObj} setAddressObj={setAddressObj} postcodeScriptUrl={postcodeScriptUrl} inputErrors={inputErrors} setInputErrors={setInputErrors}/>
                 </div>
 
                 <div className='orderItems'>
@@ -253,7 +291,7 @@ export const Order: React.FC = () => {
 
                         <li>
                             <div className='priceTitle'>배송비 합계 금액</div>
-                            <div className='price'>0원</div>
+                            <div className='price'>{totalShippingCost.toLocaleString()}원</div>
                         </li>
 
                         <li>
@@ -262,7 +300,7 @@ export const Order: React.FC = () => {
 
                         <li>
                             <div className='priceTitle'>총 주문 합계 금액</div>
-                            <div className='price'>{totalPrice.toLocaleString()}원</div>
+                            <div className='price'>{(totalPrice  + totalShippingCost).toLocaleString()}원</div>
                         </li>
                     </ul>
                     <div className='paymentContainer'>
