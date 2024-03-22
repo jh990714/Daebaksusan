@@ -7,6 +7,7 @@ import AddressData from "./interface/address-item.interface";
 import AddressObj from "./interface/addressObject-item.interface";
 import InputErrors from "./interface/OrderInputError.interface";
 import PaymentItem from "./interface/payment-item.interface";
+import OrdererInfo from "./interface/orderInfo.interface";
 
 export type{
     ResponseCode,
@@ -18,4 +19,5 @@ export type{
     AddressData,
     InputErrors,
     PaymentItem,
+    OrdererInfo,
 }

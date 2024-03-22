@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export const Login:React.FC = () => {
@@ -10,6 +10,7 @@ export const Login:React.FC = () => {
 
     const [showPasswordInput, setShowPasswordInput] = useState(false);
     const [inputShake, setInputShake] = useState(false);
+    const navigate = useNavigate();
   
     const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
@@ -28,7 +29,8 @@ export const Login:React.FC = () => {
           localStorage.setItem('accessToken', accessToken); // 수정된 부분
           localStorage.setItem('refreshToken', refreshToken); // 수정된 부분
 
-          window.location.href = "/";
+          
+          navigate(-1);
         } catch (error) {
           console.error('로그인 실패:', error);
           alert('로그인에 실패했습니다. 아이디 또는 비밀번호를 확인해주세요.');

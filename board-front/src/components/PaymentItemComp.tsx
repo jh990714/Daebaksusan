@@ -11,9 +11,9 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ paymentItem })
           <p className='text-gray-500 text-sm mb-0'>{paymentItem.paymentDate}</p>
           <p className='mb-0'>{paymentItem.paymentNumber}</p>
         </td>
-        <td><img src={`./upload/${paymentItem.paymentList.productImgPath}`} alt={paymentItem.paymentList.productName} style={{width: 100, height: 100}}/></td>
-        <td className="max-w-[150px] whitespace-nowrap overflow-hidden text-overflow-ellipsis">{paymentItem.paymentList.productName}</td>
-        <td>{paymentItem.paymentList.productDiscount.toLocaleString()}원</td>
+        <td><img src={`./upload/${paymentItem.paymentList.imageUrl}`} alt={paymentItem.paymentList.name} style={{width: 100, height: 100}}/></td>
+        <td className="max-w-[150px] whitespace-nowrap overflow-hidden text-overflow-ellipsis">{paymentItem.paymentList.name}</td>
+        <td>{paymentItem.paymentList.salePrice.toLocaleString()}원</td>
         <td>{paymentItem.quantity}</td>
         <td>
           <p className='text-blue-800 m-0 font-semibold'>{paymentItem.paymentStatus}</p>

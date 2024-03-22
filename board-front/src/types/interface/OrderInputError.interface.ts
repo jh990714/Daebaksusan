@@ -5,7 +5,6 @@ export default interface InputErrors {
     ordererPhoneLast: boolean;
     receiverPhoneMid: boolean;
     receiverPhoneLast: boolean;
-    areaAddress: boolean,
-    townAddress: boolean,
+    address: boolean,
     zip: boolean,
 }
