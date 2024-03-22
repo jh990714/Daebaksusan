@@ -41,7 +41,7 @@ export const Order: React.FC = () => {
                 setOrdererInfo(response.data);
 
                 if (response.data) {
-                    const { name, phone, postalCode, address, details } = response.data;
+                    const { name, phone, postalCode, address, detailAddress } = response.data;
                     const [phoneFirst, phoneMid, phoneLast] = phone.split('-');
 
                     setOrdererName(name || '');
@@ -50,7 +50,7 @@ export const Order: React.FC = () => {
                     setAddressObj({
                         address: address,
                         zip: postalCode,
-                        details: details
+                        details: detailAddress
                     });
                     
                     
