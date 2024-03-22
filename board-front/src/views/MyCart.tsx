@@ -66,10 +66,18 @@ export const MyCart = () => {
     const calculateTotal = () => {
         return cartItems
           .filter(item => item.isSelected)
-          .reduce((total, item) => total + (item.product.productDiscount * item.quantity), 0).toLocaleString();
+          .reduce((total, item) => total + ((item.product.regularPrice - item.product.salePrice) * item.quantity), 0);
     };
-    
+
+    const shippingCostTotal = () => {
+        return cartItems
+          .filter(item => item.isSelected)
+          .reduce((total, item) => total + item.product.shippingCost, 0);
+    };
+
     const total = calculateTotal();
+    const shippingTotal = shippingCostTotal();
+    const orderTotal = total + shippingTotal;
     const filteredCartItems = cartItems.filter(item => item.isSelected === true);
 
   return (
@@ -100,7 +108,7 @@ export const MyCart = () => {
             <ul>
                 <li>
                     <div className={styles.priceTitle}>총 상품 합계 금액</div>
-                    <div className={styles.price}>{total.toLowerCase()}원</div>
+                    <div className={styles.price}>{total.toLocaleString()}원</div>
                 </li>
 
                 <li>
@@ -109,7 +117,7 @@ export const MyCart = () => {
 
                 <li>
                     <div className={styles.priceTitle}>배송비 합계 금액</div>
-                    <div className={styles.price}>0원</div>
+                    <div className={styles.price}>{shippingTotal.toLocaleString()}</div>
                 </li>
 
                 <li>
@@ -118,7 +126,7 @@ export const MyCart = () => {
 
                 <li>
                     <div className={styles.priceTitle}>총 주문 합계 금액</div>
-                    <div className={styles.price}>{total.toLowerCase()}원</div>
+                    <div className={styles.price}>{orderTotal.toLocaleString()}원</div>
                 </li>
             </ul>
             

@@ -26,7 +26,6 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
     Cookies.set('recentProducts', JSON.stringify(updatedRecentProducts), { expires: 1 }); // 쿠키에 저장, 유효 기간은 1일
 
   };
-
   
   return (
     <Link to={`/detail/`} state={{ product: product}} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
@@ -37,10 +36,10 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
         className={styles.productInfoCard} 
       >
         <div className={styles.productImgWrapper}>
-          {product.productPrice !== product.productDiscount && (
+          {product.regularPrice !== product.salePrice && (
               <img src={saleIcon} alt="세일 아이콘" className={styles.saleIcon} />
           )}
-          <img src={`./upload/${product.productImgPath}`} alt={product.productName} 
+          <img src={`./upload/${product.imageUrl}`} alt={product.name} 
             style={{
               '--card-size': size,
               '--card-height': size,
@@ -52,10 +51,11 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
 
         <hr/>
         <div className={styles.productInfo}>
-          <p className={styles.productTitle}>{product.productName}</p>
-          <p className={styles.productSp}>1kg(순살400g내외)</p>
+          <p className={styles.productTitle}>{product.name}</p>
+          <p className={styles.productSp}>{product.description}</p>
           <div className={styles.productPrice}>
-            <p className={styles.productDiscount}>{(product.productPrice-product.productDiscount).toLocaleString()}원</p>
+            <p className={styles.productDiscount}>{(product.regularPrice-product.salePrice).toLocaleString()}원</p>
+            <p className={styles.productPriceBefore}>{(product.regularPrice).toLocaleString()}원</p>
           </div>
         </div>
       </div>

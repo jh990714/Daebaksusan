@@ -51,6 +51,11 @@ table {
     font-weight: bold;
 }
 
+.shippingCostTotal {
+    font-size: 11px;
+    color: #999
+}
+
 .quantityContainer {
     justify-content: center;
     display: flex;

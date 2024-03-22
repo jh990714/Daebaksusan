@@ -76,7 +76,7 @@ export const QuickCart = () => {
   const calculateTotal = () => {
     return cartItems
       .filter(item => item.isSelected)
-      .reduce((total, item) => total + (item.product.productDiscount * item.quantity), 0).toLocaleString();
+      .reduce((total, item) => total + ((item.product.regularPrice - item.product.salePrice) * item.quantity), 0).toLocaleString();
   };
   
   const handleQuantityChange = (id: number, delta: number) => {

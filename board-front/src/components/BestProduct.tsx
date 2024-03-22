@@ -59,6 +59,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
         }
 
           const response = await axios.get<ProductList[]>(url);
+          console.log(response)
           setProducts(response.data.slice(0, 10));
 
       } catch (error) {

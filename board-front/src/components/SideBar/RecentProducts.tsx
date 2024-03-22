@@ -33,7 +33,7 @@ const RecentProducts: React.FC = () => {
                 <ul ref={productListRef}>
                     {recentProducts.map(product => (
                         <li key={product.productId}>
-                            <Link to='/detail' > <img src={`./upload/${product.productImgPath}`} alt="사진" className={styles.recentProductImg}/> </Link>
+                            <Link to={`/detail/`} state={{ product: product}} > <img src={`./upload/${product.imageUrl}`} alt="사진" className={styles.recentProductImg}/> </Link>
                         </li>
                     ))}
                 </ul>
