@@ -1,10 +1,23 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from "./Mypage.module.css";
 import { PaymentShowList } from 'components/PaymentShowList';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import sendRequestWithToken from 'apis/sendRequestWithToken';
+import { url } from 'inspector';
 
 
 export const PaymentDetails:React.FC = () => {
+    const url = '/reviews';
+    const post = 'POST';
+    const data = null;
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        const response = sendRequestWithToken(url, post, data, navigate);
+
+        console.log(response);
+    }, []);
+    
     return (
         <div className="container mx-auto mt-10 p-5 rounded-lg">
             <div className="flex justify-between items-center border-b pb-4">

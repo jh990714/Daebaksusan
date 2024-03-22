@@ -1,6 +1,5 @@
 package com.seafood.back.service.imple;
 
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,9 +42,9 @@ public class MemberServiceImple implements MemberService {
 
     @Override
     public boolean authenticateMember(String memberId, String password) {
-        Optional<MemberEntity> user = memberRepository.findByMemberId(memberId);
+        MemberEntity user = memberRepository.findByMemberId(memberId);
 
-        if (user.isEmpty() || !passwordEncoder.matches(password, user.get().getPassword())) {
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             return false;
         }
         return true;

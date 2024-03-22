@@ -18,7 +18,7 @@ public class MemberEntity{
     @Id
     @Column(name = "member_id")
     private String memberId;
-
+    
     @Column(name = "password")
     private String password;
 
@@ -39,4 +39,5 @@ public class MemberEntity{
 
     @Column(name = "detail_address")
     private String detailAddress;
+
 }

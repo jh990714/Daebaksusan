@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from "./Mypage.module.css";
 import { Link, useNavigate } from 'react-router-dom';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
@@ -6,15 +6,23 @@ import sendRequestWithToken from 'apis/sendRequestWithToken';
 
 
 export const Mypage: React.FC = () => {
-    const url = '/reviews';
-    const post = 'POST';
+    const url = '/info';
+    const post = 'GET';
     const data = null;
     const navigate = useNavigate();
-
+    const [userInfo, setUserInfo] = useState<string>("");
+    
     useEffect(() => {
-        const response = sendRequestWithToken(url, post, data, navigate);
+        const fetchData = async () => {
+            try {
+                const response = await sendRequestWithToken(url, post, data, navigate);
+                setUserInfo(response.data);
+            } catch (error) {
+                console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+            }
+        };
 
-        console.log(response);
+        fetchData();
     }, []);
 
     return (

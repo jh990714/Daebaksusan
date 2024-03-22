@@ -43,7 +43,7 @@ async function sendRequestWithToken(url: string, method: string, data: any, navi
         };
 
         const response = await instance(config);
-        return response.data;
+        return response;
 
     } catch (error: unknown) {
             const refreshToken = localStorage.getItem('refreshToken');
