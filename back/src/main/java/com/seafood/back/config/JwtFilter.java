@@ -10,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.seafood.back.service.MemberService;
 import com.seafood.back.utils.JwtUtil;
 
 import jakarta.servlet.FilterChain;
@@ -38,14 +37,14 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info("authorization : {}", authorization);
         
         // 토큰이 없을때
-        if (authorization == null) {
+        if (authorization == null || !authorization.startsWith("Bearer ")) {
             log.error("authorization 이 없습니다.");
             filterChain.doFilter(request, response);
             return;
         }
 
         // Token꺼내기
-        String token = authorization;
+        String token = authorization.split(" ")[1];
 
         if ( JwtUtil.isExpired(token, secretKey) ) {
             log.error("Token이 만료 되었습니다.");
