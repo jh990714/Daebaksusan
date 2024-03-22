@@ -7,7 +7,9 @@ import com.seafood.back.dto.LoginRequest;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.service.MemberService;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
@@ -28,8 +30,13 @@ public class MemberController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         log.info(loginRequest.getPassword());
         if (memberService.authenticateMember(loginRequest.getUserName(), loginRequest.getPassword())) {
-            String token = memberService.getToken(loginRequest.getUserName());
-            return ResponseEntity.ok().body(token);
+            String accessToken = memberService.getAccessToken(loginRequest.getUserName());
+            String refreshToken = memberService.getRefreshToken(loginRequest.getUserName());
+            log.info("access", accessToken);
+            log.info("refresh", refreshToken);
+            TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
+            
+            return ResponseEntity.ok(tokenResponse);
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패"); // 실패 시 401 반환
     }
@@ -38,5 +45,17 @@ public class MemberController {
     public ResponseEntity<MemberEntity> registerMember(@RequestBody MemberEntity member) {
         MemberEntity registeredMember = memberService.registerNewMember(member);
         return ResponseEntity.ok(registeredMember);
+    }
+}
+
+@Getter
+@Setter
+class TokenResponse {
+    private String accessToken;
+    private String refreshToken;
+
+    public TokenResponse(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
     }
 }

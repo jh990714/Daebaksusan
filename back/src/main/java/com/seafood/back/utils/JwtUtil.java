@@ -18,7 +18,7 @@ public class JwtUtil {
                 .getBody().getExpiration().before(new Date());
     }
 
-    public static String creatJwt(String userName, String secretKey, Long expiredMs) {
+    public static String createJwt(String userName, String secretKey, Long expiredMs) {
         Claims claims = Jwts.claims();
 
         claims.put("userName", userName);
@@ -30,5 +30,15 @@ public class JwtUtil {
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
+
+    public static String generateAccessTokenFromRefreshToken(String refreshToken, String refreshSecretKey, String accessSecretKey, Long expiredMs) {
+        if (isExpired(refreshToken, refreshSecretKey)) {
+            // db에서도 해줘야함
+            return null;
+        }
+        String userName = getUserName(refreshToken, refreshSecretKey);
+        return createJwt(userName, accessSecretKey, expiredMs);
+    }
+
     
 }

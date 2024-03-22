@@ -11,8 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.seafood.back.service.MemberService;
-
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -33,7 +31,7 @@ public class AuthenticationConfig {
             // stateless한 rest api를 개발할 것이므로 csrf 공격에 대한 옵션은 꺼둔다.
  	        .csrf(AbstractHttpConfigurer::disable)
 
-	    // 특정 URL에 대한 권한 설정.
+	        // 특정 URL에 대한 권한 설정.
             .authorizeHttpRequests((authorizeRequests) -> {
                 authorizeRequests.requestMatchers("/reviews/**").authenticated();
                 authorizeRequests.requestMatchers("/manager/**")
@@ -45,7 +43,7 @@ public class AuthenticationConfig {
                 // ROLE_은 붙이면 안 된다. hasRole()을 사용할 때 자동으로 ROLE_이 붙기 때문이다.
                 .hasRole("ADMIN");
                             
-                authorizeRequests.requestMatchers("/members/**", "/product/**").permitAll();
+                authorizeRequests.requestMatchers("/members/**", "/product/**", "/refreshToken").permitAll();
             })
                 
             .formLogin((formLogin) -> {

@@ -22,13 +22,23 @@ public class MemberServiceImple implements MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Value("${jwt.secret}")
-    private String secretKey;
+    private String accessSecretKey;
 
-    private Long expiredMs = (long) (1000 * 60 * 601);
+    @Value("${jwt.refersh}")
+    private String refreshSecretKey;
+
+    private Long accessTokenExpiredMs = (long) (1000 * 60 * 30); // 액세스 토큰 만료 시간 (30분)
+    private Long refreshTokenExpiredMs = (long) (1000 * 60 * 60 * 24 * 7); // 리프레시 토큰 만료 시간 (7일)
+
 
     @Override
-    public String getToken(String userName) {
-        return JwtUtil.creatJwt(userName, secretKey, expiredMs);
+    public String getAccessToken(String userName) {
+        return JwtUtil.createJwt(userName, accessSecretKey, accessTokenExpiredMs);
+    }
+
+    @Override
+    public String getRefreshToken(String userName) {
+        return JwtUtil.createJwt(userName, refreshSecretKey, refreshTokenExpiredMs);
     }
 
     @Override

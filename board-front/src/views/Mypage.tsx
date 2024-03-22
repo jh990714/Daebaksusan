@@ -1,11 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from "./Mypage.module.css";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import sendRequestWithToken from 'apis/sendRequestWithToken';
 
 
 
-export const Mypage:React.FC = () => {
-   
+export const Mypage: React.FC = () => {
+    const url = '/reviews';
+    const post = 'POST';
+    const data = null;
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const response = sendRequestWithToken(url, post, data, navigate);
+
+        console.log(response);
+    }, []);
 
     return (
         <div className="container mx-auto mt-10 p-5 rounded-lg">
@@ -49,7 +59,7 @@ export const Mypage:React.FC = () => {
                             <div className="flex justify-center mb-4">
                                 <div className="text-2xl font-semibold">나의 주문처리 현황</div>
                                 <div className="text-xs mt-2">(최근 3개월 기준)</div>
-                        
+
                             </div>
                             <div className="grid grid-cols-4 gap-6">
                                 <div className="text-center border-dotted border-r-2 border-blue-700">

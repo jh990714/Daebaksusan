@@ -23,7 +23,11 @@ export const Login:React.FC = () => {
             userName: id,
             password: password,
           });
-          const token = response.data;
+          const { accessToken, refreshToken } = response.data; // 수정된 부분
+
+          localStorage.setItem('accessToken', accessToken); // 수정된 부분
+          localStorage.setItem('refreshToken', refreshToken); // 수정된 부분
+
           window.location.href = "/";
         } catch (error) {
           console.error('로그인 실패:', error);
