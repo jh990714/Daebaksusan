@@ -1,8 +1,11 @@
 import { DetailTabComp } from 'components/DetailTabComp';
+import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 
 
 export const Detail:React.FC = () => {
+    const product = useLocation().state.product;
+
 
     const [isSticky, setIsSticky] = useState(false);
 
@@ -31,14 +34,14 @@ export const Detail:React.FC = () => {
             <main className="container mx-auto my-8 p-4">
                 <div className="flex flex-wrap md:flex-nowrap items-stretch">
                     <div className="w-full md:w-1/2 p-4">
-                        <img src="../upload/1.jpg" alt="대전복" className="w-full h-96 object-cover m-auto rounded shadow-lg " />
+                        <img src={`../upload/${product.productImgPath}`} alt={product.productImgPath} className="w-full h-96 object-cover m-auto rounded shadow-lg " />
                     </div>
                     <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
-                        <h1 className="text-2xl font-bold border-b-2 border-gray-200 p-4">대전복 12-13미 1kg(마리당 77g 내외)</h1>
+                        <h1 className="text-2xl font-bold border-b-2 border-gray-200 p-4">{product.productName}</h1>
                         <div className="text-start border-b-2 border-gray-200 px-4 py-1">
                             <div className="grid grid-cols-5">
                                 <div className="font-bold">판매가</div>
-                                <div className="col-span-4 text-xl">38,000원</div>
+                                <div className="col-span-4 text-xl">{(product.productPrice-product.productDiscount).toLocaleString()}</div>
                             </div>
                         </div>
                         <div className="grid grid-rows-3 text-start border-b-2 border-gray-200 px-4 py-1">
@@ -63,7 +66,7 @@ export const Detail:React.FC = () => {
                             </select>
                         </div>
                         <div className="border-b-2 border-gray-200 px-4 py-1">
-                            <div className="text-end">총 : 38,000 원(1개)</div>
+                            <div className="text-end">총 : {(product.productPrice-product.productDiscount).toLocaleString()} 원(1개)</div>
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
                             <button className="bg-blue-700 text-white px-4 py-2 rounded">구매하기</button>

@@ -29,7 +29,7 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
 
   
   return (
-    <Link to={`/detail/`} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
+    <Link to={`/detail/`} state={{ product: product}} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
       <div style={{
           '--card-size': size,
           '--card-font-size': fontSize,
@@ -40,7 +40,7 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
           {product.productPrice !== product.productDiscount && (
               <img src={saleIcon} alt="세일 아이콘" className={styles.saleIcon} />
           )}
-          <img src={`./upload/${product.productImgPath}`} alt="사진" 
+          <img src={`./upload/${product.productImgPath}`} alt={product.productName} 
             style={{
               '--card-size': size,
               '--card-height': size,
@@ -55,11 +55,7 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
           <p className={styles.productTitle}>{product.productName}</p>
           <p className={styles.productSp}>1kg(순살400g내외)</p>
           <div className={styles.productPrice}>
-            <p className={styles.productDiscount}>{product.productDiscount.toLocaleString()}원</p>
-
-            {product.productPrice !== product.productDiscount && (
-              <p className={styles.productPriceBefore}>{product.productPrice.toLocaleString()}원</p>
-            )}
+            <p className={styles.productDiscount}>{(product.productPrice-product.productDiscount).toLocaleString()}원</p>
           </div>
         </div>
       </div>
