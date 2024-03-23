@@ -70,9 +70,6 @@ public class ProductEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "options")
-    private String options;
-
     @Column(name = "arrival_date")
     private Date arrivalDate;
 

@@ -7,9 +7,11 @@ import org.springframework.http.ResponseEntity;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductEntity;
 
 import com.seafood.back.service.ProductService;
@@ -40,6 +42,13 @@ public class ProductController {
         List<ProductEntity> product = productService.findProductNew();
     
         return new ResponseEntity<>(product, HttpStatus.OK);
+    }
+
+    @GetMapping("/{productId}/options")
+    public ResponseEntity<List<OptionEntity>> getOption(@PathVariable Integer productId) {
+        List<OptionEntity> option = productService.findOption(productId);
+    
+        return new ResponseEntity<>(option, HttpStatus.OK);
     }
     
 }
