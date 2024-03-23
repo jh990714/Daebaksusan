@@ -59,6 +59,8 @@ export const Detail: React.FC = () => {
                 setQuantity(product.stockQuantity); // 재고 수량으로 수량 조정
             }
         }
+
+        
     };
     
 
