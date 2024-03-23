@@ -1,13 +1,35 @@
 import { DetailTabComp } from 'components/DetailTabComp';
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
+import { Option } from 'types';
+import axios from 'axios';
 
 
 export const Detail: React.FC = () => {
     const product = useLocation().state.product;
+
     const [isSticky, setIsSticky] = useState(false);
-    const [options, setOptions] = useState<string[]>([]);
+    const [options, setOptions] = useState<Option[]>([]);
     const [quantity, setQuantity] = useState<number>(1);
+
+    const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+    const [optionPrice, setOptionPrice] = useState<number>(0);
+
+    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + product.shippingCost);
+
+    // 옵션 받아오기
+    useEffect(() => {
+        const fetchOptions = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/product/${product.productId}/options`);
+            setOptions(response.data);
+        } catch (error) {
+            console.error('Error fetching options:', error);
+        }
+        };
+
+        fetchOptions();
+    }, [product.productId]);
 
     // 스크롤 이벤트 핸들러
     const handleScroll = () => {
@@ -26,44 +48,53 @@ export const Detail: React.FC = () => {
         };
     }, []); // 빈 배열로 의존성 배열을 설정하여 컴포넌트가 마운트될 때만 이벤트 리스너가 추가되도록 함
 
-
-
-    // 옵션 분리
-    useEffect(() => {
-        if (product.options) {
-            setOptions(product.options.split('/'));
-        }
-    }, [product]);
-
     const handleQuantityChange = (value: number) => {
         const newQuantity = quantity + value;
+        let q: number = 1;
         if (newQuantity >= 1 && newQuantity <= product.stockQuantity) {
-            setQuantity(newQuantity);
+            q = newQuantity;
         } else if (newQuantity < 1) {
-            setQuantity(1); // 최소 수량은 1로 유지
+            q = 1; // 최소 수량은 1로 유지
         } else {
-            setQuantity(product.stockQuantity); // 재고 수량으로 수량 조정
+            q = product.stockQuantity; // 재고 수량으로 수량 조정
         }
+        setQuantity(q);
+        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + product.shippingCost)
     };
     
 
     const handleQuantityInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
+        let q: number = 1;
         if (value === "" || value === "0") {
-            setQuantity(0); // 빈 문자열 또는 0 입력 시 최소 수량 1로 설정
+            q = 1; // 빈 문자열 또는 0 입력 시 최소 수량 1로 설정
+            
         } else {
             const newValue = parseInt(value);
             if (!isNaN(newValue) && newValue >= 1 && newValue <= product.stockQuantity) {
-                setQuantity(newValue);
+                q = newValue;
             } else if (newValue > product.stockQuantity) {
-                setQuantity(product.stockQuantity); // 재고 수량으로 수량 조정
+                q= product.stockQuantity; // 재고 수량으로 수량 조정
             }
         }
-
-        
+        setQuantity(q);
+        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + product.shippingCost)
     };
-    
 
+
+    const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedOptionId = Number(event.target.value);
+        const selectedOption = options.find(option => option.optionId === selectedOptionId);
+
+        // 옵션 선택에 따른 추가 금액을 총 금액에 반영
+        if (selectedOption) {
+            setOptionPrice(selectedOption.addPrice);
+            setTotalPrice((product.regularPrice - product.salePrice + selectedOption.addPrice) * quantity + product.shippingCost);
+            setSelectedOption(selectedOption);
+        } else {
+            setSelectedOption(null);
+        }
+    };
 
     return (
         <div className="bg-white text-gray-700">
@@ -100,14 +131,17 @@ export const Detail: React.FC = () => {
                         </div>
                         <div className="border-b-2 border-gray-200 px-4 py-2">
                             <label htmlFor="option-select" className="mb-2"><strong>[필수]</strong> 옵션 선택 </label>
-                            <select id="option-select" className="w-full border border-gray-300 rounded p-2">
-                                {options.map((option, index) => (
-                                    <option key={index}>{option}</option>
+                            <select id="option-select" className="w-full border border-gray-300 rounded p-2" onChange={handleOptionSelect}>
+                                {options.map((option: Option) => (
+                                    <option key={option.optionId} value={option.optionId}>
+                                        <div> {option.name}</div>
+                                        <div> +{(option.addPrice).toLocaleString()}원</div>
+                                    </option>
                                 ))}
                             </select>
                         </div>
                         <div className="border-b-2 border-gray-200 px-4 py-1">
-                            <div className="text-end">총 : {((product.regularPrice - product.salePrice) * quantity + product.shippingCost).toLocaleString()} 원({quantity}개)</div>
+                            <div className="text-end">총 : {totalPrice.toLocaleString()} 원({quantity}개)</div>
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
                             <button className="bg-blue-700 text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)}>-</button>

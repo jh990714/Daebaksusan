@@ -16,7 +16,6 @@ export default interface Product {
     salePrice: number;
     shippingCost: number;
     description: string;
-    options: string;
     arrivalDate: Date;
     recommended: boolean;
 }

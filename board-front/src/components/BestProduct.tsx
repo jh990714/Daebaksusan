@@ -46,24 +46,24 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
   }
 
   useEffect(() => {
-      const fetchData = async () => {
+    const fetchData = async () => {
       try {
-          let url = '';
-          if (category === './bestProducts') {
-            url = 'http://localhost:8080/product/new';
-          } else if (category === './newProducts') {
-            url = 'http://localhost:8080/product/new';
-          }
-          else if (category === './allProducts') {
-            url = 'http://localhost:8080/product/all';
+        let url = '';
+        if (category === './bestProducts') {
+          url = 'http://localhost:8080/product/new';
+        } else if (category === './newProducts') {
+          url = 'http://localhost:8080/product/new';
+        }
+        else if (category === './allProducts') {
+          url = 'http://localhost:8080/product/all';
         }
 
-          const response = await axios.get<ProductList[]>(url);
-          console.log(response)
-          setProducts(response.data.slice(0, 10));
+        const response = await axios.get<ProductList[]>(url);
+        console.log(response)
+        setProducts(response.data.slice(0, 10));
 
       } catch (error) {
-          console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+        console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
       }
     };
 
