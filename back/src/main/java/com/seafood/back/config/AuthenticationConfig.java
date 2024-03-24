@@ -43,13 +43,13 @@ public class AuthenticationConfig {
                 // ROLE_은 붙이면 안 된다. hasRole()을 사용할 때 자동으로 ROLE_이 붙기 때문이다.
                 .hasRole("ADMIN");
                             
-                authorizeRequests.requestMatchers("/members/**", "/product/**", "/refreshToken").permitAll();
+                authorizeRequests.requestMatchers("/members/**", "/product/**", "/refreshToken", "/categories").permitAll();
             })
                 
-            .formLogin((formLogin) -> {
-            /* 권한이 필요한 요청은 해당 url로 리다이렉트 */
-		        formLogin.loginPage("/login");
-            })
+            // .formLogin((formLogin) -> {
+            // /* 권한이 필요한 요청은 해당 url로 리다이렉트 */
+		    //     formLogin.loginPage("/login");
+            // })
             .addFilterBefore(new JwtFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
             .build();
         }

@@ -37,9 +37,9 @@ export const Order: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await sendRequestWithToken(url, post, data, navigate);
+                const response = await sendRequestWithToken(url, post, data);
+                
                 setOrdererInfo(response.data);
-
                 if (response.data) {
                     const { name, phone, postalCode, address, detailAddress } = response.data;
                     const [phoneFirst, phoneMid, phoneLast] = phone.split('-');
@@ -57,6 +57,7 @@ export const Order: React.FC = () => {
                 }
                 
             } catch (error) {
+                navigate('/login');
                 console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
             }
         };

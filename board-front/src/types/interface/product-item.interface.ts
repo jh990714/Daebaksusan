@@ -8,7 +8,7 @@
 
 export default interface Product {
     productId: number;
-    category: string;
+    category: number;
     name: string;
     imageUrl: string;
     stockQuantity: number;

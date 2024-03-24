@@ -24,26 +24,24 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
     }
 }
 
-async function sendRequestWithToken(url: string, method: string, data: any, navigate: Function) {
+async function sendRequestWithToken(url: string, method: string, data: any) {
     try {
         const token = localStorage.getItem('accessToken');
-        if (!token) {
-            navigate('/login');
-            return;
+        if (token) {
+            const config: AxiosRequestConfig = {
+                method,
+                url,
+                data,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`
+                }
+            };
+    
+            const response = await instance(config);
+            return response;
         }
 
-        const config: AxiosRequestConfig = {
-            method,
-            url,
-            data,
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`
-            }
-        };
-
-        const response = await instance(config);
-        return response;
 
     } catch (error: unknown) {
             const refreshToken = localStorage.getItem('refreshToken');
@@ -66,7 +64,7 @@ async function sendRequestWithToken(url: string, method: string, data: any, navi
                     const newTokenResponse  = await instance(newTokenConfig);
 
                     console.log("새로운 액세스 토큰 생성");
-                    return newTokenResponse .data;
+                    return newTokenResponse.data;
                 } catch (refreshError) {
                     console.error('새로운 액세스 토큰 요청 실패:', refreshError);
                 }
@@ -75,7 +73,7 @@ async function sendRequestWithToken(url: string, method: string, data: any, navi
             }
 
 
-        navigate('/login');
+        return null;
     }
 }
 

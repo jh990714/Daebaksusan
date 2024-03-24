@@ -13,7 +13,7 @@ export const PaymentDetails:React.FC = () => {
     const navigate = useNavigate();
     
     useEffect(() => {
-        const response = sendRequestWithToken(url, post, data, navigate);
+        const response = sendRequestWithToken(url, post, data, );
 
         console.log(response);
     }, []);

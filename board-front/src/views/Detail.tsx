@@ -70,6 +70,7 @@ export const Detail: React.FC = () => {
     
 
     const handleQuantityInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        
         const value = event.target.value;
         let q: number = 1;
         let box_cnt = 1;
@@ -89,7 +90,6 @@ export const Detail: React.FC = () => {
         setBoxCnt(box_cnt)
         setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost*box_cnt))
     };
-
 
     const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedOptionId = Number(event.target.value);

@@ -9,6 +9,8 @@ import InputErrors from "./interface/OrderInputError.interface";
 import PaymentItem from "./interface/payment-item.interface";
 import OrdererInfo from "./interface/orderInfo.interface";
 import Option from "./interface/option-item.interface";
+import Category from "./interface/category.interface";
+import SubCategory from "./interface/subCategory.interface";
 
 export type{
     ResponseCode,
@@ -22,4 +24,6 @@ export type{
     PaymentItem,
     OrdererInfo,
     Option,
+    Category,
+    SubCategory,
 }

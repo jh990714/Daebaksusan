@@ -10,4 +10,7 @@ public interface ProductService {
     public List<ProductEntity> findProductBest();
     public List<ProductEntity> findProductNew();
     public List<OptionEntity> findOption(Integer productId);
+    public List<ProductEntity> getProductsByCategoryAndSubcategories(Long categoryId);
+    public List<ProductEntity> getProductsByCategorySub(Integer categoryId);
+    public List<ProductEntity> searchProducts(String query);
 }
