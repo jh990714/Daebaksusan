@@ -1,5 +1,7 @@
 package com.seafood.back.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 
 import jakarta.persistence.Entity;
@@ -19,6 +21,7 @@ public class MemberEntity{
     @Column(name = "member_id")
     private String memberId;
     
+    @JsonIgnore
     @Column(name = "password")
     private String password;
 

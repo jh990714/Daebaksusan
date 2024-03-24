@@ -15,9 +15,11 @@ export const Mypage: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await sendRequestWithToken(url, post, data, navigate);
+                const response = await sendRequestWithToken(url, post, data);
                 setUserInfo(response.data);
+                
             } catch (error) {
+                navigate('/login');
                 console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
             }
         };

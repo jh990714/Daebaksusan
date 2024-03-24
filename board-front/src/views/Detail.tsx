@@ -64,6 +64,7 @@ export const Detail: React.FC = () => {
     
 
     const handleQuantityInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        
         const value = event.target.value;
         let q: number = 1;
         if (value === "" || value === "0") {
@@ -80,7 +81,6 @@ export const Detail: React.FC = () => {
         setQuantity(q);
         setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + product.shippingCost)
     };
-
 
     const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedOptionId = Number(event.target.value);
