@@ -39,6 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // 토큰이 없을때
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             log.error("authorization 이 없습니다.");
+            log.error(request.toString());
             filterChain.doFilter(request, response);
             return;
         }
