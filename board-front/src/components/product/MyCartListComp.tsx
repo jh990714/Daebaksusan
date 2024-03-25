@@ -113,9 +113,9 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                             <p className={styles.option}>{myCartItem.cartItem.selectedOption.name} + {myCartItem.cartItem.selectedOption.addPrice}</p>
                         </td>
                         <td className={styles.orderPrice} data-label="상품가격">
-                            {myCartItem.cartItem.product && myCartItem.cartItem.product.regularPrice && myCartItem.cartItem.product.salePrice && (
-                                (myCartItem.cartItem.product.regularPrice - myCartItem.cartItem.product.salePrice).toLocaleString()
-                            )}원
+
+                            {(myCartItem.cartItem.product.regularPrice - myCartItem.cartItem.product.salePrice).toLocaleString()}원
+
                         </td>
                         <td className={styles.orderQuantity} data-label="수량">
                             <div className={styles.quantityContainer}>

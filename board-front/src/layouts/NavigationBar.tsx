@@ -94,9 +94,12 @@ export const NavigationBar = () => {
         setIsOpen(!isOpen); // isOpen 상태를 토글
     };
 
+    const closeCategory = () => {
+        setIsOpen(false); // 카테고리를 닫습니다.
+    };
 
     return (
-        <nav className={styles.navContainer}>
+        <nav className={styles.navContainer} onMouseLeave={closeCategory}>
             <div className={styles.navBar}>
                 <div className={styles.navLeft}>
                     <Link to='' className={styles.logo}>
@@ -125,7 +128,7 @@ export const NavigationBar = () => {
                                 </Link>
                             </li>
                             <li>
-                                <div className={styles.icon} onClick={toggleCategory}>
+                                <div className={styles.icon} onMouseEnter={toggleCategory}>
                                     <img src={cartIcon} alt='모든 상품' style={{ width: 50, height: 50 }} />
                                     <span className={styles.iconTitle}> 모든 상품 </span>
                                 </div>
@@ -187,16 +190,16 @@ export const NavigationBar = () => {
                     </div>
                 </div>
             </div>
-            <div className={`${styles.categories} ${isOpen ? styles.open : ''}`}>
+            <div className={`${styles.categories} ${isOpen ? styles.open : ''}`} onMouseLeave={closeCategory}>
                 {categories.map((category) => (
                     <div key={category.name} className={styles.categoryItem}>
-                        <Link to={`/categoryProducts/${category.name}`} state={{ category: category }} className={styles.categoryLink} onClick={toggleCategory} >
+                        <Link to={`/categoryProducts/${category.name}`} state={{ category: category }} className={styles.categoryLink}>
                             <p className={styles.categoryTitle}>{category.name}</p>
                         </Link>
 
                         <ul className={styles.subcategoryList}>
                             {category.subcategories.map((sub, index) => ( // 여기서 index를 사용하여 고유한 key prop을 생성합니다.
-                                <Link key={`${category.name}_${index}`} to={`/categoryProducts/${category.name}/${sub.name}`} state={{ category: sub }} className={styles.subcategoryLink} onClick={toggleCategory}>
+                                <Link key={`${category.name}_${index}`} to={`/categoryProducts/${category.name}/${sub.name}`} state={{ category: sub }} className={styles.subcategoryLink}>
                                     <li className={styles.subcategoryItem}>{sub.name}</li>
                                 </Link>
                             ))}

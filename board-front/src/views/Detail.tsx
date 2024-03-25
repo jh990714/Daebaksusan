@@ -6,6 +6,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { CONNREFUSED } from 'dns';
 import Product from 'types/interface/product-item.interface';
+import sendRequestWithToken from 'apis/sendRequestWithToken';
 
 interface CartItem {
     product: Product;
@@ -73,7 +74,7 @@ export const Detail: React.FC = () => {
             q = product.stockQuantity; // 재고 수량으로 수량 조정
         }
         setQuantity(q);
-        box_cnt = (Math.floor(q/product.maxQuantityPerDelivery)+1);
+        box_cnt = (Math.ceil(q/product.maxQuantityPerDelivery));
         setBoxCnt(box_cnt)
         setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost*box_cnt))
     };
@@ -96,7 +97,7 @@ export const Detail: React.FC = () => {
             }
         }
         setQuantity(q);
-        box_cnt = (Math.floor(q/product.maxQuantityPerDelivery)+1);
+        box_cnt = (Math.ceil(q/product.maxQuantityPerDelivery));
         setBoxCnt(box_cnt)
         setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost*box_cnt))
     };
@@ -136,23 +137,46 @@ export const Detail: React.FC = () => {
     }
 
 
-    const handleAddToCart = () => {
-        const cartItem: CartItem = {
-            product: product,
-            selectedOption,
-            quantity,
-            box_cnt,
-        };
-    
-        const existingCartCookie = Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')!) : [];;
+    const handleAddToCart = async () => {
+        try {
+            
+            const cartInputItem = {
+                productId: product.productId,
+                optionId: selectedOption?.optionId,
+                quantity: quantity,
+                boxCnt: box_cnt
+            };
 
-        // 새로운 아이템 추가
-        const updatedCartItems = [...existingCartCookie, cartItem];
+            const url = '/info/cart';
+            const post = 'POST';
+            const data = cartInputItem;
+
+            const response = await sendRequestWithToken(url, post, data)
+
+            console.log(response)
+
+            alert('장바구니에 상품이 추가되었습');
+            
+        } catch (error) {
+            const cartItem: CartItem = {
+                product: product,
+                selectedOption,
+                quantity,
+                box_cnt,
+            };
+        
+            const existingCartCookie = Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')!) : [];;
     
-        Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: 2 }); // 쿠키에 저장, 유효 기간은 2일
-    
-        // 장바구니에 추가되었음을 알리는 알림 또는 리다이렉트 등을 수행
-        alert('장바구니에 상품이 추가되었습니다.');
+            // 새로운 아이템 추가
+            const updatedCartItems = [...existingCartCookie, cartItem];
+        
+            Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: 2 }); // 쿠키에 저장, 유효 기간은 2일
+        
+            // 장바구니에 추가되었음을 알리는 알림 또는 리다이렉트 등을 수행
+            alert('장바구니에 상품이 추가되었습니다.');
+        }
+
+        
     };
 
     return (
