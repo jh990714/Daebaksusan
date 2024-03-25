@@ -35,7 +35,9 @@ export const Detail: React.FC = () => {
         try {
             const response = await axios.get(`http://localhost:8080/product/${product.productId}/options`);
             setOptions(response.data);
-            setSelectedOption(response.data[0])
+            setSelectedOption(response.data[0]);
+            setQuantity(1);
+            setTotalPrice((product.regularPrice - product.salePrice) * 1 + (product.shippingCost*box_cnt));
         } catch (error) {
             console.error('Error fetching options:', error);
         }
@@ -116,7 +118,7 @@ export const Detail: React.FC = () => {
         }
     };
 
-    function de_loop(quantity: number, maxQuantityPerDelivery: number){
+    function showList(quantity: number, maxQuantityPerDelivery: number){
         let arr = [];
         const n = quantity / maxQuantityPerDelivery;
         let count = 0;
@@ -188,8 +190,8 @@ export const Detail: React.FC = () => {
                         <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded shadow-lg " />
                     </div>
                     <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
-                        <h1 className="text-2xl font-bold p-3">{product.name}</h1>
-                        <h1 className="text-xl font-bold border-b-2 border-gray-200 p-2">{product.description}</h1>
+                        <h1 className="text-2xl text-blue-700 font-bold p-3">{product.name}</h1>
+                        <h1 className="text-xl text-gray-500 font-bold border-b-2 border-gray-200 p-2">{product.description}</h1>
                         
                         <div className="text-start border-b-2 border-gray-200 px-4 py-1">
                             <div className="grid grid-cols-5">
@@ -225,7 +227,7 @@ export const Detail: React.FC = () => {
                         </div>
 
                         <>
-                            {de_loop(quantity, product.maxQuantityPerDelivery)}
+                            {showList(quantity, product.maxQuantityPerDelivery)}
                         </>
                     
                         <div className="flex justify-center space-x-2 py-4">
