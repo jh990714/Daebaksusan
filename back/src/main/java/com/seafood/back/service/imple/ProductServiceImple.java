@@ -84,9 +84,9 @@ public class ProductServiceImple implements ProductService{
     }
 
     @Override
-    public List<ProductEntity> getProductsByCategorySub(Integer category) {
+    public List<ProductEntity> getProductsByCategorySub(Long categoryId) {
         // 카테고리에 따른 제품 데이터를 데이터베이스에서 조회하여 반환
-        return productRepository.findByCategory(category);
+        return productRepository.findByCategory(categoryId);
     }
 
     public List<ProductEntity> searchProducts(String query) {

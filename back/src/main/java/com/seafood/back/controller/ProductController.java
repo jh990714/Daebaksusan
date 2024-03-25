@@ -60,7 +60,7 @@ public class ProductController {
     }
 
     @GetMapping("/category/sub/{categoryId}")
-    public ResponseEntity<List<ProductEntity>> getProductsByCategorySub(@RequestParam Integer categoryId) {
+    public ResponseEntity<List<ProductEntity>> getProductsByCategorySub(@PathVariable Long categoryId) {
         List<ProductEntity> product = productService.getProductsByCategorySub(categoryId);
 
         return new ResponseEntity<>(product, HttpStatus.OK);
