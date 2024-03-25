@@ -1,20 +1,26 @@
 package com.seafood.back.service.imple;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seafood.back.entity.CartEntity;
 import com.seafood.back.entity.MemberEntity;
+import com.seafood.back.respository.CartRepository;
 import com.seafood.back.respository.MemberRepository;
 import com.seafood.back.service.InfoService;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class InfoServiceImple implements InfoService {
 
-    private final MemberRepository memberRepository; // UserRepository는 실제 사용자 정보를 가져오는데 사용될 것입니다.
+    private final MemberRepository memberRepository;
+    private final CartRepository cartRepository;
     private final ObjectMapper objectMapper; // JSON 변환을 위한 ObjectMapper
 
     @Override
@@ -31,5 +37,18 @@ public class InfoServiceImple implements InfoService {
         } else {
             return "User not found"; // 사용자가 없을 경우 예외 처리
         }
+    }
+
+    @Override
+    public void addToCart(String memberId, Integer productId, Integer optionId, Integer quantity, Integer boxCnt) {
+        CartEntity cart = new CartEntity();
+        cart.setMemberId(memberId);
+        cart.setProductId(productId);
+        cart.setOptionId(optionId);
+        cart.setQuantity(quantity);
+        cart.setBoxCnt(boxCnt);
+        cart.setUpdatedAt(LocalDateTime.now());
+
+        cartRepository.save(cart);
     }
 }
