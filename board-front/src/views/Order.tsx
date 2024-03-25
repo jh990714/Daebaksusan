@@ -3,7 +3,7 @@ import DaumPost from 'components/DaumPost';
 import { OrderFlow } from 'components/OrderFlow';
 import './Order.css';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AddressObj, CartItem, InputErrors, OrdererInfo,   } from 'types';
+import { AddressObj, Cart, CartItem, InputErrors, OrdererInfo,   } from 'types';
 import { OrderItemListComp } from 'components/product/OrderItemListComp';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
 
@@ -78,12 +78,15 @@ export const Order: React.FC = () => {
 
    
     const orderItems = useLocation().state.cartItems;
-    const totalPrice: number = orderItems.reduce((accumulator: number, orderItem: CartItem) => {
-        return accumulator + (orderItem.product.regularPrice - orderItem.product.salePrice) * orderItem.quantity;
+    const totalPrice: number = orderItems.reduce((total: number, orderItem: Cart) => {
+        const itemPrice = (orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice) * orderItem.cartItem.quantity;
+        const optionCost = orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption.addPrice;
+        return total + itemPrice + optionCost;
     }, 0); 
 
-    const totalShippingCost: number = orderItems.reduce((accumulator: number, orderItem: CartItem) => {
-        return accumulator + orderItem.product.shippingCost;
+    const totalShippingCost: number = orderItems.reduce((total: number, orderItem: Cart) => {
+        const shippingCost =orderItem.cartItem.box_cnt * orderItem.cartItem.product.shippingCost;
+        return total + shippingCost;
     }, 0); 
 
 
@@ -164,6 +167,7 @@ export const Order: React.FC = () => {
 
     return (
         <div className='orderContainer'>
+            
             <OrderFlow currentStep={2}/>
 
             <div className='orderTitle'> 배송정보 </div>
@@ -270,8 +274,8 @@ export const Order: React.FC = () => {
                     <div className='orderTitle'> 구매 상품 </div>
                     <div className='scrollableList'>
                         <ul>
-                            {orderItems.map((cartItem: CartItem) => (
-                                <li key={cartItem.product.productId}>
+                            {orderItems.map((cartItem: Cart) => (
+                                <li key={cartItem.cartItem.product.productId}>
                                     <OrderItemListComp orderItem={cartItem}/>
                                 </li>
                             ))}

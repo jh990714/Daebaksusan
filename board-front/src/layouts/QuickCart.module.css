@@ -149,7 +149,10 @@
     background-color: #696a6b;
 }
 
-
+.option {
+    color: #9CA3AF;
+    font-size: 10px;
+}
 @media (max-width: 780px) {
     .quickCartBar {
         display: none;

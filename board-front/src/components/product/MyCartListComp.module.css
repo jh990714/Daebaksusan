@@ -73,6 +73,25 @@ table {
     background-color: #f5f5f5;
 }
 
+.title, .option {
+    margin: 0;
+}
+.option {
+    color: #9CA3AF;
+    font-size: 13px;
+}
+
+.priceInfo {
+    font-size: 14px; /* 원하는 글자 크기로 변경하세요 */
+    color: #333; /* 원하는 색상으로 변경하세요 */
+    margin-bottom: 8px; /* 아래 여백 조절 */
+}
+
+.priceInfo p {
+    margin: 4px 0; /* 단락 간격 조절 */
+}
+
+
 @media (max-width: 780px) {
     table {
         display: none;

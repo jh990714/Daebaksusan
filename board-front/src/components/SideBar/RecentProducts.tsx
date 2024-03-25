@@ -13,8 +13,7 @@ const RecentProducts: React.FC = () => {
         if (products) {
             setRecentProducts(JSON.parse(products));
         }
-
-    }, []);
+    }, [Cookies.get('recentProducts')]);
 
     
     const scrollProductList = (direction: 'up' | 'down') => {
@@ -33,7 +32,7 @@ const RecentProducts: React.FC = () => {
                 <ul ref={productListRef}>
                     {recentProducts.map(product => (
                         <li key={product.productId}>
-                            <Link to={`/detail/`} state={{ product: product}} > <img src={`./upload/${product.imageUrl}`} alt="사진" className={styles.recentProductImg}/> </Link>
+                            <Link to={`/detail/`} state={{ product: product}} > <img src={process.env.PUBLIC_URL + `/upload/${product.imageUrl}`} alt="사진" className={styles.recentProductImg}/> </Link>
                         </li>
                     ))}
                 </ul>
