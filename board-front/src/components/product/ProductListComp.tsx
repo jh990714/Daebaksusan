@@ -39,7 +39,7 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
           {product.regularPrice !== product.salePrice && (
               <img src={saleIcon} alt="세일 아이콘" className={styles.saleIcon} />
           )}
-          <img src={`./upload/${product.imageUrl}`} alt={product.name} 
+          <img src={process.env.PUBLIC_URL + `/upload/${product.imageUrl}`} alt={product.name} 
             style={{
               '--card-size': size,
               '--card-height': size,
@@ -54,8 +54,12 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
           <p className={styles.productTitle}>{product.name}</p>
           <p className={styles.productSp}>{product.description}</p>
           <div className={styles.productPrice}>
-            <p className={styles.productDiscount}>{(product.regularPrice-product.salePrice).toLocaleString()}원</p>
-            <p className={styles.productPriceBefore}>{(product.regularPrice).toLocaleString()}원</p>
+          {product.regularPrice && product.salePrice && (
+              <>
+                <p className={styles.productDiscount}>{(product.regularPrice - product.salePrice).toLocaleString()}원</p>
+                <p className={styles.productPriceBefore}>{product.regularPrice.toLocaleString()}원</p>
+              </>
+            )}
           </div>
         </div>
       </div>
