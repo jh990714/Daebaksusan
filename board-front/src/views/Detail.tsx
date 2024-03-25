@@ -3,7 +3,16 @@ import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 import { Option } from 'types';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { CONNREFUSED } from 'dns';
+import Product from 'types/interface/product-item.interface';
+
+interface CartItem {
+    product: Product;
+    selectedOption?: Option | null;
+    quantity: number;
+    box_cnt: number;
+}
 
 
 export const Detail: React.FC = () => {
@@ -50,6 +59,7 @@ export const Detail: React.FC = () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []); // 빈 배열로 의존성 배열을 설정하여 컴포넌트가 마운트될 때만 이벤트 리스너가 추가되도록 함
+
 
     const handleQuantityChange = (value: number) => {
         const newQuantity = quantity + value;
@@ -124,6 +134,27 @@ export const Detail: React.FC = () => {
         }
         return (arr);
     }
+
+
+    const handleAddToCart = () => {
+        const cartItem: CartItem = {
+            product: product,
+            selectedOption,
+            quantity,
+            box_cnt,
+        };
+    
+        const existingCartCookie = Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')!) : [];;
+
+        // 새로운 아이템 추가
+        const updatedCartItems = [...existingCartCookie, cartItem];
+    
+        Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: 2 }); // 쿠키에 저장, 유효 기간은 2일
+    
+        // 장바구니에 추가되었음을 알리는 알림 또는 리다이렉트 등을 수행
+        alert('장바구니에 상품이 추가되었습니다.');
+    };
+
     return (
         <div className="bg-white text-gray-700">
 
@@ -189,7 +220,8 @@ export const Detail: React.FC = () => {
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
                             <button className="bg-blue-700 text-white px-4 py-2 rounded">구매하기</button>
-                            <button className="border border-gray-300 px-4 py-2 rounded">장바구니 담기</button>
+                            <button className="bg-blue-700 text-white px-4 py-2 rounded" onClick={handleAddToCart}>장바구니 담기</button>
+
                         </div>
             
                     </div>

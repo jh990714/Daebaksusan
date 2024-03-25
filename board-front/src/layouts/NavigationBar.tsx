@@ -61,7 +61,7 @@ export const NavigationBar = () => {
 
     useEffect(() => {
         // API 호출
-        fetch('/categories')
+        fetch('http://localhost:8080/categories')
             .then(response => response.json())
             .then(data => setCategories(data))
             .catch(error => console.error('Error fetching categories:', error));
@@ -144,7 +144,7 @@ export const NavigationBar = () => {
                                     onChange={handleInputChange}
                                 />
                                 <Link to={`/product/search?query=${debouncedQuery}`} state={{ category: debouncedQuery }} className={styles.icon}>
-                                    <img src={searchIcon} alt='검색' style={{ width: 30, height: 30 }} onClick={handleSearch}/>
+                                    <img src={searchIcon} alt='검색' style={{ width: 30, height: 30 }} onClick={handleSearch} />
                                 </Link>
                             </div>
                             {/* 검색 결과 리스트 */}
@@ -190,19 +190,20 @@ export const NavigationBar = () => {
             <div className={`${styles.categories} ${isOpen ? styles.open : ''}`}>
                 {categories.map((category) => (
                     <div key={category.name} className={styles.categoryItem}>
-                        <Link to={`/categoryProducts/${category.id}`} state={{ category: category }} className={styles.categoryLink} onClick={toggleCategory} >
+                        <Link to={`/categoryProducts/${category.name}`} state={{ category: category }} className={styles.categoryLink} onClick={toggleCategory} >
                             <p className={styles.categoryTitle}>{category.name}</p>
                         </Link>
 
                         <ul className={styles.subcategoryList}>
-                            {category.subcategories.map((sub) => (
-                                <Link to={`/categoryProducts/${category.id}/${sub.id}`} state={{ category: sub }} className={styles.subcategoryLink} onClick={toggleCategory}>
+                            {category.subcategories.map((sub, index) => ( // 여기서 index를 사용하여 고유한 key prop을 생성합니다.
+                                <Link key={`${category.name}_${index}`} to={`/categoryProducts/${category.name}/${sub.name}`} state={{ category: sub }} className={styles.subcategoryLink} onClick={toggleCategory}>
                                     <li className={styles.subcategoryItem}>{sub.name}</li>
                                 </Link>
                             ))}
                         </ul>
                     </div>
                 ))}
+
             </div>
 
         </nav>
