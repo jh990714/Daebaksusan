@@ -9,14 +9,15 @@ import menuIcon from '../assets/tabBar.png'
 
 import searchIcon from '../assets/search.png'
 import { Link } from 'react-router-dom'
-import useAuth from 'hook/useAuth';
 import { Category } from 'types';
 import useDebounce from 'hook/useDebounce'
+import { useAuthContext } from 'hook/AuthProvider'
+import sendRequestWithToken from 'apis/sendRequestWithToken'
 
 type SearchResults = Array<any>
 
 export const NavigationBar = () => {
-    const isLoggedIn = useAuth();
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false); // 카테고리가 열려있는지 여부를 state로 관리
     const [categories, setCategories] = useState<Category[]>([]);
@@ -26,6 +27,30 @@ export const NavigationBar = () => {
 
 
     const debouncedQuery = useDebounce<string>(query, 300);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const url = '/check';
+                const post = 'GET';
+                const data = null;
+
+                const response = await sendRequestWithToken(url, post, data);
+                setIsLoggedIn(true)
+            } catch (error) {
+                setIsLoggedIn(false);
+                console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+            }
+            
+        };
+
+        fetchData();
+    }, []);
+    
+    useEffect(() => {
+        
+        console.log('로그인 상태가 변경되었습니다:', isLoggedIn);
+    }, [isLoggedIn]);
 
     useEffect(() => {
         const fetchSearchResults = async () => {
@@ -98,6 +123,12 @@ export const NavigationBar = () => {
         setIsOpen(false); // 카테고리를 닫습니다.
     };
 
+    const handleLogOut = () => {
+        // 로그아웃 동작 수행
+        localStorage.removeItem('accessToken'); // 로컬 스토리지에서 토큰 제거
+        localStorage.removeItem('refreshToken'); 
+        setIsLoggedIn(false)
+    };
     return (
         <nav className={styles.navContainer} onMouseLeave={closeCategory}>
             <div className={styles.navBar}>
@@ -177,6 +208,9 @@ export const NavigationBar = () => {
                                             <img src={loginIcon} alt='마이페이지' style={{ width: 50, height: 50 }} />
                                             <span className={styles.iconTitle}> 마이페이지 </span>
                                         </Link>
+                                        <div onClick={handleLogOut}>
+                                            로그아웃
+                                        </div>
                                     </li>
                                 )}
                                 <li>

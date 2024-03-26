@@ -7,9 +7,15 @@ import rightArrow from '../assets/rightArrow.png';
 import { ProductListComp } from 'components/product/ProductListComp';
 import { Cart, CartItem } from 'types';
 import { Link } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import useAuth from 'hook/useAuth';
+import { fetchCartItemsDelete, fetchCartItems } from 'utils/cartUtils';
+import { useCart } from 'hook/CartProvider';
+import { useAuthContext } from 'hook/AuthProvider';
 
 export const QuickCart = () => {
+    const {cartItemsUpdate,  setCartItemsUpdate} = useCart();
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
+    const isTokenCheck = useAuth();
     const [isVisible, setIsVisible] = useState(false);
     const [buttonImage, setButtonImage] = useState(topArrow);
     const [startIndex, setStartIndex] = useState(0);
@@ -17,22 +23,16 @@ export const QuickCart = () => {
 
     const filteredCartItems = cartItems.filter(item => item.isSelected === true);
 
-    useEffect(() => {
-        const fetchCartItemsFromCookie = () => {
-            const cartCookie = Cookies.get('cartItems');
-            if (cartCookie) {
-                const parsedCartItems: CartItem[] = JSON.parse(cartCookie);
-                const updatedCartItems = parsedCartItems.map((item, index) => ({
-                    id: index, // id 증가
-                    cartItem: item,
-                    isSelected: true,
-                }));
-                setCartItems(updatedCartItems);
-            }
-        };
 
-        fetchCartItemsFromCookie();
-    }, [Cookies.get('cartItems')]);
+
+    useEffect(() => {
+
+            fetchCartItems(setCartItems);
+         
+    }, [isLoggedIn, cartItemsUpdate]);
+
+
+
 
     const handelClick = () => {
         setIsVisible(!isVisible);
@@ -102,18 +102,12 @@ export const QuickCart = () => {
         setStartIndex(0);
     };
 
-    const selectDelete = () => {
-        // 선택되지 않은 아이템만 필터링하여 상태에서 유지
-        const remainingItems = cartItems.filter(item => !item.isSelected);
-        setCartItems(remainingItems);
+    const selectDelete = async () => {
+
+        fetchCartItemsDelete(cartItems, setCartItems)
         setStartIndex(0);
-    
-        // 선택되지 않은 아이템들의 쿠키를 다시 설정
-        const remainingItemsCookie = remainingItems.map(item => item.cartItem);
-        Cookies.set('cartItems', JSON.stringify(remainingItemsCookie));
+        setCartItemsUpdate(!cartItemsUpdate)
     };
-    
-    
     
 
     const renderListItems = () => {

@@ -92,5 +92,17 @@ public class ProductServiceImple implements ProductService{
     public List<ProductEntity> searchProducts(String query) {
         return productRepository.findTop5ByNameContaining(query);
     }
+
+    @Override
+    public ProductEntity getProductById(Integer productId) {
+
+        return productRepository.findByProductId(productId);
+    }
+
+    @Override
+    public OptionEntity getOptionById(Integer optionId) {
+        
+        return optionRepository.findByOptionId(optionId);
+    }
     
 }

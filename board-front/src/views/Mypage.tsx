@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react'
 import styles from "./Mypage.module.css";
 import { Link, useNavigate } from 'react-router-dom';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
+import { useAuthContext } from 'hook/AuthProvider';
+import useAuth from 'hook/useAuth';
 
 
 
 export const Mypage: React.FC = () => {
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const url = '/info';
     const post = 'GET';
     const data = null;
@@ -20,8 +23,10 @@ export const Mypage: React.FC = () => {
                 
             } catch (error) {
                 navigate('/login');
+                setIsLoggedIn(false);
                 console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
             }
+            
         };
 
         fetchData();
