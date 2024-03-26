@@ -2,8 +2,10 @@ import React from 'react'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthContext } from 'hook/AuthProvider';
 
 export const Login:React.FC = () => {
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +32,8 @@ export const Login:React.FC = () => {
           localStorage.setItem('refreshToken', refreshToken); // 수정된 부분
 
           
-          navigate(-2);
+          navigate('/');
+          setIsLoggedIn(true)
         } catch (error) {
           console.error('로그인 실패:', error);
           alert('로그인에 실패했습니다. 아이디 또는 비밀번호를 확인해주세요.');
