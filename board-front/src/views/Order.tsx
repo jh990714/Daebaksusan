@@ -39,9 +39,10 @@ export const Order: React.FC = () => {
             try {
                 const response = await sendRequestWithToken(url, post, data);
                 
-                setOrdererInfo(response.data);
-                if (response.data) {
-                    const { name, phone, postalCode, address, detailAddress } = response.data;
+                setOrdererInfo(response);
+                if (response) {
+                    const { name, phone, postalCode, address, detailAddress } = response;
+
                     const [phoneFirst, phoneMid, phoneLast] = phone.split('-');
 
                     setOrdererName(name || '');
