@@ -106,7 +106,6 @@ export const QuickCart = () => {
 
         fetchCartItemsDelete(cartItems, setCartItems)
         setStartIndex(0);
-        setCartItemsUpdate(!cartItemsUpdate)
     };
     
 

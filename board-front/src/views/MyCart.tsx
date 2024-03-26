@@ -62,7 +62,6 @@ export const MyCart = () => {
 
     const deleteSelectedItems = async () => {
         fetchCartItemsDelete(cartItems, setCartItems)
-        setCartItemsUpdate(!cartItemsUpdate)
     };
     
     
