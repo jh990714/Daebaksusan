@@ -37,7 +37,7 @@ export const Detail: React.FC = () => {
             setOptions(response.data);
             setSelectedOption(response.data[0]);
             setQuantity(1);
-            setTotalPrice((product.regularPrice - product.salePrice) * 1 + (product.shippingCost*box_cnt));
+            setTotalPrice((product.regularPrice - product.salePrice) * 1 + (product.shippingCost*1));
         } catch (error) {
             console.error('Error fetching options:', error);
         }
