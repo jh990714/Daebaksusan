@@ -30,7 +30,8 @@ export const Login:React.FC = () => {
 
           localStorage.setItem('accessToken', accessToken); // 수정된 부분
           localStorage.setItem('refreshToken', refreshToken); // 수정된 부분
-
+          
+          
           
           navigate('/');
           setIsLoggedIn(true)
