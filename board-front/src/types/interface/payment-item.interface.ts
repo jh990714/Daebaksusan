@@ -1,4 +1,4 @@
-import { ProductList } from "types";
+import { Product } from "types";
 
 export default interface PaymentItem {
     paymentDate: string;
@@ -6,5 +6,5 @@ export default interface PaymentItem {
     paymentStatus: string;
     deliveryStatus: string;
     quantity: number;
-    paymentList: ProductList;
+    paymentList: Product;
 }

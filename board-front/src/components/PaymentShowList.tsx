@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react'
-import { PaymentItem, ProductList } from 'types';
+import { PaymentItem, Product } from 'types';
 import { PaymentItemComp } from './PaymentItemComp';
 import styles from './PaymentShowList.module.css';
 
@@ -10,7 +10,7 @@ export const PaymentShowList = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get<ProductList[]>('http://localhost:8080/product/all');
+                const response = await axios.get<Product[]>('http://localhost:8080/product/all');
                 const paymentItems = response.data.map(paymentList=> ({
                     paymentDate: '2024-03-01',
                     paymentNumber: '00001',
