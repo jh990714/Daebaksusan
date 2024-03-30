@@ -1,22 +1,22 @@
 import React from 'react'
 import Cookies from 'js-cookie';
 import { Link } from 'react-router-dom';
-import { ProductList } from 'types';
+import { Product } from 'types';
 import styles from './ProductListComp.module.css';
 import saleIcon from 'assets/bestProductIcon.png';
 
 interface ProductListCompProps {
-    product: ProductList;
+    product: Product;
     size: string;
     fontSize: string;
 }
 
 export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size, fontSize }) => {
-    const addToRecentProducts = (product: ProductList) => {
+    const addToRecentProducts = (product: Product) => {
         const maxRecentProducts = 7; // 최대 저장할 최근 본 상품의 수
         const recentProducts = Cookies.get('recentProducts') ? JSON.parse(Cookies.get('recentProducts')!) : [];
 
-        const updatedRecentProducts = recentProducts.filter((p: ProductList) => p.productId !== product.productId);
+        const updatedRecentProducts = recentProducts.filter((p: Product) => p.productId !== product.productId);
         updatedRecentProducts.unshift(product); // 가장 최근 본 상품을 배열 앞쪽에 추가
 
         if (updatedRecentProducts.length > maxRecentProducts) {
@@ -56,8 +56,8 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
                     <div className={styles.productPrice}>
 
 
-                        <p className={styles.productDiscount}>{(product.regularPrice - product.salePrice).toLocaleString()}원</p>
-                        <p className={styles.productPriceBefore}>{product.regularPrice.toLocaleString()}원</p>
+                        <p className={styles.productDiscount}>{(product.regularPrice && product.salePrice) ? (product.regularPrice - product.salePrice).toLocaleString() : 0}원</p>
+                        <p className={styles.productPriceBefore}>{product.regularPrice ? product.regularPrice.toLocaleString() : 0}원</p>
 
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styles from './QuickCart.module.css';
 import topArrow from '../assets/topArrow.png';
 import bottomArrow from '../assets/bottomArrow.png';
@@ -7,31 +7,23 @@ import rightArrow from '../assets/rightArrow.png';
 import { ProductListComp } from 'components/product/ProductListComp';
 import { Cart, CartItem } from 'types';
 import { Link } from 'react-router-dom';
-import useAuth from 'hook/useAuth';
 import { fetchCartItemsDelete, fetchCartItems } from 'utils/cartUtils';
 import { useCart } from 'hook/CartProvider';
 import { useAuthContext } from 'hook/AuthProvider';
 
 export const QuickCart = () => {
-    const {cartItemsUpdate,  setCartItemsUpdate} = useCart();
+    const {cartItems,  setCartItems} = useCart();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
-    const isTokenCheck = useAuth();
     const [isVisible, setIsVisible] = useState(false);
     const [buttonImage, setButtonImage] = useState(topArrow);
     const [startIndex, setStartIndex] = useState(0);
-    const [cartItems, setCartItems] = useState<Cart[]>([]);
+    // const [cartItems, setCartItems] = useState<Cart[]>([]);
 
     const filteredCartItems = cartItems.filter(item => item.isSelected === true);
 
-
-
     useEffect(() => {
-
-            fetchCartItems(setCartItems);
-         
-    }, [isLoggedIn, cartItemsUpdate]);
-
-
+        fetchCartItems(setCartItems, setIsLoggedIn);
+    }, [isLoggedIn]);
 
 
     const handelClick = () => {
@@ -46,7 +38,7 @@ export const QuickCart = () => {
     };
 
     const handleNext = () => {
-        if (startIndex < cartItems.length - 4) {
+        if (startIndex < cartItems.length - 5) {
             setStartIndex(prevIndex => prevIndex + 1);
         }
     };
@@ -67,7 +59,7 @@ export const QuickCart = () => {
             .filter(item => item.isSelected)
             .reduce((total, item) => {
 
-                const optionPrice = item.cartItem.box_cnt * item.cartItem.selectedOption.addPrice
+                const optionPrice = item.cartItem.box_cnt * item.cartItem.selectedOption!.addPrice
 
                 const itemTotal = (item.cartItem.product.regularPrice - item.cartItem.product.salePrice) * item.cartItem.quantity;
 
@@ -104,7 +96,7 @@ export const QuickCart = () => {
 
     const selectDelete = async () => {
 
-        fetchCartItemsDelete(cartItems, setCartItems)
+        fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn)
         setStartIndex(0);
     };
     
@@ -125,7 +117,7 @@ export const QuickCart = () => {
                     <li key={item.id}>
                         <ProductListComp product={item.cartItem.product} size='110px' fontSize='4px' />
                     </li>
-                    <div className={styles.option}> - {item.cartItem.selectedOption.name} + {item.cartItem.selectedOption.addPrice}</div>
+                    <div className={styles.option}> - {item.cartItem.selectedOption!.name} + {item.cartItem.selectedOption!.addPrice}</div>
                     <div className={styles.quantityContainer}>
                         <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.id, -1)}>-</button>
                         {item.cartItem.quantity}

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { ProductList } from 'types';
+import { Product } from 'types';
 import { ProductListComp } from '../components/product/ProductListComp';
 import styles from './CategoryProduct.module.css';
 import { useLocation, useParams } from 'react-router-dom';
@@ -14,7 +14,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 
 
 	const [visibleCount, setVisibleCount] = useState<number>(12);
-	const [products, setProducts] = useState<ProductList[]>([])
+	const [products, setProducts] = useState<Product[]>([])
 
 	let pageTitle;
 
@@ -67,7 +67,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 						break;
 				}
 
-				const response = await axios.get<ProductList[]>(url);
+				const response = await axios.get<Product[]>(url);
 				setProducts(response.data);
 				
 
@@ -96,7 +96,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 				</div>
 				<div>
 					<ul className={styles.productList}>
-						{getCurrentPageData().map((product: ProductList, index: number) => (
+						{getCurrentPageData().map((product: Product, index: number) => (
 							<li key={product.productId} className={index >= visibleCount - 4 && visibleCount < products.length ? `${styles.blurEffect}` : ''}>
 								<ProductListComp product={product} size='255px' fontSize='7px' />
 							</li>

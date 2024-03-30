@@ -11,61 +11,32 @@ interface CartItemCompProps {
 }
 
 
-export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAll, onQuantityChange, onSelectedChange }) => {
-    const [myCartItem, setCartItem] = useState(cartItem);
-
+export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuantityChange, onSelectedChange }) => {
     const handleQuantityChange = (id: number, delta: number) => {
-        const newQuantity = Math.min(Math.max(1, myCartItem.cartItem.quantity + delta), myCartItem.cartItem.product.stockQuantity);
-        const newBoxcnt = Math.ceil(newQuantity / myCartItem.cartItem.product.maxQuantityPerDelivery);
-        setCartItem(prevCartItem => ({
-            ...prevCartItem,
-            cartItem: {
-                ...prevCartItem.cartItem,
-                quantity: newQuantity,
-                box_cnt: newBoxcnt,
-            },
-        }));
+        const newQuantity = Math.min(Math.max(1, cartItem.cartItem.quantity + delta), cartItem.cartItem.product.stockQuantity);
+        const newBoxcnt = Math.ceil(newQuantity / cartItem.cartItem.product.maxQuantityPerDelivery);
         onQuantityChange(id, newQuantity, newBoxcnt);
     };
 
     const handleQuantityInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value === '' ? NaN : parseInt(event.target.value, 10);
         if (event.target.value === '' || !isNaN(value) && value >= 0) {
-            const newQuantity = Math.min(Math.max(1, isNaN(value) ? 0 : value), myCartItem.cartItem.product.stockQuantity);
-            const newBoxcnt = Math.ceil(newQuantity / myCartItem.cartItem.product.maxQuantityPerDelivery);
-            setCartItem(prevCartItem => ({
-                ...prevCartItem,
-                cartItem: {
-                    ...prevCartItem.cartItem,
-                    quantity: newQuantity,
-                    box_cnt: newBoxcnt,
-                },
-            }));
-            onQuantityChange(myCartItem.id, newQuantity, newBoxcnt);
+            const newQuantity = Math.min(Math.max(1, isNaN(value) ? 0 : value), cartItem.cartItem.product.stockQuantity);
+            const newBoxcnt = Math.ceil(newQuantity / cartItem.cartItem.product.maxQuantityPerDelivery);
+            onQuantityChange(cartItem.id, newQuantity, newBoxcnt);
         }
     };
 
     const handleCheckboxChange = () => {
-        const newSelected = !myCartItem.isSelected;
-        setCartItem(prevCartItem => ({
-            ...prevCartItem,
-            isSelected: newSelected,
-        }));
-        onSelectedChange(myCartItem.id, newSelected);
+        const newSelected = !cartItem.isSelected;
+        onSelectedChange(cartItem.id, newSelected);
     };
-
-    useEffect(() => {
-        setCartItem(prevCartItem => ({
-            ...prevCartItem,
-            isSelected: selectAll, // prop으로 받은 전체 선택 상태를 반영
-        }));
-    }, [selectAll]);
 
     const calculateItemTotal = (item: Cart) => {
         const product = item.cartItem.product;
         const quantity = item.cartItem.quantity;
         const boxCount = item.cartItem.box_cnt;
-        const optionPrice = boxCount * item.cartItem.selectedOption.addPrice;
+        const optionPrice = boxCount * item.cartItem.selectedOption!.addPrice;
         const shippingCost = boxCount * product.shippingCost;
         const itemPrice = (product.regularPrice - product.salePrice) * quantity;
         const totalPrice = itemPrice + optionPrice + shippingCost;
@@ -100,42 +71,42 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                         <td data-label="칼럼명">
                             <input
                                 type="checkbox"
-                                checked={myCartItem.isSelected}
+                                checked={cartItem.isSelected}
                                 onChange={handleCheckboxChange}
                             />
 
                         </td>
                         <td className={styles.orderImg} data-label="이미지">
-                            <img src={`./upload/${myCartItem.cartItem.product.imageUrl}`} alt="사진" style={{ width: 140, height: 140 }}></img>
+                            <img src={`./upload/${cartItem.cartItem.product.imageUrl}`} alt="사진" style={{ width: 140, height: 140 }}></img>
                         </td>
                         <td className={styles.orderName} data-label="주문 상품 정보">
-                            <p className={styles.title}>{myCartItem.cartItem.product.name}</p>
-                            <p className={styles.option}>{myCartItem.cartItem.selectedOption.name} + {myCartItem.cartItem.selectedOption.addPrice}</p>
+                            <p className={styles.title}>{cartItem.cartItem.product.name}</p>
+                            <p className={styles.option}>{cartItem.cartItem.selectedOption!.name} + {cartItem.cartItem.selectedOption!.addPrice}</p>
                         </td>
                         <td className={styles.orderPrice} data-label="상품가격">
 
-                            {(myCartItem.cartItem.product.regularPrice - myCartItem.cartItem.product.salePrice).toLocaleString()}원
+                            {(cartItem.cartItem.product.regularPrice - cartItem.cartItem.product.salePrice).toLocaleString()}원
 
                         </td>
                         <td className={styles.orderQuantity} data-label="수량">
                             <div className={styles.quantityContainer}>
-                                <button className={styles.quantityButton} onClick={() => handleQuantityChange(myCartItem.id, -1)}>-</button>
+                                <button className={styles.quantityButton} onClick={() => handleQuantityChange(cartItem.id, -1)}>-</button>
                                 <input
                                     type="text"
-                                    value={myCartItem.cartItem.quantity.toLocaleString()}
+                                    value={cartItem.cartItem.quantity.toLocaleString()}
                                     onChange={handleQuantityInputChange}
                                     className={styles.quantityInput}
                                 />
-                                <button className={styles.quantityButton} onClick={() => handleQuantityChange(myCartItem.id, 1)}>+</button>
+                                <button className={styles.quantityButton} onClick={() => handleQuantityChange(cartItem.id, 1)}>+</button>
                             </div>
                         </td>
                         <td data-label="가격정보" className={styles.priceInfo}>
-                            <p>박스 개수: {myCartItem.cartItem.box_cnt}</p>
-                            <p>옵션 가격: {(myCartItem.cartItem.box_cnt * myCartItem.cartItem.selectedOption.addPrice).toLocaleString()}원</p>
-                            <p>배송비: {(myCartItem.cartItem.box_cnt * myCartItem.cartItem.product.shippingCost).toLocaleString()}원</p>
+                            <p>박스 개수: {cartItem.cartItem.box_cnt}</p>
+                            <p>옵션 가격: {(cartItem.cartItem.box_cnt * cartItem.cartItem.selectedOption!.addPrice).toLocaleString()}원</p>
+                            <p>배송비: {(cartItem.cartItem.box_cnt * cartItem.cartItem.product.shippingCost).toLocaleString()}원</p>
                         </td>
                         <td data-label="합계">
-                            <p className={styles.orderTotal}>{calculateItemTotal(myCartItem)}원</p>
+                            <p className={styles.orderTotal}>{calculateItemTotal(cartItem)}원</p>
                         </td>
                     </tr>
                 </tbody>
@@ -144,41 +115,41 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, selectAl
                 <div className="checkBox">
                     <input
                         type="checkbox"
-                        checked={myCartItem.isSelected}
+                        checked={cartItem.isSelected}
                         onChange={handleCheckboxChange}
                         className={styles_m.custom_checkbox} // CSS 클래스 추가
                     />
-                    <label htmlFor={myCartItem.cartItem.product.productId.toString()} className={styles_m.checkbox_icon}></label> {/* label에 클래스 추가 */}
+                    <label htmlFor={cartItem.cartItem.product.productId.toString()} className={styles_m.checkbox_icon}></label> {/* label에 클래스 추가 */}
                 </div>
 
                 <div className={styles_m.orderImg}>
-                    <img src={`./upload/${myCartItem.cartItem.product.imageUrl}`} alt="사진" style={{ width: 200, height: 200, borderRadius: 10 }} />
+                    <img src={`./upload/${cartItem.cartItem.product.imageUrl}`} alt="사진" style={{ width: 200, height: 200, borderRadius: 10 }} />
                 </div>
                 <div className={styles_m.orderInfo}>
                     <div className={styles_m.orderName}>
-                        {myCartItem.cartItem.product.name}
+                        {cartItem.cartItem.product.name}
                     </div>
 
                     <div className={styles_m.orderOption}>
                         옵션
                     </div>
                     <div className={styles_m.quantityContainer}>
-                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(myCartItem.id, -1)}>-</button>
+                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(cartItem.id, -1)}>-</button>
                         <input
                             type="text"
-                            value={myCartItem.cartItem.quantity.toLocaleString()}
+                            value={cartItem.cartItem.quantity.toLocaleString()}
                             onChange={handleQuantityInputChange}
                             className={styles_m.quantityInput}
                         />
-                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(myCartItem.id, 1)}>+</button>
+                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(cartItem.id, 1)}>+</button>
                     </div>
 
                     <div className={styles_m.orderTotal}>
                         <div className={styles_m.priceInfo}>
-                            <p>박스 개수: {myCartItem.cartItem.box_cnt}</p>
-                            <p>옵션 가격: {(myCartItem.cartItem.box_cnt * myCartItem.cartItem.selectedOption.addPrice).toLocaleString()}원</p>
-                            <p>배송비: {(myCartItem.cartItem.box_cnt * myCartItem.cartItem.product.shippingCost).toLocaleString()}원</p>
-                            <p className={styles_m.total}>합계 : {calculateItemTotal(myCartItem)}원</p>
+                            <p>박스 개수: {cartItem.cartItem.box_cnt}</p>
+                            <p>옵션 가격: {(cartItem.cartItem.box_cnt * cartItem.cartItem.selectedOption!.addPrice).toLocaleString()}원</p>
+                            <p>배송비: {(cartItem.cartItem.box_cnt * cartItem.cartItem.product.shippingCost).toLocaleString()}원</p>
+                            <p className={styles_m.total}>합계 : {calculateItemTotal(cartItem)}원</p>
                         </div>
                     </div>
                 </div>

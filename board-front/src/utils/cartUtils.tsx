@@ -1,11 +1,47 @@
 import Cookies from 'js-cookie';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
-import { Cart, CartItem } from 'types';
+import { Cart, CartInput, CartItem } from 'types';
+import { useAuthContext } from 'hook/AuthProvider';
 
-export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetStateAction<Cart[]>>) => {
+export const saveCartItemsToDatabase = async (cartItems: CartInput[], setIsLoggedIn: (value: boolean) => void) => {
     try {
+        // 카트 아이템들을 데이터베이스에 저장하는 API 요청
+        const url = '/cart/cookieSave';
+        const post = 'POST';
+        const data = cartItems;
+        console.log(cartItems)
+        const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
+        
+
+        // 데이터베이스에 저장된 후에는 쿠키 삭제
+        Cookies.remove('cartItems');
+    } catch (error) {
+        console.error('장바구니 데이터 저장 실패:', error);
+    }
+};
+
+export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetStateAction<Cart[]>>, setIsLoggedIn: (value: boolean) => void) => {
+    try {
+        const cartCookie = Cookies.get('cartItems');
+        console.log('aaaa', cartCookie)
+        if (cartCookie) {
+            const parsedCartItems: CartItem[] = JSON.parse(cartCookie);
+
+            // 파싱된 카트 아이템들을 데이터베이스에 저장
+            const cartItemsToSave: CartInput[] = parsedCartItems.map((parsedCartItem: CartItem) => ({
+                productId: parsedCartItem.product.productId,
+                optionId: parsedCartItem.selectedOption?.optionId || null, // 선택된 옵션이 없을 경우를 대비하여 기본값 설정
+                quantity: parsedCartItem.quantity,
+                boxCnt: parsedCartItem.box_cnt
+            }));
+
+            console.log('bbbbb', cartItemsToSave)
+            // 데이터베이스에 저장
+            await saveCartItemsToDatabase(cartItemsToSave, setIsLoggedIn);
+        }
+
         const url = '/cart/get';
-        const response = await sendRequestWithToken(url, 'GET', null);
+        const response = await sendRequestWithToken(url, 'GET', null, setIsLoggedIn);
 
         const parsedCartItems: Cart[] = response.map((item: any) => ({
             id: item.cartId,
@@ -20,7 +56,7 @@ export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetState
 
         setCartItems(parsedCartItems);
     } catch (error) {
-        console.log('API 요청 실패:', error);
+        console.error('API 요청 실패:', error);
         const cartCookie = Cookies.get('cartItems');
         if (cartCookie) {
             const parsedCartItems: CartItem[] = JSON.parse(cartCookie);
@@ -31,12 +67,15 @@ export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetState
             }));
             setCartItems(updatedCartItems);
         }
+        else {
+            setCartItems([])
+        }
     }
 
 };
 
 
-export const fetchCartItemsDelete = async (cartItems: Cart[], setCartItems: React.Dispatch<React.SetStateAction<Cart[]>>) => {
+export const fetchCartItemsDelete = async (cartItems: Cart[], setCartItems: React.Dispatch<React.SetStateAction<Cart[]>>, setIsLoggedIn: (value: boolean) => void) => {
     // 선택되지 않은 아이템만 필터링하여 상태에서 유지
     try {
         const remainingItemsNotSelect = cartItems.filter(item => !item.isSelected);
@@ -47,7 +86,7 @@ export const fetchCartItemsDelete = async (cartItems: Cart[], setCartItems: Reac
         const data = remainingItemstSelect.map(item => item.id);
         console.log(data)
 
-        const response = await sendRequestWithToken(url, post, data);
+        const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
         console.log(response);
         setCartItems(remainingItemsNotSelect);
     }

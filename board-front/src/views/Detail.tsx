@@ -1,28 +1,26 @@
 import { DetailTabComp } from 'components/DetailTabComp';
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
-import { Cart, Option } from 'types';
+import { Cart, CartItem, Option } from 'types';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { CONNREFUSED } from 'dns';
 import Product from 'types/interface/product-item.interface';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
-import useAuth from 'hook/useAuth';
 import { useCart } from 'hook/CartProvider';
 import { useAuthContext } from 'hook/AuthProvider';
 
-interface CartItem {
-    product: Product;
-    selectedOption?: Option | null;
-    quantity: number;
-    box_cnt: number;
-}
+// interface CartItem {
+//     product: Product;
+//     selectedOption?: Option | null;
+//     quantity: number;
+//     box_cnt: number;
+// }
 
 
 export const Detail: React.FC = () => {
-    const { cartItemsUpdate, setCartItemsUpdate } = useCart();
+    const { cartItems, setCartItems } = useCart();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
-    const isTokenCheck = useAuth();
     const product = useLocation().state.product;
 
     const [isSticky, setIsSticky] = useState(false);
@@ -147,7 +145,6 @@ export const Detail: React.FC = () => {
 
     const handleAddToCart = async () => {
         try {
-
             const cartInputItem = {
                 productId: product.productId,
                 optionId: selectedOption?.optionId,
@@ -155,27 +152,58 @@ export const Detail: React.FC = () => {
                 boxCnt: box_cnt
             };
 
-            const url = '/info/cartSave';
+            const url = '/cart/cartSave';
             const post = 'POST';
             const data = cartInputItem;
 
-            const response = await sendRequestWithToken(url, post, data)
+            const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
+            console.log(response);
+            alert('장바구니에 상품이 추가되었습니다.');
 
-            alert('장바구니에 상품이 추가되었습');
-            setCartItemsUpdate(!cartItemsUpdate)
+            const updatedCartItems = cartItems.map(cart => {
+                if (cart.id === response.cartId) {
+                    // 이미 해당 ID를 가진 카트 아이템이 존재하면 업데이트
+                    return {
+                        ...cart,
+                        id: response.cartId,
+                        cartItem: {
+                            product: product,
+                            selectedOption,
+                            quantity: response.quantity,
+                            box_cnt: response.boxCnt,
+                        },
+                        isSelected: true
+                    };
+                }
+                return cart;
+            });
+
+            const isNewItem = updatedCartItems.every(cart => cart.id !== response.cartId);
+
+            if (isNewItem) {
+                // 새로운 아이템일 경우 목록에 추가
+                const newCart: Cart = {
+                    id: response.cartId,
+                    cartItem: {
+                        product: product,
+                        selectedOption,
+                        quantity,
+                        box_cnt,
+                    },
+                    isSelected: true
+                };
+                setCartItems([...updatedCartItems, newCart]);
+            } else {
+                // 기존 아이템을 업데이트한 경우 업데이트된 목록으로 설정
+                setCartItems(updatedCartItems);
+            }
+
 
         } catch (error) {
             console.log('errr')
 
-            const cartItem: CartItem = {
-                product: product,
-                selectedOption,
-                quantity,
-                box_cnt,
-            };
-
             const existingCartCookie = Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')!) : [];;
-            
+
             // 장바구니에 추가하려는 상품과 옵션에 대한 정보
             const newItem: CartItem = {
                 product: product,
@@ -191,34 +219,39 @@ export const Detail: React.FC = () => {
                 return item.product.productId === product.productId && item.selectedOption?.optionId === selectedOption?.optionId;
             });
 
+            // 기존에 선택된 상품이 있을 경우, 쿠키에서 해당 아이템을 찾아 업데이트합니다.
             if (existingItemIndex !== -1) {
                 // 기존에 선택된 상품이 있을 경우, 수량을 합산하여 업데이트
                 const existingItem = existingCartCookie[existingItemIndex];
                 const updatedQuantity = existingItem.quantity + quantity;
                 const updatedBoxCnt = Math.ceil(updatedQuantity / existingItem.product.maxQuantityPerDelivery);
 
+                // 기존 아이템을 업데이트합니다.
                 existingCartCookie[existingItemIndex] = {
                     ...existingItem,
                     quantity: updatedQuantity,
                     box_cnt: updatedBoxCnt
                 };
-    
+
+                // 업데이트된 아이템 목록을 새로운 카트 아이템 목록으로 설정합니다.
                 updatedCartItems = existingCartCookie;
             } else {
-                // 기존에 선택된 상품이 없을 경우, 새로운 상품으로 추가
+                // 기존에 선택된 상품이 없을 경우, 새로운 상품으로 추가합니다.
                 updatedCartItems = [...existingCartCookie, newItem];
             }
-    
             // 쿠키에 업데이트된 장바구니 정보 저장
             Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: 2 });
-    
+
+            const newCartItems = updatedCartItems.map((item, index) => ({
+                id: index,
+                cartItem: item,
+                isSelected: true,
+            }));
+            setCartItems(newCartItems);
+
             alert('장바구니에 상품이 추가되었습니다.');
-            setCartItemsUpdate(!cartItemsUpdate);
 
         }
-
-
-
     };
 
     return (
