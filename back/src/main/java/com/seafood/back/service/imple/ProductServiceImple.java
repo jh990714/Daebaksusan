@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.seafood.back.dto.CartDTO;
 import com.seafood.back.entity.CategoryEntity;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductEntity;
@@ -14,6 +15,7 @@ import com.seafood.back.respository.OptionRepository;
 import com.seafood.back.respository.ProductRepository;
 import com.seafood.back.service.ProductService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -103,6 +105,33 @@ public class ProductServiceImple implements ProductService{
     public OptionEntity getOptionById(Integer optionId) {
         
         return optionRepository.findByOptionId(optionId);
+    }
+
+    @Override
+    @Transactional
+    public void updateProductQuantities(List<CartDTO> orderItems) {
+        for (CartDTO orderItem : orderItems) {
+            int productId = orderItem.getProduct().getProductId();
+            int orderedQuantity = orderItem.getQuantity();
+
+            // 상품을 데이터베이스에서 조회하여 수량을 변경합니다.
+            Optional<ProductEntity> productOptional = productRepository.findById(productId);
+            if (productOptional.isPresent()) {
+                ProductEntity product = productOptional.get();
+                int currentStock = product.getStockQuantity();
+                if (currentStock >= orderedQuantity) {
+                    product.setStockQuantity(currentStock - orderedQuantity);
+                    // 변경된 상품 정보를 데이터베이스에 저장합니다.
+                    productRepository.save(product);
+                } else {
+
+                    throw new RuntimeException("주문된 수량이 재고보다 많습니다.");
+                }
+            } else {
+                // 상품을 찾을 수 없는 경우의 예외 처리를 수행합니다.
+                throw new RuntimeException("상품을 찾을 수 없습니다.");
+            }
+        }
     }
     
 }

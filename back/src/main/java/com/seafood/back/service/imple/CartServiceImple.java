@@ -118,6 +118,7 @@ public class CartServiceImple implements CartService{
     }
 
     @Override
+    
     @Transactional
     public ResponseEntity<?> saveCartItems(String memberId, CartEntity[] cartItems) {
         try {
@@ -133,12 +134,15 @@ public class CartServiceImple implements CartService{
 
     private OptionDTO convertToOptionDTO(OptionEntity optionEntity) {
         OptionDTO optionDTO = new OptionDTO();
-        // OptionEntity의 필드들을 OptionDTO로 복사
-        optionDTO.setOptionId(optionEntity.getOptionId());
-        optionDTO.setProductId(optionEntity.getProductId());
-        optionDTO.setName(optionEntity.getName());
-        optionDTO.setAddPrice(optionEntity.getAddPrice());
-        // 나머지 필드들도 복사
+        if (optionEntity != null) { // optionEntity가 null이 아닌 경우에만 처리
+            // OptionEntity의 필드들을 OptionDTO로 복사
+            optionDTO.setOptionId(optionEntity.getOptionId());
+            optionDTO.setProductId(optionEntity.getProductId());
+            optionDTO.setName(optionEntity.getName());
+            optionDTO.setAddPrice(optionEntity.getAddPrice());
+            // 나머지 필드들도 복사
+        }
         return optionDTO;
     }
 }
+    
