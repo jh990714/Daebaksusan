@@ -6,15 +6,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AddressObj, Cart, CartItem, InputErrors, OrdererInfo,   } from 'types';
 import { OrderItemListComp } from 'components/product/OrderItemListComp';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
+import { useAuthContext } from 'hook/AuthProvider';
 
-declare global {
-    interface Window {
-      IMP: any; // 아임포트 타입 정의
-    }
-}
+declare const window: typeof globalThis & {
+    IMP: any;
+};
 
   // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [ordererName, setOrdererName] = useState<string>('');
     const [ordererPhoneMid, setOrdererPhoneMid] = useState<string>('');
     const [ordererPhoneLast, setOrdererPhoneLast] = useState<string>('');
@@ -37,7 +37,7 @@ export const Order: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await sendRequestWithToken(url, post, data);
+                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
                 
                 setOrdererInfo(response);
                 if (response) {
@@ -58,8 +58,7 @@ export const Order: React.FC = () => {
                 }
                 
             } catch (error) {
-                navigate('/login');
-                console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+                console.error('비회원 주문', error);
             }
         };
 
@@ -81,7 +80,9 @@ export const Order: React.FC = () => {
     const orderItems = useLocation().state.cartItems;
     const totalPrice: number = orderItems.reduce((total: number, orderItem: Cart) => {
         const itemPrice = (orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice) * orderItem.cartItem.quantity;
-        const optionCost = orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption.addPrice;
+        const optionCost = orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption!.addPrice;
+
+
         return total + itemPrice + optionCost;
     }, 0); 
 
@@ -113,7 +114,30 @@ export const Order: React.FC = () => {
         }
         
         // requestPay();
-        console.log('결제 진행');
+        var IMP = window.IMP;
+        IMP.init('imp02022068'); // iamport 가맹점 식별코드
+        const paymentData = {
+            pg: 'nice',
+            pay_method: "card",
+            merchant_uid: new Date().getTime(),// 상점에서 관리하는 주문 번호
+            name: '테스트 상품',
+            amount: totalPrice + totalShippingCost,
+            buyer_email: 'test@naver.com',
+            buyer_name: '코드쿡',
+            buyer_tel: '010-1234-5678',
+            buyer_addr: addressObj.address + addressObj.details,
+            buyer_postcode: addressObj.zip,
+        };
+    
+        IMP.request_pay(paymentData, function (rsp: any) {
+            console.log(rsp)
+            if (rsp.success) {
+                alert('결제 성공');;
+            } else {
+                alert('결제 실패');
+            }
+        });
+
       };
 
     // 입력 필드 변경 시 에러 상태를 해제하는 함수
@@ -142,29 +166,29 @@ export const Order: React.FC = () => {
     const postcodeScriptUrl = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
     
 
-    // useEffect(() => {
-    //     IMP.init('imp02022068'); // 가맹점 식별코드 초기화
-    // }, []);
-    
-    // const requestPay = () => {
+    // const subscribeItemClickHandler = (e: any) => {
+    //     var IMP = window.IMP;
+    //     IMP.init('imp02022068'); // iamport 가맹점 식별코드
     //     IMP.request_pay({
-    //         pg: 'nictest00m',
-    //         merchant_uid: `상품명_${new Date()}`,
+    //         pg: 'nice',
+    //         pay_method: "card",
+    //         merchant_uid: new Date().getTime(),// 상점에서 관리하는 주문 번호
     //         name: '테스트 상품',
-    //         amount: 10,
-    //         buyer_email: 'test@example.com',
-    //         buyer_name: '홍길동',
+    //         amount: totalPrice  + totalShippingCost,
+    //         buyer_email: 'test@naver.com',
+    //         buyer_name: '코드쿡',
     //         buyer_tel: '010-1234-5678',
-    //         buyer_addr: '서울특별시 강남구 삼성동',
-    //         buyer_postcode: '123-456'
-    //     }, (rsp: any) => { // 콜백 함수의 파라미터에 타입을 any로 지정
+    //         buyer_addr: addressObj.address + addressObj.details,
+    //         buyer_postcode: addressObj.zip,
+    //     }, function (rsp: any) {
+    //         console.log(rsp)
     //         if (rsp.success) {
-    //             alert('결제가 완료되었습니다.');
+    //             alert('빌링키 발급 성공');
     //         } else {
-    //             alert(`결제 실패: ${rsp.error_msg}`);
+    //             alert('빌링키 발급 실패');
     //         }
     //     });
-    // };
+    // }
 
     return (
         <div className='orderContainer'>
