@@ -1,7 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
+declare global {
+  interface Window {
+    Kakao: any;
+  }
+}
+
 
 export const Login:React.FC = () => {
     const [id, setId] = useState('');
@@ -50,7 +57,41 @@ export const Login:React.FC = () => {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
+    
+    const loginWithKakao = () => {
+      window.Kakao.Auth.authorize({
+        redirectUri: 'http://localhost:3000/login',
+      });
+    };
   
+    // 데모를 위한 UI 코드
+    useEffect(() => {
+      displayToken();
+    }, []);
+  
+    const displayToken = () => {
+      const token = getCookie('authorize-access-token');
+      const tokenResultElement = document.getElementById('token-result');
+    
+      if (token && tokenResultElement) { // tokenResultElement이 null이 아닌지 확인
+        window.Kakao.Auth.setAccessToken(token);
+        window.Kakao.Auth.getStatusInfo()
+          .then((res: { status: string; }) => {
+            if (res.status === 'connected') {
+              tokenResultElement.innerText = 'login success, token: ' + window.Kakao.Auth.getAccessToken();
+            }
+          })
+          .catch((err: any) => {
+            window.Kakao.Auth.setAccessToken(null);
+          });
+      }
+    };
+  
+    const getCookie = (name: string) => {
+      const parts = document.cookie.split(name + '=');
+      if (parts.length === 2) { return parts[1].split(';')[0]; }
+    };
+    
     return (
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
@@ -97,7 +138,12 @@ export const Login:React.FC = () => {
         <div>
             <button className="w-full flex justify-center mt-3 py-3 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Google 계정으로 계속</button>
             <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-green-600 text-sm font-medium text-white hover:bg-green-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600">Naver 계정으로 계속</button>
-            <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-yellow-300 text-sm font-medium text-yellow-950 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300">Kakao 계정으로 계속</button>
+            <a id="kakao-login-btn" href="#" onClick={loginWithKakao}>
+              <img src={process.env.PUBLIC_URL + `/login/kakao_login_medium_narrow.png`} width="222"
+                alt="카카오 로그인 버튼" />
+            </a>
+            <p id="token-result"></p>
+            {/* <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-yellow-300 text-sm font-medium text-yellow-950 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300">Kakao 계정으로 계속</button> */}
         </div>
         </div>
       </div>

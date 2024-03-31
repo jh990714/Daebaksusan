@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface OptionRepository extends JpaRepository<OptionEntity, Integer> {
     List<OptionEntity> findByProductId(Integer productId);
+
+    OptionEntity findByOptionId(Integer optionId);
 }
