@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 import DaumPost from 'components/DaumPost';
 import { OrderFlow } from 'components/OrderFlow';
 import './Order.css';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { AddressObj, Cart, CartItem, InputErrors, OrdererInfo,   } from 'types';
+import { useLocation } from 'react-router-dom';
+import { AddressObj, Cart, CartItem, InputErrors, Option, OrdererInfo, Product, } from 'types';
 import { OrderItemListComp } from 'components/product/OrderItemListComp';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
+import { useAuthContext } from 'hook/AuthProvider';
+import axios from 'axios';
 
-declare global {
-    interface Window {
-      IMP: any; // 아임포트 타입 정의
-    }
-}
+declare const window: typeof globalThis & {
+    IMP: any;
+};
 
-  // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
+// 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [ordererName, setOrdererName] = useState<string>('');
     const [ordererPhoneMid, setOrdererPhoneMid] = useState<string>('');
     const [ordererPhoneLast, setOrdererPhoneLast] = useState<string>('');
@@ -31,14 +32,13 @@ export const Order: React.FC = () => {
     const url = '/info';
     const post = 'GET';
     const data = null;
-    const navigate = useNavigate();
     const [ordererInfo, setOrdererInfo] = useState<OrdererInfo>();
-    
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await sendRequestWithToken(url, post, data);
-                
+                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
+
                 setOrdererInfo(response);
                 if (response) {
                     const { name, phone, postalCode, address, detailAddress } = response;
@@ -53,13 +53,12 @@ export const Order: React.FC = () => {
                         zip: postalCode,
                         details: detailAddress
                     });
-                    
-                    
+
+
                 }
-                
+
             } catch (error) {
-                navigate('/login');
-                console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+                console.error('비회원 주문', error);
             }
         };
 
@@ -75,23 +74,26 @@ export const Order: React.FC = () => {
         receiverPhoneLast: false,
         address: false,
         zip: false,
-      });
+    });
 
-   
+
     const orderItems = useLocation().state.cartItems;
+
     const totalPrice: number = orderItems.reduce((total: number, orderItem: Cart) => {
         const itemPrice = (orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice) * orderItem.cartItem.quantity;
-        const optionCost = orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption.addPrice;
+        const optionCost = orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption!.addPrice;
+
+
         return total + itemPrice + optionCost;
-    }, 0); 
+    }, 0);
 
     const totalShippingCost: number = orderItems.reduce((total: number, orderItem: Cart) => {
-        const shippingCost =orderItem.cartItem.box_cnt * orderItem.cartItem.product.shippingCost;
+        const shippingCost = orderItem.cartItem.box_cnt * orderItem.cartItem.product.shippingCost;
         return total + shippingCost;
-    }, 0); 
+    }, 0);
 
 
-    
+
     const handlePayment = () => {
         const errors: InputErrors = {
             ordererName: !ordererName,
@@ -103,21 +105,63 @@ export const Order: React.FC = () => {
             address: !addressObj.address,
             zip: !addressObj.zip
         };
-    
+
         setInputErrors(errors); // 유효성 상태 업데이트
-    
+
         // 모든 필드가 유효한지 검사
         if (Object.values(errors).some(isInvalid => isInvalid)) {
-          alert('모든 정보를 입력해주세요.');
-          return;
+            alert('모든 정보를 입력해주세요.');
+            return;
         }
-        
+
         // requestPay();
-        console.log('결제 진행');
-      };
+        var IMP = window.IMP;
+        IMP.init('imp02022068'); // iamport 가맹점 식별코드
+        const paymentData = {
+            pg: 'kakaopay',
+            pay_method: "card",
+            merchant_uid: new Date().getTime(),// 상점에서 관리하는 주문 번호
+            name: '테스트 상품',
+            amount: totalPrice + totalShippingCost,
+            buyer_email: ordererInfo?.email,
+            buyer_name: '코드쿡',
+            buyer_tel: '010-1234-5678',
+            buyer_addr: addressObj.address + addressObj.details,
+            buyer_postcode: addressObj.zip,
+        };
+
+        IMP.request_pay(paymentData, async function (rsp: any) {
+            try {
+                // 주문 상품 정보를 requestData 객체에 담음
+                const requestData = orderItems.map((orderItem: { cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
+                    product: orderItem.cartItem.product,
+                    option: orderItem.cartItem.selectedOption,
+                    quantity: orderItem.cartItem.quantity,
+                    boxCnt: orderItem.cartItem.box_cnt
+                }));
+                
+                console.log(requestData)
+                // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
+                const { data } = await axios.post('http://localhost:8080/verifyIamport/' + rsp.imp_uid, requestData);
+                console.log(data);
+        
+                // 결제 확인 응답 처리
+                if (rsp.paid_amount === data.response.amount) {
+                    alert('결제 성공');
+                } else {
+                    alert('결제 실패');
+                }
+            } catch (error) {
+                console.error('결제 확인 중 오류 발생:', error);
+                alert('결제 실패');
+            }
+        });
+        
+
+    };
 
     // 입력 필드 변경 시 에러 상태를 해제하는 함수
-    const handleChange = (field: string, value:string) => {
+    const handleChange = (field: string, value: string) => {
         setInputErrors({
             ...inputErrors,
             [field]: false, // 현재 변경하는 필드의 에러 상태를 false로 설정
@@ -140,36 +184,11 @@ export const Order: React.FC = () => {
     }
 
     const postcodeScriptUrl = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-    
-
-    // useEffect(() => {
-    //     IMP.init('imp02022068'); // 가맹점 식별코드 초기화
-    // }, []);
-    
-    // const requestPay = () => {
-    //     IMP.request_pay({
-    //         pg: 'nictest00m',
-    //         merchant_uid: `상품명_${new Date()}`,
-    //         name: '테스트 상품',
-    //         amount: 10,
-    //         buyer_email: 'test@example.com',
-    //         buyer_name: '홍길동',
-    //         buyer_tel: '010-1234-5678',
-    //         buyer_addr: '서울특별시 강남구 삼성동',
-    //         buyer_postcode: '123-456'
-    //     }, (rsp: any) => { // 콜백 함수의 파라미터에 타입을 any로 지정
-    //         if (rsp.success) {
-    //             alert('결제가 완료되었습니다.');
-    //         } else {
-    //             alert(`결제 실패: ${rsp.error_msg}`);
-    //         }
-    //     });
-    // };
 
     return (
         <div className='orderContainer'>
-            
-            <OrderFlow currentStep={2}/>
+
+            <OrderFlow currentStep={2} />
 
             <div className='orderTitle'> 배송정보 </div>
             <div className='orderInfo'>
@@ -188,7 +207,8 @@ export const Order: React.FC = () => {
                         className={'phoneNumFirst'}
                         title=''
                         id='ordererPhoneFist'
-                    >
+                    >   
+                    
                         <option>010</option>
                         <option>011</option>
                         <option>016</option>
@@ -196,7 +216,7 @@ export const Order: React.FC = () => {
                         <option>018</option>
                         <option>019</option>
                     </select>
-                        
+
                     <input
                         type='text'
                         className={`phoneNum ${inputErrors.ordererPhoneMid ? 'error' : ''}`}
@@ -217,7 +237,7 @@ export const Order: React.FC = () => {
                         maxLength={4}
                         onChange={(e) => handleChange('ordererPhoneLast', e.target.value)}
                     />
-                </div>    
+                </div>
             </div>
 
             <div className='orderInfo'>
@@ -244,7 +264,7 @@ export const Order: React.FC = () => {
                         <option>018</option>
                         <option>019</option>
                     </select>
-                        
+
                     <input
                         type='text'
                         className={`phoneNum ${inputErrors.receiverPhoneMid ? 'error' : ''}`}
@@ -268,7 +288,7 @@ export const Order: React.FC = () => {
                 </div>
 
                 <div className='addressContainer'>
-                    <DaumPost addressObj={addressObj} setAddressObj={setAddressObj} postcodeScriptUrl={postcodeScriptUrl} inputErrors={inputErrors} setInputErrors={setInputErrors}/>
+                    <DaumPost addressObj={addressObj} setAddressObj={setAddressObj} postcodeScriptUrl={postcodeScriptUrl} inputErrors={inputErrors} setInputErrors={setInputErrors} />
                 </div>
 
                 <div className='orderItems'>
@@ -277,13 +297,13 @@ export const Order: React.FC = () => {
                         <ul>
                             {orderItems.map((cartItem: Cart) => (
                                 <li key={cartItem.cartItem.product.productId}>
-                                    <OrderItemListComp orderItem={cartItem}/>
+                                    <OrderItemListComp orderItem={cartItem} />
                                 </li>
                             ))}
                         </ul>
                     </div>
                 </div>
-                
+
                 <div className='totalPriceContainer'>
                     <ul>
                         <li>
@@ -306,7 +326,7 @@ export const Order: React.FC = () => {
 
                         <li>
                             <div className='priceTitle'>총 주문 합계 금액</div>
-                            <div className='price'>{(totalPrice  + totalShippingCost).toLocaleString()}원</div>
+                            <div className='price'>{(totalPrice + totalShippingCost).toLocaleString()}원</div>
                         </li>
                     </ul>
                     <div className='paymentContainer'>
@@ -316,7 +336,7 @@ export const Order: React.FC = () => {
 
 
             </div>
-       
+
         </div>
     );
 };

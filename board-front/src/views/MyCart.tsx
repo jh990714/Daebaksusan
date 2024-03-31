@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import styles from './MyCart.module.css'
 import { Cart } from 'types';
 import { MyCartListComp } from 'components/product/MyCartListComp';
@@ -6,20 +6,20 @@ import { OrderFlow } from 'components/OrderFlow';
 import { Link } from 'react-router-dom';
 import { fetchCartItemsDelete, fetchCartItems} from 'utils/cartUtils';
 import { useAuthContext } from 'hook/AuthProvider';
-import useAuth from 'hook/useAuth';
 import { useCart } from 'hook/CartProvider';
 
 export const MyCart = () => {
-    const {cartItemsUpdate,  setCartItemsUpdate} = useCart();
-    const { isLoggedIn } = useAuthContext();
-    const isTokenCheck = useAuth();
-    const [cartItems, setCartItems] = useState<Cart[]>([])
+    const {cartItems,  setCartItems} = useCart();
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [selectAll, setSelectAll] = useState(true);
     
     useEffect(() => {
-        fetchCartItems(setCartItems);
-    }, [isLoggedIn, cartItemsUpdate]);
+        fetchCartItems(setCartItems, setIsLoggedIn);
+    }, [isLoggedIn]);
 
+    useEffect(() => {
+        console.log(cartItems)
+    }, [cartItems]);
 
     const handleQuantityChange = (id: number, quantity: number, box_cnt: number) => {
         setCartItems(prevItems =>
@@ -58,21 +58,17 @@ export const MyCart = () => {
         setSelectAll(!selectAll);
     };
 
-
-
     const deleteSelectedItems = async () => {
-        fetchCartItemsDelete(cartItems, setCartItems)
-        setCartItemsUpdate(!cartItemsUpdate)
+        fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn)
     };
     
     
-
     const productCostTotal = () => {
         return cartItems
             .filter(item => item.isSelected)
             .reduce((total, item) => {
                 const itemPrice = (item.cartItem.product.regularPrice - item.cartItem.product.salePrice) * item.cartItem.quantity;
-                const itemOptionCost = item.cartItem.selectedOption.addPrice * item.cartItem.box_cnt;
+                const itemOptionCost = item.cartItem.selectedOption!.addPrice * item.cartItem.box_cnt;
                 console.log(item)
                 return total + itemPrice + itemOptionCost; // 각 항목의 상품 가격과 배송비를 합산
             }, 0);
@@ -110,7 +106,7 @@ export const MyCart = () => {
             </div>
 
             <ul className={styles.cartItemList}>
-                {cartItems.map((cartItem: Cart, index: number) => (
+                {cartItems.map((cartItem: Cart) => (
                     <li key={cartItem.id}>
                         <MyCartListComp cartItem={cartItem} selectAll={selectAll} onQuantityChange={handleQuantityChange} onSelectedChange={handleSelectedChange} />
                     </li>
@@ -149,8 +145,6 @@ export const MyCart = () => {
                     </div>
                 </Link>
             </div>
-
-
         </div>
     )
 }

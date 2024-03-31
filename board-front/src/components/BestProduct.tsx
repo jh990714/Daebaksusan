@@ -3,7 +3,7 @@ import axios from 'axios';
 import styles from './BestProduct.module.css';
 import leftArrow from '../assets/leftArrow.png'
 import rightArrow from '../assets/rightArrow.png'
-import { ProductList } from 'types';
+import { Product } from 'types';
 import { ProductListComp } from 'components/product/ProductListComp';
 import { Link } from 'react-router-dom';
 import { CategoryMenuBar } from 'layouts/CategoryMenuBar';
@@ -13,7 +13,7 @@ interface CategoryProductProp {
 }
 
 export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
-  const [products, setProducts] = useState<ProductList[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null); // 타입스크립트를 사용하여 ref의 타입을 HTMLDivElement로 지정합니다.
   const [scrollAmount, setScrollAmount] = useState(0); // 스크롤 양 동적 조정
 
@@ -58,7 +58,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
           url = 'http://localhost:8080/product/all';
         }
 
-        const response = await axios.get<ProductList[]>(url);
+        const response = await axios.get<Product[]>(url);
         console.log(response)
         setProducts(response.data.slice(0, 10));
 
@@ -119,7 +119,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
           </button>
           <div className={styles.wrapScorll} ref={scrollRef}>
             <ul>
-              {products.map((product: ProductList) => (
+              {products.map((product: Product) => (
                 <li key={product.productId}>
                   <ProductListComp product={product} size='255px' fontSize='7px'/>
                 </li>

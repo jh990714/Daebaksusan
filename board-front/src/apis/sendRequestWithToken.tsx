@@ -24,7 +24,7 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
     }
 }
 
-async function sendRequestWithToken(url: string, method: string, data: any) {
+async function sendRequestWithToken(url: string, method: string, data: any, setIsLoggedIn: any) {
     try {
         const token = localStorage.getItem('accessToken');
 
@@ -39,6 +39,7 @@ async function sendRequestWithToken(url: string, method: string, data: any) {
         };
 
         const response = await instance(config);
+        setIsLoggedIn(true)
         return response.data;
 
 
@@ -63,11 +64,14 @@ async function sendRequestWithToken(url: string, method: string, data: any) {
                 const newTokenResponse = await instance(newTokenConfig);
 
                 console.log("새로운 액세스 토큰 생성");
+                setIsLoggedIn(true)
                 return newTokenResponse.data;
             } catch (refreshError) {
+                setIsLoggedIn(false)
                 console.error('새로운 액세스 토큰 요청 실패:', refreshError);
             }
         } else {
+            setIsLoggedIn(false)
             console.error('Refresh Token이 없습니다.');
             throw new Error('에러!');
         }

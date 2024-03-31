@@ -1,9 +1,9 @@
-import { ProductList } from "types";
+import { Product } from "types";
 import Option from "./option-item.interface";
 
 export default interface CartItem {
-    product: ProductList,
-    selectedOption: Option,
+    product: Product,
+    selectedOption?: Option | null;
     quantity: number,
     box_cnt: number,
 };

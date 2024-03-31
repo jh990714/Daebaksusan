@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from "./Mypage.module.css";
 import { Link, useNavigate } from 'react-router-dom';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
-import { useAuthContext } from 'hook/AuthProvider';
-import useAuth from 'hook/useAuth';
-
+import { useAuthContext } from 'hook/AuthProvider';;
 
 
 export const Mypage: React.FC = () => {
@@ -18,7 +16,7 @@ export const Mypage: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await sendRequestWithToken(url, post, data);
+                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
                 setUserInfo(response.data);
                 
             } catch (error) {
