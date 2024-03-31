@@ -1,52 +1,24 @@
 import { useEffect, useState } from 'react'
 import styles from './MyCart.module.css'
-import { Cart, CartItem, ProductList } from 'types';
-import axios from 'axios';
+import { Cart } from 'types';
 import { MyCartListComp } from 'components/product/MyCartListComp';
 import { OrderFlow } from 'components/OrderFlow';
 import { Link } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import { fetchCartItemsDelete, fetchCartItems} from 'utils/cartUtils';
+import { useAuthContext } from 'hook/AuthProvider';
+import useAuth from 'hook/useAuth';
+import { useCart } from 'hook/CartProvider';
 
 export const MyCart = () => {
+    const {cartItemsUpdate,  setCartItemsUpdate} = useCart();
+    const { isLoggedIn } = useAuthContext();
+    const isTokenCheck = useAuth();
     const [cartItems, setCartItems] = useState<Cart[]>([])
     const [selectAll, setSelectAll] = useState(true);
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const response = await axios.get<ProductList[]>('http://localhost:8080/product/all');
-    //             const cartItems = response.data.map(product => ({
-    //                 product,
-    //                 isSelected: true,
-    //                 quantity: 1,
-    //             }));
-    //             setCartItems(cartItems);
-
-    //         } catch (error) {
-    //             console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
-    //         }
-    //     };
-
-    //     fetchData();
-    // }, []);
-
+    
     useEffect(() => {
-        const fetchCartItemsFromCookie = () => {
-            const cartCookie = Cookies.get('cartItems');
-            if (cartCookie) {
-                const parsedCartItems: CartItem[] = JSON.parse(cartCookie);
-                const updatedCartItems = parsedCartItems.map((item, index) => ({
-                    id: index + 1, // id 증가
-                    cartItem: item,
-                    isSelected: true,
-                }));
-                setCartItems(updatedCartItems);
-            }
-        };
-
-        fetchCartItemsFromCookie();
-    }, []);
-
+        fetchCartItems(setCartItems);
+    }, [isLoggedIn, cartItemsUpdate]);
 
 
     const handleQuantityChange = (id: number, quantity: number, box_cnt: number) => {
@@ -88,15 +60,11 @@ export const MyCart = () => {
 
 
 
-    const deleteSelectedItems = () => {
-        // 선택되지 않은 아이템만 필터링하여 상태에서 유지
-        const remainingItems = cartItems.filter(item => !item.isSelected);
-        setCartItems(remainingItems);
-    
-        // 선택되지 않은 아이템들의 쿠키를 다시 설정
-        const remainingItemsCookie = remainingItems.map(item => item.cartItem);
-        Cookies.set('cartItems', JSON.stringify(remainingItemsCookie));
+    const deleteSelectedItems = async () => {
+        fetchCartItemsDelete(cartItems, setCartItems)
+        setCartItemsUpdate(!cartItemsUpdate)
     };
+    
     
 
     const productCostTotal = () => {

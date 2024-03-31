@@ -16,5 +16,4 @@ public interface ProductService {
     public List<ProductEntity> searchProducts(String query);
     public ProductEntity getProductById(Integer productId);
     public OptionEntity getOptionById(Integer optionId);
-    public void updateProductQuantities(List<CartDTO> orderItems);
 }
