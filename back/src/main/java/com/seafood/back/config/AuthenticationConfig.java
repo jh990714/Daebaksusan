@@ -8,8 +8,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.seafood.back.handler.OAuth2SuccessHandler;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +25,8 @@ public class AuthenticationConfig {
 
     @Value("${jwt.secret}")
     private String secretKey;
+    private final DefaultOAuth2UserService oAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -43,9 +48,15 @@ public class AuthenticationConfig {
                 // ROLE_은 붙이면 안 된다. hasRole()을 사용할 때 자동으로 ROLE_이 붙기 때문이다.
                 .hasRole("ADMIN");
                             
-                authorizeRequests.requestMatchers("/members/**", "/product/**", "/refreshToken", "categories").permitAll();
+                authorizeRequests.requestMatchers("/members/**", "/product/**", "/refreshToken", "categories", "/verifyIamport/**", "/oauth2/**").permitAll();
             })
-                
+            
+            .oauth2Login(oauth2 -> oauth2
+                .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/v1/auth/oauth2"))
+                .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+                .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
+                .successHandler(oAuth2SuccessHandler)
+            )
             // .formLogin((formLogin) -> {
             // /* 권한이 필요한 요청은 해당 url로 리다이렉트 */
 		    //     formLogin.loginPage("/login");

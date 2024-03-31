@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.seafood.back.dto.CartDTO;
 import com.seafood.back.entity.CategoryEntity;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductEntity;
@@ -14,6 +15,7 @@ import com.seafood.back.respository.OptionRepository;
 import com.seafood.back.respository.ProductRepository;
 import com.seafood.back.service.ProductService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service

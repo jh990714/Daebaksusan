@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.seafood.back.entity.CartEntity;
 import com.seafood.back.service.InfoService;
 
 import lombok.RequiredArgsConstructor;
