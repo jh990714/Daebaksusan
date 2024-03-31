@@ -54,11 +54,11 @@ public class MemberEntity{
 
 
 
-    public MemberEntity(String memberId, String email, String type){
+    public MemberEntity(String memberId, String name, String phone, String email, String type){
         this.memberId = memberId;
         this.password = "passw0rd";
-        this.name = null;
-        this.phone = null;
+        this.name = name;
+        this.phone = phone;
         this.email = email;
         this.postalCode = null;
         this.address = null;
