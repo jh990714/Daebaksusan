@@ -4,18 +4,29 @@ import { PaymentShowList } from 'components/PaymentShowList';
 import { Link, useNavigate } from 'react-router-dom';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
 import { url } from 'inspector';
+import { useAuthContext } from 'hook/AuthProvider';
 
 
 export const PaymentDetails:React.FC = () => {
-    const url = '/reviews';
-    const post = 'POST';
+    const url = '/info';
+    const post = 'GET';
     const data = null;
     const navigate = useNavigate();
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     
     useEffect(() => {
-        const response = sendRequestWithToken(url, post, data, );
+        const fetchData = async () => {
+            try {
+                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);            
+                
+                
+            } catch (error) {
+                navigate('/login');
+                console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+            }
+        };
 
-        console.log(response);
+        fetchData();
     }, []);
     
     return (

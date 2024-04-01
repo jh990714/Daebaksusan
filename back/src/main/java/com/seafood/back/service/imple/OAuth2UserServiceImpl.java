@@ -35,18 +35,27 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService{
         // }
 
         MemberEntity memberEntity = null;
-        String memberId = null;
+        String memberId = "";
+        String name = "";
+        String phone = "";
         String email = "email@email.com";
 
         if(oauthClientName.equals("kakao")){
             memberId = "kakao_" + oAuth2User.getAttributes().get("id");
-            memberEntity = new MemberEntity(memberId, email, "kakao");
+            Map<String, String> reponseMap = (Map<String, String>) oAuth2User.getAttributes().get("kakao_account");
+            name = reponseMap.get("name");
+            phone = reponseMap.get("phone_number");
+            email = reponseMap.get("email");
+
+            memberEntity = new MemberEntity(memberId, name, phone, email, "kakao");
         }
         if(oauthClientName.equals("naver")){
             Map<String, String> reponseMap = (Map<String, String>) oAuth2User.getAttributes().get("response");
             memberId = "naver_" + reponseMap.get("id").substring(0, 14);
+            name = reponseMap.get("name");
+            phone = reponseMap.get("mobile");
             email = reponseMap.get("email");
-            memberEntity = new MemberEntity(memberId, email, "naver");
+            memberEntity = new MemberEntity(memberId, name, phone, email, "naver");
         }
 
         memberRepository.save(memberEntity);

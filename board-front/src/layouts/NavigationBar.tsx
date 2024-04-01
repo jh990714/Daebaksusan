@@ -35,10 +35,8 @@ export const NavigationBar = () => {
                 const post = 'GET';
                 const data = null;
 
-                const response = await sendRequestWithToken(url, post, data);
-                setIsLoggedIn(true)
+                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
             } catch (error) {
-                setIsLoggedIn(false);
                 console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
             }
             
@@ -124,11 +122,12 @@ export const NavigationBar = () => {
     };
 
     const handleLogOut = () => {
-        // 로그아웃 동작 수행
         localStorage.removeItem('accessToken'); // 로컬 스토리지에서 토큰 제거
         localStorage.removeItem('refreshToken'); 
         setIsLoggedIn(false)
     };
+
+    
     return (
         <nav className={styles.navContainer} onMouseLeave={closeCategory}>
             <div className={styles.navBar}>

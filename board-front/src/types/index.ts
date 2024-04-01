@@ -1,7 +1,6 @@
 import ResponseCode from "./enum/response-code.enum";
 import TestListItem from "./interface/test-item.interface";
 import SeafoodList from "./interface/seafood-item.interface";
-import ProductList from "./interface/product-item.interface";
 import AddressData from "./interface/address-item.interface";
 import AddressObj from "./interface/addressObject-item.interface";
 import InputErrors from "./interface/OrderInputError.interface";
@@ -12,12 +11,14 @@ import Category from "./interface/category.interface";
 import SubCategory from "./interface/subCategory.interface";
 import Cart from "./interface/cart-item.interface";
 import CartItem from "./interface/cart.interface";
+import Product from "./interface/product-item.interface";
+import CartInput from "./interface/cartInput.interface";
 
 export type{
     ResponseCode,
     TestListItem,
     SeafoodList,
-    ProductList,
+    Product,
     AddressObj,
     AddressData,
     InputErrors,
@@ -28,4 +29,5 @@ export type{
     SubCategory,
     Cart,
     CartItem,
+    CartInput,
 }

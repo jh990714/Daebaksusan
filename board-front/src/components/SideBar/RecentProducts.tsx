@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Cookies from 'js-cookie';
-import { ProductList } from 'types';
+import { Product } from 'types';
 import styles from './RecentProducts.module.css'; // 스타일링에 맞게 css 파일을 생성해주세요.
 import { Link } from 'react-router-dom';
 
 const RecentProducts: React.FC = () => {
-    const [recentProducts, setRecentProducts] = useState<ProductList[]>([]);
+    const [recentProducts, setRecentProducts] = useState<Product[]>([]);
     const productListRef = useRef<HTMLUListElement>(null);
 
     useEffect(() => {

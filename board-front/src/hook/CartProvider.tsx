@@ -2,17 +2,17 @@ import React, { createContext, useContext, useState, Dispatch, SetStateAction, R
 import { Cart } from 'types';
 
 interface CartContextType {
-    cartItemsUpdate: boolean;
-    setCartItemsUpdate: Dispatch<SetStateAction<boolean>>;
+    cartItems: Cart[];
+    setCartItems: Dispatch<SetStateAction<Cart[]>>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [cartItemsUpdate, setCartItemsUpdate] = useState<boolean>(false);
+    const [cartItems, setCartItems] = useState<Cart[]>([]);
 
     return (
-        <CartContext.Provider value={{ cartItemsUpdate, setCartItemsUpdate }}>
+        <CartContext.Provider value={{ cartItems, setCartItems }}>
             {children}
         </CartContext.Provider>
     );
