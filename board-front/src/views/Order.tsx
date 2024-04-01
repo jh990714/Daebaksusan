@@ -8,6 +8,10 @@ import { OrderItemListComp } from 'components/product/OrderItemListComp';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
 import axios from 'axios';
+import { PayMethodButton } from 'components/Button/PayMethodButton';
+import kakaoPayIcon from '../assets/payment/kakaoPay.png'
+import tossPayIcon from '../assets/payment/tossPay.png'
+import cardIcon from '../assets/payment/card.png'
 
 declare const window: typeof globalThis & {
     IMP: any;
@@ -30,12 +34,12 @@ export const Order: React.FC = () => {
         zip: '',
         details: ''
     });
-
-    const url = '/info';
-    const post = 'GET';
-    const data = null;
+    const [pg, setPg] = useState<string>('nice'); // pg 상태 추가
+    const [paymentMethod, setPaymentMethod] = useState<string>('card'); // 결제 수단 상태 추가
     const [ordererInfo, setOrdererInfo] = useState<OrdererInfo>();
-    
+
+
+
     useEffect(() => {
         // orderItems가 비어 있는지 확인
         if (!orderItems || orderItems.length === 0) {
@@ -44,6 +48,11 @@ export const Order: React.FC = () => {
         }
         // orderItems가 비어있지 않은 경우에만 실행
         const fetchData = async () => {
+            const url = '/info';
+            const post = 'GET';
+            const data = null;
+
+
             try {
                 const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
 
@@ -68,8 +77,8 @@ export const Order: React.FC = () => {
         };
 
         fetchData();
-        
-        
+
+
     }, [orderItems]);
 
     const [inputErrors, setInputErrors] = useState<InputErrors>({
@@ -127,29 +136,30 @@ export const Order: React.FC = () => {
             const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
             id = response.memberId
             console.log(id)
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.response && error.response.data) {
                 alert('결제호출 중 에러가 발생했습니다.')
             }
 
             alert('비회원 결제입니다.')
-        } 
-        
+        }
+
         // 주문 상품 정보를 requestData 객체에 담음
-        const requestData = orderItems.map((orderItem: {id: number; cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
+        const requestData = orderItems.map((orderItem: { id: number; cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
             cartId: orderItem.id,
             product: orderItem.cartItem.product,
             option: orderItem.cartItem.selectedOption,
             quantity: orderItem.cartItem.quantity,
             boxCnt: orderItem.cartItem.box_cnt
         }));
-        
+
         // requestPay();
         var IMP = window.IMP;
         IMP.init('imp02022068'); // iamport 가맹점 식별코드
+        console.log(pg, paymentMethod)
         const paymentData = {
-            pg: 'kakaopay',
-            pay_method: "card",
+            pg: pg,
+            pay_method: paymentMethod,
             merchant_uid: new Date().getTime(),// 상점에서 관리하는 주문 번호
             name: '테스트 상품',
             amount: totalPrice + totalShippingCost,
@@ -165,7 +175,7 @@ export const Order: React.FC = () => {
         };
 
         IMP.request_pay(paymentData, async function (rsp: any) {
-            
+
             if (rsp.success) {
                 try {
 
@@ -174,8 +184,8 @@ export const Order: React.FC = () => {
                     // const post = 'POST';
                     // const data = requestData;
                     // const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
-        
-                
+
+
                     // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
                     console.log(rsp.imp_uid)
                     const response = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid);
@@ -229,6 +239,11 @@ export const Order: React.FC = () => {
             setReceiverPhoneLast(value);
         }
     }
+
+    const handlePaymentMethodClick = (selectedPg: string, method: string) => {
+        setPg(selectedPg);
+        setPaymentMethod(method);
+    };
 
     const postcodeScriptUrl = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
 
@@ -383,6 +398,49 @@ export const Order: React.FC = () => {
 
 
             </div>
+            <div className='orderTitle'> 결제 수단 </div>
+            <div className='mt-4'>
+                <div className='font-bold mb-2'> 간편결제 </div>
+                <div className='flex flex-wrap gap-4 mb-4 pl-4'>
+                    <PayMethodButton
+                        label='kakao pay'
+                        imageUrl={kakaoPayIcon}
+                        onClick={() => handlePaymentMethodClick('kakaopay', 'card')}
+                        selected={pg === 'kakaopay'}
+                    />
+                    <PayMethodButton
+                        label='toss pay'
+                        imageUrl={tossPayIcon}
+                        onClick={() => handlePaymentMethodClick('tosspay', 'card')}
+                        selected={pg === 'tosspay'}
+                    />
+                </div>
+
+                <div className='font-bold mb-2'> 카드결제●계좌이체 </div>
+                <div className='flex flex-wrap gap-4 pl-4'>
+                    <PayMethodButton
+                        label='신용/체크 카드'
+                        imageUrl={cardIcon}
+                        onClick={() => handlePaymentMethodClick('nice', 'card')}
+                        selected={pg === 'nice' && paymentMethod === 'card'} // 선택된 결제 수단에 따라 selected prop을 설정
+                    />
+                    <PayMethodButton
+                        label='가상계좌'
+                        imageUrl={cardIcon}
+                        onClick={() => handlePaymentMethodClick('nice', 'trans')}
+                        selected={pg === 'nice' && paymentMethod === 'trans'} // 선택된 결제 수단에 따라 selected prop을 설정
+                    />
+                    <PayMethodButton
+                        label='계좌이체'
+                        imageUrl={cardIcon}
+                        onClick={() => handlePaymentMethodClick('nice', 'vbank')}
+                        selected={pg === 'nice' && paymentMethod === 'vbank'} // 선택된 결제 수단에 따라 selected prop을 설정
+                    />
+                </div>
+
+            </div>
+
+
 
         </div>
     );
