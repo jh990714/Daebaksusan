@@ -84,25 +84,24 @@ public class PaymentServiceImple implements PaymentService{
     public void savePaymentDetails(String userId, String impUid) {
         PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
-        if (userId == null) {
-            // 현재 시간을 포맷에 맞게 변환하여 문자열로 저장
-            LocalDateTime now = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-            String currentTime = now.format(formatter);
-
-            // auto_increment의 id 값 가져오기
-            Long autoIncrementId = paymentDetailsRepository.getAutoIncrementId();
-
-            // userId 생성 (현재 시간 + _ + auto_increment id)
-            userId = currentTime + "_" + autoIncrementId;
-            paymentDetails.setIsMember(false);
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String currentTime = now.format(formatter);
+        
+        // auto_increment의 id 값 가져오기
+        Long autoIncrementId = paymentDetailsRepository.getAutoIncrementId();
+        
+        // 현재 시간과 auto_increment id를 조합하여 16자리의 사용자 ID 생성
+        String orderNumber = currentTime + '_' + String.format("%08d", autoIncrementId);
+        
+        if (userId != null) {
+            paymentDetails.setUserId(userId);
         }
         
-        paymentDetails.setUserId(userId);
+        paymentDetails.setOrderNumber(orderNumber);
         paymentDetails.setImpUid(impUid);
         paymentDetailsRepository.save(paymentDetails);
     }
-
     @Override
     public void processSuccessfulPayment(String userId, List<CartDTO> orderItems, String impUid) {
         // 결제가 성공하면 상품 수량 변경
