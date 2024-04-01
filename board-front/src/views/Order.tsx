@@ -93,7 +93,6 @@ export const Order: React.FC = () => {
     }, 0);
 
 
-
     const handlePayment = () => {
         const errors: InputErrors = {
             ordererName: !ordererName,
@@ -114,6 +113,14 @@ export const Order: React.FC = () => {
             return;
         }
 
+        // 주문 상품 정보를 requestData 객체에 담음
+        const requestData = orderItems.map((orderItem: { cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
+            product: orderItem.cartItem.product,
+            option: orderItem.cartItem.selectedOption,
+            quantity: orderItem.cartItem.quantity,
+            boxCnt: orderItem.cartItem.box_cnt
+        }));
+        
         // requestPay();
         var IMP = window.IMP;
         IMP.init('imp02022068'); // iamport 가맹점 식별코드
@@ -131,34 +138,43 @@ export const Order: React.FC = () => {
         };
 
         IMP.request_pay(paymentData, async function (rsp: any) {
-            try {
-                // 주문 상품 정보를 requestData 객체에 담음
-                const requestData = orderItems.map((orderItem: { cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
-                    product: orderItem.cartItem.product,
-                    option: orderItem.cartItem.selectedOption,
-                    quantity: orderItem.cartItem.quantity,
-                    boxCnt: orderItem.cartItem.box_cnt
-                }));
-                
-                console.log(requestData)
-                // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
-                const { data } = await axios.post('http://localhost:8080/verifyIamport/' + rsp.imp_uid, requestData);
-                console.log(data);
-        
-                // 결제 확인 응답 처리
-                if (rsp.paid_amount === data.response.amount) {
-                    alert('결제 성공');
-                } else {
-                    alert('결제 실패');
-                }
-            } catch (error) {
-                console.error('결제 확인 중 오류 발생:', error);
-                alert('결제 실패');
-            }
-        });
+            if (rsp.success) {
+                try {
+
+                     // 카트 아이템들을 데이터베이스에 저장하는 API 요청
+                    const url = '/payment/verifyIamport/' + rsp.imp_uid;
+                    const post = 'POST';
+                    const data = requestData;
+                    const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
         
 
-    };
+                    // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
+                    // const { response } = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid, requestData);
+
+                    // 결제 확인 응답 처리
+                    if (rsp.paid_amount === response.response.amount) {
+                        alert('결제 성공');
+                    }
+                } catch (error: any) {
+                    console.error('결제 확인 중 오류 발생:', error);
+                    // 여기서는 네트워크 오류 등의 클라이언트 측 에러를 처리할 수 있습니다
+                    if (error.response && error.response.data) {
+                        alert(error.response.data); // 서버에서 전달한 에러 메시지를 사용자에게 알립니다
+                    } else {
+                        alert('결제 실패');
+                    }
+
+                }
+            } else {
+                // 결제가 실패했을 때 처리
+                console.error('결제 실패:', rsp.error_msg);
+                alert(rsp.error_msg);
+            }
+
+        });
+    }
+
+
 
     // 입력 필드 변경 시 에러 상태를 해제하는 함수
     const handleChange = (field: string, value: string) => {
@@ -207,8 +223,8 @@ export const Order: React.FC = () => {
                         className={'phoneNumFirst'}
                         title=''
                         id='ordererPhoneFist'
-                    >   
-                    
+                    >
+
                         <option>010</option>
                         <option>011</option>
                         <option>016</option>
