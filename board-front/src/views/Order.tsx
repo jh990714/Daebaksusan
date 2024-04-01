@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DaumPost from 'components/DaumPost';
 import { OrderFlow } from 'components/OrderFlow';
 import './Order.css';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AddressObj, Cart, CartItem, InputErrors, Option, OrdererInfo, Product, } from 'types';
 import { OrderItemListComp } from 'components/product/OrderItemListComp';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
@@ -15,6 +15,8 @@ declare const window: typeof globalThis & {
 
 // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
+    const orderItems = useLocation().state.cartItems;
+    const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [ordererName, setOrdererName] = useState<string>('');
     const [ordererPhoneMid, setOrdererPhoneMid] = useState<string>('');
@@ -33,8 +35,14 @@ export const Order: React.FC = () => {
     const post = 'GET';
     const data = null;
     const [ordererInfo, setOrdererInfo] = useState<OrdererInfo>();
-
+    
     useEffect(() => {
+        // orderItems가 비어 있는지 확인
+        if (!orderItems || orderItems.length === 0) {
+            alert("주문할 상품이 없습니다.");
+            navigate('/')
+        }
+        // orderItems가 비어있지 않은 경우에만 실행
         const fetchData = async () => {
             try {
                 const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
@@ -53,17 +61,16 @@ export const Order: React.FC = () => {
                         zip: postalCode,
                         details: detailAddress
                     });
-
-
                 }
-
             } catch (error) {
                 console.error('비회원 주문', error);
             }
         };
 
         fetchData();
-    }, []);
+        
+        
+    }, [orderItems]);
 
     const [inputErrors, setInputErrors] = useState<InputErrors>({
         ordererName: false,
@@ -76,8 +83,6 @@ export const Order: React.FC = () => {
         zip: false,
     });
 
-
-    const orderItems = useLocation().state.cartItems;
 
     const totalPrice: number = orderItems.reduce((total: number, orderItem: Cart) => {
         const itemPrice = (orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice) * orderItem.cartItem.quantity;
@@ -93,7 +98,7 @@ export const Order: React.FC = () => {
     }, 0);
 
 
-    const handlePayment = () => {
+    const handlePayment = async () => {
         const errors: InputErrors = {
             ordererName: !ordererName,
             ordererPhoneMid: !ordererPhoneMid,
@@ -113,8 +118,26 @@ export const Order: React.FC = () => {
             return;
         }
 
+        let id = null
+        try {
+            const url = '/info';
+            const post = 'GET';
+            const data = null;
+
+            const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
+            id = response.memberId
+            console.log(id)
+        } catch (error:any) {
+            if (error.response && error.response.data) {
+                alert('결제호출 중 에러가 발생했습니다.')
+            }
+
+            alert('비회원 결제입니다.')
+        } 
+        
         // 주문 상품 정보를 requestData 객체에 담음
-        const requestData = orderItems.map((orderItem: { cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
+        const requestData = orderItems.map((orderItem: {id: number; cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
+            cartId: orderItem.id,
             product: orderItem.cartItem.product,
             option: orderItem.cartItem.selectedOption,
             quantity: orderItem.cartItem.quantity,
@@ -135,32 +158,40 @@ export const Order: React.FC = () => {
             buyer_tel: '010-1234-5678',
             buyer_addr: addressObj.address + addressObj.details,
             buyer_postcode: addressObj.zip,
+            custom_data: {
+                orderItems: requestData,
+                userId: id
+            }
         };
 
         IMP.request_pay(paymentData, async function (rsp: any) {
+            
             if (rsp.success) {
                 try {
 
-                     // 카트 아이템들을 데이터베이스에 저장하는 API 요청
-                    const url = '/payment/verifyIamport/' + rsp.imp_uid;
-                    const post = 'POST';
-                    const data = requestData;
-                    const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
+                    //  // 카트 아이템들을 데이터베이스에 저장하는 API 요청
+                    // const url = '/payment/verifyIamport/' + rsp.imp_uid;
+                    // const post = 'POST';
+                    // const data = requestData;
+                    // const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
         
-
+                
                     // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
-                    // const { response } = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid, requestData);
-
+                    console.log(rsp.imp_uid)
+                    const response = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid);
+                    console.log(response);
                     // 결제 확인 응답 처리
-                    if (rsp.paid_amount === response.response.amount) {
+                    if (rsp.paid_amount === response.data.response.amount) {
+
                         alert('결제 성공');
                     }
                 } catch (error: any) {
                     console.error('결제 확인 중 오류 발생:', error);
-                    // 여기서는 네트워크 오류 등의 클라이언트 측 에러를 처리할 수 있습니다
+                    // 여기서는 네트워크 오류 등의 클라이언트 측 에러를 처리할 수 있습니다p
                     if (error.response && error.response.data) {
                         alert(error.response.data); // 서버에서 전달한 에러 메시지를 사용자에게 알립니다
                     } else {
+
                         alert('결제 실패');
                     }
 
