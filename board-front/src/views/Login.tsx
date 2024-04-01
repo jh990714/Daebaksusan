@@ -1,10 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthContext } from 'hook/AuthProvider';
 
+
 export const Login:React.FC = () => {
+    const DOMAIN = 'http://localhost:8080';
+    const API_DOMAIN = `${DOMAIN}/api/v1`;
+
+    const SNS_LOGIN_URL = (type: 'kakao' | 'naver') => `${API_DOMAIN}/auth/oauth2/${type}`;
+
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [id, setId] = useState('');
     const [password, setPassword] = useState('');
@@ -54,7 +60,11 @@ export const Login:React.FC = () => {
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
     };
-  
+
+    const onSnsLoginButtonClickHandler = (type: 'kakao' | 'naver') => {
+      window.location.href = SNS_LOGIN_URL(type);
+    }
+    
     return (
       <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
@@ -100,8 +110,14 @@ export const Login:React.FC = () => {
         
         <div>
             <button className="w-full flex justify-center mt-3 py-3 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Google 계정으로 계속</button>
-            <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-green-600 text-sm font-medium text-white hover:bg-green-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600">Naver 계정으로 계속</button>
-            <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-yellow-300 text-sm font-medium text-yellow-950 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300">Kakao 계정으로 계속</button>
+            
+            <img src={process.env.PUBLIC_URL + `/login/naver_login_btnG_complete.png`} width="222"
+              alt="네이버 로그인 버튼" onClick={() => onSnsLoginButtonClickHandler('naver')}/>
+
+            <img src={process.env.PUBLIC_URL + `/login/kakao_login_medium_narrow.png`} width="222"
+              alt="카카오 로그인 버튼" onClick={() => onSnsLoginButtonClickHandler('kakao')}/>
+            {/* <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-green-600 text-sm font-medium text-white hover:bg-green-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600" onClick={() => onSnsLoginButtonClickHandler('kakao')}>Naver 계정으로 계속</button> */}
+            {/* <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-yellow-300 text-sm font-medium text-yellow-950 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300">Kakao 계정으로 계속</button> */}
         </div>
         </div>
       </div>

@@ -8,12 +8,15 @@ import jakarta.persistence.Entity;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Table(name="members")
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Entity
 public class MemberEntity{
@@ -42,5 +45,26 @@ public class MemberEntity{
 
     @Column(name = "detail_address")
     private String detailAddress;
+
+    @Column(name = "type")
+    private String type;
+
+    @Column(name = "role")
+    private String role;
+
+
+
+    public MemberEntity(String memberId, String name, String phone, String email, String type){
+        this.memberId = memberId;
+        this.password = "passw0rd";
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.postalCode = null;
+        this.address = null;
+        this.detailAddress = null;
+        this.type = type;
+        this.role = "ROLE_USER";
+    }
 
 }

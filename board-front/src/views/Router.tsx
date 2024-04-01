@@ -11,6 +11,7 @@ import { JoinStep1 } from './join/JoinStep1'
 import { JoinStep2 } from './join/JoinStep2'
 import { JoinStep3 } from './join/JoinStep3'
 import { PaymentDetails } from './PaymentDetails'
+import OAuth from './Authentication/OAuth'
 
 export const Router:React.FC = () => {
   return (
@@ -31,6 +32,7 @@ export const Router:React.FC = () => {
       <Route path="/categoryProducts/:category" element={<CategoryProduct path='./categoryProducts/category'/>} />
       <Route path="/categoryProducts/:category/:sub" element={<CategoryProduct path='./categoryProducts/category/sub'/>} />
       <Route path="/product/search" element={<CategoryProduct path='./search'/>} />
+      <Route path='/auth/oauth-response/:token' element={<OAuth/>} />
     </Routes>
   )
 }
