@@ -39,44 +39,57 @@ async function sendRequestWithToken(url: string, method: string, data: any, setI
         };
 
         const response = await instance(config);
-        setIsLoggedIn(true)
+        setIsLoggedIn(true);
         return response.data;
 
-
     } catch (error: unknown) {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (refreshToken) {
-            try {
-                const newAccessToken = await refreshAccessToken(refreshToken);
 
-                // 새로운 액세스 토큰을 localStorage에 저장한 후에 요청을 다시 보냄
-                const newTokenConfig: AxiosRequestConfig = {
-                    method,
-                    url,
-                    data,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${newAccessToken}`
+        const axiosError = error as AxiosError;
+        if (!axiosError.response || axiosError.response.status === 403) {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (refreshToken) {
+                try {
+                    const newAccessToken = await refreshAccessToken(refreshToken);
+
+                    // 새로운 액세스 토큰을 localStorage에 저장한 후에 요청을 다시 보냄
+                    const newTokenConfig: AxiosRequestConfig = {
+                        method,
+                        url,
+                        data,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${newAccessToken}`
+                        }
+                    };
+
+
+                    const newTokenResponse = await instance(newTokenConfig);
+
+                    console.log("새로운 액세스 토큰 생성");
+                    setIsLoggedIn(true)
+                    return newTokenResponse.data;
+                } catch (refreshError) {
+                    const axiosError = refreshError as AxiosError;
+                    if (!axiosError.response || axiosError.response.status === 403) {
+
+                        setIsLoggedIn(false)
+                        console.error('새로운 액세스 토큰 요청 실패:', refreshError);
                     }
-                };
-
-
-                const newTokenResponse = await instance(newTokenConfig);
-
-                console.log("새로운 액세스 토큰 생성");
-                setIsLoggedIn(true)
-                return newTokenResponse.data;
-            } catch (refreshError) {
+                    else {
+                        throw axiosError
+                    }
+                }
+            } else {
                 setIsLoggedIn(false)
-                console.error('새로운 액세스 토큰 요청 실패:', refreshError);
+                console.error('Refresh Token이 없습니다.');
+                throw new Error('에러!');
             }
-        } else {
-            setIsLoggedIn(false)
-            console.error('Refresh Token이 없습니다.');
-            throw new Error('에러!');
         }
-
+        else {
+            throw axiosError;
+        }
     }
 }
+
 
 export default sendRequestWithToken;
