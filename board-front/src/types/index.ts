@@ -13,6 +13,7 @@ import Cart from "./interface/cart-item.interface";
 import CartItem from "./interface/cart.interface";
 import Product from "./interface/product-item.interface";
 import CartInput from "./interface/cartInput.interface";
+import PaymentDetail from "./interface/paymentDetail.interface";
 
 export type{
     ResponseCode,
@@ -30,4 +31,5 @@ export type{
     Cart,
     CartItem,
     CartInput,
+    PaymentDetail,
 }
