@@ -2,7 +2,7 @@ import { DetailTabComp } from 'components/DetailTabComp';
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 import { Cart, CartItem, Option } from 'types';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { CONNREFUSED } from 'dns';
 import Product from 'types/interface/product-item.interface';
@@ -12,9 +12,9 @@ import { useAuthContext } from 'hook/AuthProvider';
 
 // interface CartItem {
 //     product: Product;
-//     selectedOption?: Option | null;
+//     option?: Option | null;
 //     quantity: number;
-//     box_cnt: number;
+//     boxCnt: number;
 // }
 
 
@@ -27,11 +27,11 @@ export const Detail: React.FC = () => {
     const [options, setOptions] = useState<Option[]>([]);
     const [quantity, setQuantity] = useState<number>(1);
 
-    const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+    const [option, setoption] = useState<Option | null>(null);
     const [optionPrice, setOptionPrice] = useState<number>(0);
-    const [box_cnt, setBoxCnt] = useState<number>(1);
+    const [boxCnt, setBoxCnt] = useState<number>(1);
 
-    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + (product.shippingCost * box_cnt));
+    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + (product.shippingCost * boxCnt));
 
     // 옵션 받아오기
     useEffect(() => {
@@ -39,7 +39,7 @@ export const Detail: React.FC = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/product/${product.productId}/options`);
                 setOptions(response.data);
-                setSelectedOption(response.data[0]);
+                setoption(response.data[0]);
                 setQuantity(1);
                 setTotalPrice((product.regularPrice - product.salePrice) * 1 + (product.shippingCost * 1));
             } catch (error) {
@@ -71,7 +71,7 @@ export const Detail: React.FC = () => {
     const handleQuantityChange = (value: number) => {
         const newQuantity = quantity + value;
         let q: number = 1;
-        let box_cnt = 1;
+        let boxCnt = 1;
         if (newQuantity >= 1 && newQuantity <= product.stockQuantity) {
             q = newQuantity;
         } else if (newQuantity < 1) {
@@ -80,9 +80,9 @@ export const Detail: React.FC = () => {
             q = product.stockQuantity; // 재고 수량으로 수량 조정
         }
         setQuantity(q);
-        box_cnt = (Math.ceil(q / product.maxQuantityPerDelivery));
-        setBoxCnt(box_cnt)
-        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * box_cnt))
+        boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
+        setBoxCnt(boxCnt)
+        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * boxCnt))
     };
 
 
@@ -90,7 +90,7 @@ export const Detail: React.FC = () => {
 
         const value = event.target.value;
         let q: number = 1;
-        let box_cnt = 1;
+        let boxCnt = 1;
         if (value === "" || value === "0") {
             q = 1; // 빈 문자열 또는 0 입력 시 최소 수량 1로 설정
 
@@ -103,22 +103,22 @@ export const Detail: React.FC = () => {
             }
         }
         setQuantity(q);
-        box_cnt = (Math.ceil(q / product.maxQuantityPerDelivery));
-        setBoxCnt(box_cnt)
-        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * box_cnt))
+        boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
+        setBoxCnt(boxCnt)
+        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * boxCnt))
     };
 
     const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedOptionId = Number(event.target.value);
-        const selectedOption = options.find(option => option.optionId === selectedOptionId);
+        const optionId = Number(event.target.value);
+        const option = options.find(option => option.optionId === optionId);
 
         // 옵션 선택에 따른 추가 금액을 총 금액에 반영
-        if (selectedOption) {
-            setOptionPrice(selectedOption.addPrice);
-            setTotalPrice((product.regularPrice - product.salePrice + selectedOption.addPrice) * quantity + (product.shippingCost * box_cnt));
-            setSelectedOption(selectedOption);
+        if (option) {
+            setOptionPrice(option.addPrice);
+            setTotalPrice((product.regularPrice - product.salePrice + option.addPrice) * quantity + (product.shippingCost * boxCnt));
+            setoption(option);
         } else {
-            setSelectedOption(null);
+            setoption(null);
         }
     };
 
@@ -132,7 +132,7 @@ export const Detail: React.FC = () => {
                 <div className="border-b-2 border-gray-200 px-4 py-1 grid grid-cols-3 place-items-center">
                     <div>
                         <div>{product.name}</div>
-                        <div className='text-sm text-gray-400'>- {selectedOption?.name}({selectedOption?.addPrice.toLocaleString()})  배송 비({product.shippingCost.toLocaleString()}) - </div>
+                        <div className='text-sm text-gray-400'>- {option?.name}({option?.addPrice.toLocaleString()})  배송 비({product.shippingCost.toLocaleString()}) - </div>
                     </div>
                     <div className="">{count = Math.min(maxQuantityPerDelivery, quantity - (i * maxQuantityPerDelivery))}개</div>
                     <div className="">{((product.regularPrice - product.salePrice + optionPrice) * count + product.shippingCost).toLocaleString()} 원</div>
@@ -147,9 +147,9 @@ export const Detail: React.FC = () => {
         try {
             const cartInputItem = {
                 productId: product.productId,
-                optionId: selectedOption?.optionId,
+                optionId: option?.optionId,
                 quantity: quantity,
-                boxCnt: box_cnt
+                boxCnt: boxCnt
             };
 
             const url = '/cart/cartSave';
@@ -168,9 +168,9 @@ export const Detail: React.FC = () => {
                         id: response.cartId,
                         cartItem: {
                             product: product,
-                            selectedOption,
+                            option,
                             quantity: response.quantity,
-                            box_cnt: response.boxCnt,
+                            boxCnt: response.boxCnt,
                         },
                         isSelected: true
                     };
@@ -186,9 +186,9 @@ export const Detail: React.FC = () => {
                     id: response.cartId,
                     cartItem: {
                         product: product,
-                        selectedOption,
+                        option,
                         quantity,
-                        box_cnt,
+                        boxCnt,
                     },
                     isSelected: true
                 };
@@ -199,24 +199,28 @@ export const Detail: React.FC = () => {
             }
 
 
-        } catch (error) {
-            console.log('errr')
+        } catch (error: any) {
+            if (error.response && error.response.data) {
+                console.log(error);
+                alert(error.response.data);
+                return;
+            }
 
             const existingCartCookie = Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')!) : [];;
 
             // 장바구니에 추가하려는 상품과 옵션에 대한 정보
             const newItem: CartItem = {
                 product: product,
-                selectedOption: selectedOption,
+                option: option,
                 quantity: quantity,
-                box_cnt: box_cnt,
+                boxCnt: boxCnt,
             };
 
             let updatedCartItems: CartItem[] = [];
 
             // 기존에 선택된 상품이 있는지 확인
             const existingItemIndex = existingCartCookie.findIndex((item: CartItem) => {
-                return item.product.productId === product.productId && item.selectedOption?.optionId === selectedOption?.optionId;
+                return item.product.productId === product.productId && item.option?.optionId === option?.optionId;
             });
 
             // 기존에 선택된 상품이 있을 경우, 쿠키에서 해당 아이템을 찾아 업데이트합니다.
@@ -230,7 +234,7 @@ export const Detail: React.FC = () => {
                 existingCartCookie[existingItemIndex] = {
                     ...existingItem,
                     quantity: updatedQuantity,
-                    box_cnt: updatedBoxCnt
+                    boxCnt: updatedBoxCnt
                 };
 
                 // 업데이트된 아이템 목록을 새로운 카트 아이템 목록으로 설정합니다.

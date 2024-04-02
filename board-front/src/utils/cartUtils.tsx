@@ -30,9 +30,9 @@ export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetState
             // 파싱된 카트 아이템들을 데이터베이스에 저장
             const cartItemsToSave: CartInput[] = parsedCartItems.map((parsedCartItem: CartItem) => ({
                 productId: parsedCartItem.product.productId,
-                optionId: parsedCartItem.selectedOption?.optionId || null, // 선택된 옵션이 없을 경우를 대비하여 기본값 설정
+                optionId: parsedCartItem.option?.optionId || null, // 선택된 옵션이 없을 경우를 대비하여 기본값 설정
                 quantity: parsedCartItem.quantity,
-                boxCnt: parsedCartItem.box_cnt
+                boxCnt: parsedCartItem.boxCnt
             }));
 
             console.log('bbbbb', cartItemsToSave)
@@ -47,9 +47,9 @@ export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetState
             id: item.cartId,
             cartItem: {
                 product: item.product,
-                selectedOption: item.option,
+                option: item.option,
                 quantity: item.quantity,
-                box_cnt: item.boxCnt,
+                boxCnt: item.boxCnt,
             },
             isSelected: true,
         }));

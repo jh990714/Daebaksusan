@@ -98,14 +98,14 @@ export const Order: React.FC = () => {
 
     const totalPrice: number = orderItems.reduce((total: number, orderItem: Cart) => {
         const itemPrice = (orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice) * orderItem.cartItem.quantity;
-        const optionCost = orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption!.addPrice;
+        const optionCost = orderItem.cartItem.boxCnt * orderItem.cartItem.option!.addPrice;
 
 
         return total + itemPrice + optionCost;
     }, 0);
 
     const totalShippingCost: number = orderItems.reduce((total: number, orderItem: Cart) => {
-        const shippingCost = orderItem.cartItem.box_cnt * orderItem.cartItem.product.shippingCost;
+        const shippingCost = orderItem.cartItem.boxCnt * orderItem.cartItem.product.shippingCost;
         return total + shippingCost;
     }, 0);
 
@@ -148,12 +148,12 @@ export const Order: React.FC = () => {
         }
 
         // 주문 상품 정보를 requestData 객체에 담음
-        const requestData = orderItems.map((orderItem: { id: number; cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
+        const requestData = orderItems.map((orderItem: { id: number; cartItem: { product: Product; option: Option; quantity: number; boxCnt: number; }; }) => ({
             cartId: orderItem.id,
             product: orderItem.cartItem.product,
-            option: orderItem.cartItem.selectedOption,
+            option: orderItem.cartItem.option,
             quantity: orderItem.cartItem.quantity,
-            boxCnt: orderItem.cartItem.box_cnt
+            boxCnt: orderItem.cartItem.boxCnt
         }));
 
         // requestPay();

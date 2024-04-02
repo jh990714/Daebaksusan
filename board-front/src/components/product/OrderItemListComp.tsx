@@ -12,8 +12,8 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({ orderItem }) => {
     const calculateItemTotal = (item: Cart) => {
         const product = item.cartItem.product;
         const quantity = item.cartItem.quantity;
-        const boxCount = item.cartItem.box_cnt;
-        const optionPrice = boxCount * item.cartItem.selectedOption!.addPrice;
+        const boxCount = item.cartItem.boxCnt;
+        const optionPrice = boxCount * item.cartItem.option!.addPrice;
         const shippingCost = boxCount * product.shippingCost;
         const itemPrice = (product.regularPrice - product.salePrice) * quantity;
         const totalPrice = itemPrice + optionPrice + shippingCost;
@@ -56,9 +56,9 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({ orderItem }) => {
                             </div>
                         </td>
                         <td data-label="가격정보" className={styles.priceInfo}>
-                            <p>박스 개수: {orderItem.cartItem.box_cnt}</p>
-                            <p>옵션 가격: {(orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption!.addPrice).toLocaleString()}원</p>
-                            <p>배송비: {(orderItem.cartItem.box_cnt * orderItem.cartItem.product.shippingCost).toLocaleString()}원</p>
+                            <p>박스 개수: {orderItem.cartItem.boxCnt}</p>
+                            <p>옵션 가격: {(orderItem.cartItem.boxCnt * orderItem.cartItem.option!.addPrice).toLocaleString()}원</p>
+                            <p>배송비: {(orderItem.cartItem.boxCnt * orderItem.cartItem.product.shippingCost).toLocaleString()}원</p>
                         </td>
                         <td data-label="합계">
                             <p className={styles.orderTotal}>{calculateItemTotal(orderItem)}원</p>
@@ -83,9 +83,9 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({ orderItem }) => {
                     </div>
                     <div className={styles_m.orderTotal}>
                         <div className={styles_m.priceInfo}>
-                            <p>박스 개수: {orderItem.cartItem.box_cnt}</p>
-                            <p>옵션 가격: {(orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption!.addPrice).toLocaleString()}원</p>
-                            <p>배송비: {(orderItem.cartItem.box_cnt * orderItem.cartItem.product.shippingCost).toLocaleString()}원</p>
+                            <p>박스 개수: {orderItem.cartItem.boxCnt}</p>
+                            <p>옵션 가격: {(orderItem.cartItem.boxCnt * orderItem.cartItem.option!.addPrice).toLocaleString()}원</p>
+                            <p>배송비: {(orderItem.cartItem.boxCnt * orderItem.cartItem.product.shippingCost).toLocaleString()}원</p>
                             <p className={styles_m.total}>합계 : {calculateItemTotal(orderItem)}원</p>
                         </div>
                     </div>
