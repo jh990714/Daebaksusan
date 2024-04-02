@@ -2,6 +2,7 @@ package com.seafood.back.controller;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public class PaymentController {
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(), new TypeReference<Map<String, Object>>() {});
             
-            String userId = (String) jsonMap.get("userId");
+            String id = (String) jsonMap.get("id");
             List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"), new TypeReference<List<CartDTO>>() {});
 
             // 결제 금액과 주문 가격 비교
@@ -63,9 +64,14 @@ public class PaymentController {
             if (orderAmount.compareTo(paidAmount) == 0) {
                 log.info("결제 성공");
 
-                paymentService.processSuccessfulPayment(userId, orderItems, imp_uid);
-               
-                return ResponseEntity.ok(iamportResponse);
+                String orderNumber = paymentService.processSuccessfulPayment(id, orderItems, imp_uid);
+               // 필요한 정보만을 응답으로 보내기
+                Map<String, Object> response = new HashMap<>();
+                response.put("orderNumber", orderNumber);
+                response.put("iamportResponse", iamportResponse);
+
+                
+                return ResponseEntity.ok(response);
             } else {
                 log.error("결제 검증 실패: 주문 가격과 결제된 금액이 일치하지 않습니다.");
                 cancelPayment(imp_uid);

@@ -10,6 +10,7 @@ import com.seafood.back.service.MemberService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
+@Slf4j
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
@@ -26,9 +28,9 @@ public class MemberController {
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        if (memberService.authenticateMember(loginRequest.getUserName(), loginRequest.getPassword())) {
-            String accessToken = memberService.getAccessToken(loginRequest.getUserName());
-            String refreshToken = memberService.getRefreshToken(loginRequest.getUserName());
+        if (memberService.authenticateMember(loginRequest.getId(), loginRequest.getPassword())) {
+            String accessToken = memberService.getAccessToken(loginRequest.getId());
+            String refreshToken = memberService.getRefreshToken(loginRequest.getId());
             TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
             
             return ResponseEntity.ok(tokenResponse);
@@ -38,7 +40,9 @@ public class MemberController {
     
     @PostMapping("/signUp")
     public ResponseEntity<MemberEntity> registerMember(@RequestBody MemberEntity member) {
+        log.info(member.getPassword());
         MemberEntity registeredMember = memberService.registerNewMember(member);
+        
         return ResponseEntity.ok(registeredMember);
     }
 }

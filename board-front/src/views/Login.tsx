@@ -29,7 +29,7 @@ export const Login:React.FC = () => {
       } else {
         try {
           const response = await axios.post('http://localhost:8080/members/login', {
-            userName: id,
+            id: id,
             password: password,
           });
           const { accessToken, refreshToken } = response.data; // 수정된 부분

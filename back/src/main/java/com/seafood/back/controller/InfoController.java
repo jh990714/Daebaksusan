@@ -10,6 +10,8 @@ import com.seafood.back.service.InfoService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,11 +23,17 @@ public class InfoController {
 
     @GetMapping
     public ResponseEntity<String> myPage(Authentication authentication) {
-        String username = authentication.getName();
-        String userInfo = infoService.getUserInfo(username);
+        String id = authentication.getName();
+        String userInfo = infoService.getUserInfo(id);
 
         log.info(userInfo);
         return ResponseEntity.ok().body(userInfo);
     }
+
+    @GetMapping("/paymentDetails")
+    public String getMethodName(@RequestParam String param) {
+        return new String();
+    }
+    
 
 }

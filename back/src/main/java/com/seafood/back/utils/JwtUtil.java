@@ -8,20 +8,29 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JwtUtil {
 
-    public static String getUserName(String token, String secretKey) {
+    public static String getId(String token, String secretKey) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
-        .getBody().get("userName", String.class);
+        .getBody().get("ID", String.class);
     }
 
     public static boolean isExpired(String token, String secretKey) {
+        // Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        // Date expiration = claims.getExpiration();
+        // Date now = new Date();
+        
+        // long tenMinutesInMillis = 10 * 60 * 1000; // 10분을 밀리초로 변환
+        // Date tenMinutesLater = new Date(now.getTime() + tenMinutesInMillis);
+        
+        // // 토큰의 만료 시간이 현재 시간에서 10분 이전인지 확인합니다.
+        // return expiration.before(tenMinutesLater);
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
                 .getBody().getExpiration().before(new Date());
     }
 
-    public static String createJwt(String userName, String secretKey, Long expiredMs) {
+    public static String createJwt(String id, String secretKey, Long expiredMs) {
         Claims claims = Jwts.claims();
 
-        claims.put("userName", userName);
+        claims.put("ID", id);
         
         return Jwts.builder()
                 .setClaims(claims)
@@ -36,8 +45,8 @@ public class JwtUtil {
             // db에서도 해줘야함
             return null;
         }
-        String userName = getUserName(refreshToken, refreshSecretKey);
-        return createJwt(userName, accessSecretKey, expiredMs);
+        String ID = getId(refreshToken, refreshSecretKey);
+        return createJwt(ID, accessSecretKey, expiredMs);
     }
 
     

@@ -81,7 +81,7 @@ public class PaymentServiceImple implements PaymentService{
 
     @Transactional
     @Override
-    public void savePaymentDetails(String userId, String impUid) {
+    public String  savePaymentDetails(String userId, String impUid) {
         PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
         LocalDateTime now = LocalDateTime.now();
@@ -101,9 +101,12 @@ public class PaymentServiceImple implements PaymentService{
         paymentDetails.setOrderNumber(orderNumber);
         paymentDetails.setImpUid(impUid);
         paymentDetailsRepository.save(paymentDetails);
+
+        return orderNumber;
     }
+
     @Override
-    public void processSuccessfulPayment(String userId, List<CartDTO> orderItems, String impUid) {
+    public String processSuccessfulPayment(String userId, List<CartDTO> orderItems, String impUid) {
         // 결제가 성공하면 상품 수량 변경
         productService.updateProductQuantities(orderItems);
 
@@ -116,7 +119,9 @@ public class PaymentServiceImple implements PaymentService{
             cartService.deleteSelectedCartItems(userId, cartItemIdsToDelete);
         }
         // 결제 정보 저장
-        savePaymentDetails(userId, impUid);
+        String orderNumber = savePaymentDetails(userId, impUid);
+
+        return orderNumber;
     }
 
 }

@@ -10,8 +10,8 @@ import com.seafood.back.entity.CartEntity;
 
 @Repository
 public interface CartRepository extends JpaRepository<CartEntity, Long> {
-    List<CartEntity> findByMemberId(String memberId);
-    void deleteByMemberIdAndCartIdIn(String memberId, List<Long> cartItemIdsToDelete);
-    Optional<CartEntity> findByMemberIdAndProductIdAndOptionId(String memberId, Integer productId, Integer optionId);
+    List<CartEntity> findByMemberId(String id);
+    void deleteByMemberIdAndCartIdIn(String id, List<Long> cartItemIdsToDelete);
+    Optional<CartEntity> findByMemberIdAndProductIdAndOptionId(String id, Integer productId, Integer optionId);
     
 }
