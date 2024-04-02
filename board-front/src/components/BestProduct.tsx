@@ -111,7 +111,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
             <CategoryMenuBar onCategoryChange={handleCategoryChange} />
           </div>
           
-          <Link to={category} className={styles.moreButton}> 더보기 </Link>
+          <Link to={category} state={{ category: null }} className={styles.moreButton}> 더보기 </Link>
         </div>
         <div className={styles.productList}>
           <button className={styles.moveButton}>

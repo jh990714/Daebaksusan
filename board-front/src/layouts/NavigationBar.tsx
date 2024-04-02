@@ -158,10 +158,12 @@ export const NavigationBar = () => {
                                 </Link>
                             </li>
                             <li>
-                                <div className={styles.icon} onMouseEnter={toggleCategory}>
-                                    <img src={cartIcon} alt='모든 상품' style={{ width: 50, height: 50 }} />
-                                    <span className={styles.iconTitle}> 모든 상품 </span>
-                                </div>
+                                <Link to='/allProducts' state={{ category: null }} className={styles.icon}>
+                                    <div className={styles.icon} onMouseEnter={toggleCategory}>
+                                        <img src={cartIcon} alt='모든 상품' style={{ width: 50, height: 50 }} />
+                                        <span className={styles.iconTitle}> 모든 상품 </span>
+                                    </div>
+                                </Link>
 
                             </li>
                         </ul>
@@ -226,9 +228,9 @@ export const NavigationBar = () => {
             <div className={`${styles.categories} ${isOpen ? styles.open : ''}`} onMouseLeave={closeCategory}>
                 {categories.map((category) => (
                     <div key={category.name} className={styles.categoryItem}>
-                        <Link to={`/categoryProducts/${category.name}`} state={{ category: category }} className={styles.categoryLink}>
-                            <p className={styles.categoryTitle}>{category.name}</p>
-                        </Link>
+                            <Link to={`/categoryProducts/${category.name}`} state={{ category: category }} className={styles.categoryLink}>
+                                <p className={styles.categoryTitle}>{category.name}</p>
+                            </Link>
 
                         <ul className={styles.subcategoryList}>
                             {category.subcategories.map((sub, index) => ( // 여기서 index를 사용하여 고유한 key prop을 생성합니다.
