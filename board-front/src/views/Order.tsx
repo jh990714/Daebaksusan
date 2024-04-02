@@ -23,12 +23,13 @@ export const Order: React.FC = () => {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [ordererName, setOrdererName] = useState<string>('');
+    const [ordererPhoneFirst, setOrdererPhoneFirst] = useState('010');
     const [ordererPhoneMid, setOrdererPhoneMid] = useState<string>('');
     const [ordererPhoneLast, setOrdererPhoneLast] = useState<string>('');
     const [receiverName, setReceiverName] = useState<string>('');
+    const [receiverPhoneFirst, setReceiverPhoneFirst] = useState('010');
     const [receiverPhoneMid, setReceiverPhoneMid] = useState<string>('');
     const [receiverPhoneLast, setReceiverPhoneLast] = useState<string>('');
-    const { IMP } = window; // 아임포트 라이브러리 추출
     const [addressObj, setAddressObj] = useState<AddressObj>({
         address: '',
         zip: '',
@@ -38,8 +39,9 @@ export const Order: React.FC = () => {
     const [paymentMethod, setPaymentMethod] = useState<string>('card'); // 결제 수단 상태 추가
     const [ordererInfo, setOrdererInfo] = useState<OrdererInfo>();
 
-
-
+    const firstItemProductName = orderItems.length > 0 ? orderItems[0].cartItem.product.name : '';
+    const remainingItemNames = orderItems.slice(1).map((item: { cartItem: { product: { name: any; }; }; }) => item.cartItem.product.name).join(', ');
+    
     useEffect(() => {
         // orderItems가 비어 있는지 확인
         if (!orderItems || orderItems.length === 0) {
@@ -62,12 +64,14 @@ export const Order: React.FC = () => {
 
                     const [phoneFirst, phoneMid, phoneLast] = phone.split('-');
 
-                    setOrdererName(name || '');
-                    setOrdererPhoneMid(phoneMid || '');
-                    setOrdererPhoneLast(phoneLast || '');
-                    setReceiverName(name || '');
-                    setReceiverPhoneMid(phoneMid || '');
-                    setReceiverPhoneLast(phoneLast || '');
+                    setOrdererName(name);
+                    setOrdererPhoneFirst(phoneFirst);
+                    setOrdererPhoneMid(phoneMid);
+                    setOrdererPhoneLast(phoneLast);
+                    setReceiverName(name);
+                    setReceiverPhoneFirst(phoneFirst);
+                    setReceiverPhoneMid(phoneMid);
+                    setReceiverPhoneLast(phoneLast);
                     setAddressObj({
                         address: address,
                         zip: postalCode,
@@ -164,12 +168,12 @@ export const Order: React.FC = () => {
             pg: pg,
             pay_method: paymentMethod,
             merchant_uid: new Date().getTime(),// 상점에서 관리하는 주문 번호
-            name: '테스트 상품',
+            name: firstItemProductName + (remainingItemNames ? ` 외 ${orderItems.length - 1}개` : ''),
             amount: totalPrice + totalShippingCost,
             buyer_email: ordererInfo?.email,
-            buyer_name: '코드쿡',
-            buyer_tel: '010-1234-5678',
-            buyer_addr: addressObj.address + addressObj.details,
+            buyer_name: ordererName,
+            buyer_tel: '010-' + ordererPhoneMid + '-' +  ordererPhoneLast,
+            buyer_addr: addressObj.address + ' ' + addressObj.details,
             buyer_postcode: addressObj.zip,
             custom_data: {
                 orderItems: requestData,
@@ -272,7 +276,9 @@ export const Order: React.FC = () => {
                     <select
                         className={'phoneNumFirst'}
                         title=''
-                        id='ordererPhoneFist'
+                        id='ordererPhoneFirst'
+                        value={ordererPhoneFirst}
+                        onChange={(e) => setOrdererPhoneFirst(e.target.value)}
                     >
 
                         <option>010</option>
@@ -322,6 +328,8 @@ export const Order: React.FC = () => {
                         className={'phoneNumFirst'}
                         title=''
                         id='receiverPhoneFirst'
+                        value={receiverPhoneFirst}
+                        onChange={(e) => setReceiverPhoneFirst(e.target.value)}
                     >
                         <option>010</option>
                         <option>011</option>
