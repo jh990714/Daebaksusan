@@ -1,25 +1,29 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from "./Mypage.module.css";
 import { PaymentShowList } from 'components/PaymentShowList';
 import { Link, useNavigate } from 'react-router-dom';
 import sendRequestWithToken from 'apis/sendRequestWithToken';
 import { url } from 'inspector';
 import { useAuthContext } from 'hook/AuthProvider';
+import { PaymentDetail } from 'types';
 
 
 export const PaymentDetails:React.FC = () => {
-    const url = '/info';
-    const post = 'GET';
-    const data = null;
+
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
+    const [ paymentDetails, setPaymentDetails ] = useState<PaymentDetail[]|null>(null)
     
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);            
-                
-                
+                const url = '/info/paymentDetails';
+                const post = 'GET';
+                const data = null;
+                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);  
+                console.log(response)
+                setPaymentDetails(response)
+                    
             } catch (error) {
                 navigate('/login');
                 console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
@@ -54,7 +58,11 @@ export const PaymentDetails:React.FC = () => {
                     <div>
                         <div className='text-left ml-10 text-2xl border-b font-semibold'> 주문 내역 </div>
                         <div className='ml-10 font-medium'>
-                            <PaymentShowList />
+                            {paymentDetails ? (
+                                <PaymentShowList paymentDetails={paymentDetails} />
+                            ) : (
+                                <p>Loading...</p>
+                            )}
                         </div> 
                     </div>
                             

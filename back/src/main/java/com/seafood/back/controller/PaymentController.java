@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,22 +25,18 @@ import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
 @RequestMapping("/payment")
+@RequiredArgsConstructor
 public class PaymentController {
 
     private final IamportClient iamportClient;
-    private final PaymentService paymentService;
-
-    public PaymentController(@Value("${iamport.key}") String restApiKey,
-            @Value("${iamport.secret}") String restApiSecret, PaymentService paymentService) {
-        this.iamportClient = new IamportClient(restApiKey, restApiSecret);
-        this.paymentService = paymentService;
-        
-    }
+    private final PaymentService paymentService; 
+    
 
     @PostMapping("/verifyIamport/{imp_uid}")
     public ResponseEntity<?> paymentByImpUid(@PathVariable String imp_uid) {

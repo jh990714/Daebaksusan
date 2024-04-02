@@ -81,7 +81,7 @@ public class PaymentServiceImple implements PaymentService{
 
     @Transactional
     @Override
-    public String  savePaymentDetails(String userId, String impUid) {
+    public String savePaymentDetails(String id, String impUid) {
         PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
         LocalDateTime now = LocalDateTime.now();
@@ -94,8 +94,8 @@ public class PaymentServiceImple implements PaymentService{
         // 현재 시간과 auto_increment id를 조합하여 16자리의 사용자 ID 생성
         String orderNumber = currentTime + '_' + String.format("%08d", autoIncrementId);
         
-        if (userId != null) {
-            paymentDetails.setUserId(userId);
+        if (id != null) {
+            paymentDetails.setMemberId(id);
         }
         
         paymentDetails.setOrderNumber(orderNumber);
@@ -106,20 +106,20 @@ public class PaymentServiceImple implements PaymentService{
     }
 
     @Override
-    public String processSuccessfulPayment(String userId, List<CartDTO> orderItems, String impUid) {
+    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid) {
         // 결제가 성공하면 상품 수량 변경
         productService.updateProductQuantities(orderItems);
 
         // 결제가 성공하면 카트 아이템 삭제
-        if (userId != null) {
+        if (id != null) {
             List<Long> cartItemIdsToDelete = orderItems.stream()
                                                         .map(CartDTO::getCartId)
                                                         .collect(Collectors.toList());
         
-            cartService.deleteSelectedCartItems(userId, cartItemIdsToDelete);
+            cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
         }
         // 결제 정보 저장
-        String orderNumber = savePaymentDetails(userId, impUid);
+        String orderNumber = savePaymentDetails(id, impUid);
 
         return orderNumber;
     }
