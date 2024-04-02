@@ -121,13 +121,6 @@ export const NavigationBar = () => {
         setIsOpen(false); // 카테고리를 닫습니다.
     };
 
-    const handleLogOut = () => {
-        localStorage.removeItem('accessToken'); // 로컬 스토리지에서 토큰 제거
-        localStorage.removeItem('refreshToken'); 
-        setIsLoggedIn(false)
-    };
-
-    
     return (
         <nav className={styles.navContainer} onMouseLeave={closeCategory}>
             <div className={styles.navBar}>
@@ -209,9 +202,6 @@ export const NavigationBar = () => {
                                             <img src={loginIcon} alt='마이페이지' style={{ width: 50, height: 50 }} />
                                             <span className={styles.iconTitle}> 마이페이지 </span>
                                         </Link>
-                                        <div onClick={handleLogOut}>
-                                            로그아웃
-                                        </div>
                                     </li>
                                 )}
                                 <li>
