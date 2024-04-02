@@ -17,13 +17,13 @@ public class PaymentDetailsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_detail_id")
-    private Long id;
+    private Long paymentDetailId;
 
     @Column(name = "order_number")
     private String orderNumber;
 
     @Column(name = "member_id")
-    private String userId;
+    private String memberId;
 
     @Column(name = "imp_uid")
     private String impUid;
