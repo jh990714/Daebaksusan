@@ -4,8 +4,13 @@ const instance = axios.create({
     baseURL: 'http://localhost:8080',
 });
 
-async function refreshAccessToken(refreshToken: string): Promise<string> {
+export async function refreshAccessToken() {
     try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+            throw new Error('refreshToken 없음')
+        } 
+        
         const response = await instance.post(
             '/refreshToken',
             { refreshToken },
@@ -17,6 +22,7 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
         );
 
         localStorage.setItem('accessToken', response.data.accessToken);
+        console.log('새로운 액세스토큰 발급')
         // 새로운 액세스 토큰이 response.data에 있는지 확인하고 반환
         return response.data.accessToken;
     } catch (error) {
@@ -24,7 +30,7 @@ async function refreshAccessToken(refreshToken: string): Promise<string> {
     }
 }
 
-async function sendRequestWithToken(url: string, method: string, data: any, setIsLoggedIn: any) {
+export async function sendRequestWithToken(url: string, method: string, data: any, setIsLoggedIn: any) {
     try {
         const token = localStorage.getItem('accessToken');
 
@@ -46,50 +52,43 @@ async function sendRequestWithToken(url: string, method: string, data: any, setI
 
         const axiosError = error as AxiosError;
         if (!axiosError.response || axiosError.response.status === 403) {
-            const refreshToken = localStorage.getItem('refreshToken');
-            if (refreshToken) {
-                try {
-                    const newAccessToken = await refreshAccessToken(refreshToken);
 
-                    // 새로운 액세스 토큰을 localStorage에 저장한 후에 요청을 다시 보냄
-                    const newTokenConfig: AxiosRequestConfig = {
-                        method,
-                        url,
-                        data,
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${newAccessToken}`
-                        }
-                    };
+            try {
+                const newAccessToken = await refreshAccessToken();
 
-
-                    const newTokenResponse = await instance(newTokenConfig);
-
-                    console.log("새로운 액세스 토큰 생성");
-                    setIsLoggedIn(true)
-                    return newTokenResponse.data;
-                } catch (refreshError) {
-                    const axiosError = refreshError as AxiosError;
-                    if (!axiosError.response || axiosError.response.status === 403) {
-
-                        setIsLoggedIn(false)
-                        console.error('새로운 액세스 토큰 요청 실패:', refreshError);
+                // 새로운 액세스 토큰을 localStorage에 저장한 후에 요청을 다시 보냄
+                const newTokenConfig: AxiosRequestConfig = {
+                    method,
+                    url,
+                    data,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${newAccessToken}`
                     }
-                    else {
-                        throw axiosError
-                    }
+                };
+
+
+                const newTokenResponse = await instance(newTokenConfig);
+
+                console.log("새로운 액세스 토큰 생성");
+                setIsLoggedIn(true)
+                return newTokenResponse.data;
+            } catch (refreshError) {
+                const axiosError = refreshError as AxiosError;
+                if (!axiosError.response || axiosError.response.status === 403) {
+
+                    setIsLoggedIn(false)
+                    console.error('새로운 액세스 토큰 요청 실패:', refreshError);
+                    throw refreshError
                 }
-            } else {
-                setIsLoggedIn(false)
-                console.error('Refresh Token이 없습니다.');
-                throw new Error('에러!');
+                else {
+                    throw axiosError
+                }
             }
+
         }
         else {
             throw axiosError;
         }
     }
 }
-
-
-export default sendRequestWithToken;

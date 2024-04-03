@@ -5,13 +5,15 @@ import './Order.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AddressObj, Cart, CartItem, InputErrors, Option, OrdererInfo, Product, } from 'types';
 import { OrderItemListComp } from 'components/product/OrderItemListComp';
-import sendRequestWithToken from 'apis/sendRequestWithToken';
+import {refreshAccessToken, sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
 import axios from 'axios';
 import { PayMethodButton } from 'components/Button/PayMethodButton';
 import kakaoPayIcon from '../assets/payment/kakaoPay.png'
 import tossPayIcon from '../assets/payment/tossPay.png'
 import cardIcon from '../assets/payment/card.png'
+import { useCart } from 'hook/CartProvider';
+import { fetchCartItemsDelete } from 'utils/cartUtils';
 
 declare const window: typeof globalThis & {
     IMP: any;
@@ -20,6 +22,7 @@ declare const window: typeof globalThis & {
 // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
     const orderItems = useLocation().state.cartItems;
+    const {cartItems,  setCartItems} = useCart();
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [ordererName, setOrdererName] = useState<string>('');
@@ -136,6 +139,8 @@ export const Order: React.FC = () => {
 
         let id = null
         try {
+            refreshAccessToken();
+            
             const url = '/info';
             const post = 'GET';
             const data = null;
@@ -195,6 +200,8 @@ export const Order: React.FC = () => {
                     if (rsp.paid_amount === iamportRespons.amount) {
 
                         alert('결제 성공');
+
+                        fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn);
                         navigate('/successOrder', { 
                             state: {
                                 orderNumber: orderNumber,

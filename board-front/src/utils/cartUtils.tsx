@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import sendRequestWithToken from 'apis/sendRequestWithToken';
+import {sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { Cart, CartInput, CartItem } from 'types';
 import { useAuthContext } from 'hook/AuthProvider';
 

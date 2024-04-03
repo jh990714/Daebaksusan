@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PaymentShowList } from 'components/PaymentShowList';
 import { Link, useNavigate } from 'react-router-dom';
-import sendRequestWithToken from 'apis/sendRequestWithToken';
+import {sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
 import { PaymentDetail } from 'types';
 import { MyPageMenu } from 'components/MyPage/MyPageMenu';

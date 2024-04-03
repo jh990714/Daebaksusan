@@ -12,7 +12,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Category } from 'types';
 import useDebounce from 'hook/useDebounce'
 import { useAuthContext } from 'hook/AuthProvider'
-import sendRequestWithToken from 'apis/sendRequestWithToken'
 
 type SearchResults = Array<any>
 

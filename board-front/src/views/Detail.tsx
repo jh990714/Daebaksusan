@@ -6,7 +6,7 @@ import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { CONNREFUSED } from 'dns';
 import Product from 'types/interface/product-item.interface';
-import sendRequestWithToken from 'apis/sendRequestWithToken';
+import {sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useCart } from 'hook/CartProvider';
 import { useAuthContext } from 'hook/AuthProvider';
 
