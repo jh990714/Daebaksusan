@@ -79,7 +79,6 @@ public class PaymentServiceImple implements PaymentService{
         return sum;
     }
 
-    @Transactional
     @Override
     public String savePaymentDetails(String id, String impUid) {
         PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
@@ -105,6 +104,7 @@ public class PaymentServiceImple implements PaymentService{
         return orderNumber;
     }
 
+    @Transactional
     @Override
     public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid) {
         // 결제가 성공하면 상품 수량 변경
