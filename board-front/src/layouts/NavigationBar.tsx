@@ -20,12 +20,48 @@ export const NavigationBar = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false); // 카테고리가 열려있는지 여부를 state로 관리
-    const navigate = useNavigate();
     const [categories, setCategories] = useState<Category[]>([]);
     const [query, setQuery] = useState<string>(''); // 입력 값의 타입을 string으로 명시합니다.
     const [searchResults, setSearchResults] = useState<SearchResults>([]); // 검색 결과의 타입을 명시합니다.
     const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
+    const debouncedQuery = useDebounce<string>(query, 300);
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        // API 호출
+        fetch('http://localhost:8080/categories')
+            .then(response => response.json())
+            .then(data => setCategories(data))
+            .catch(error => console.error('Error fetching categories:', error));
+    }, []);
 
+
+    useEffect(() => {
+        console.log('로그인 상태가 변경되었습니다:', isLoggedIn);
+    }, [isLoggedIn]);
+
+    useEffect(() => {
+        const fetchSearchResults = async () => {
+            if (!debouncedQuery) {
+                setSearchResults([]);
+                return;
+            }
+            try {
+                const response = await fetch(`http://localhost:8080/product/search?query=${debouncedQuery}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch search results');
+                }
+                const data = await response.json();
+                setSelectedItemIndex(null);
+                setSearchResults(data);
+            } catch (error) {
+                console.error('Error fetching search results:', error);
+                setSearchResults([]);
+            }
+        };
+        fetchSearchResults();
+        console.log(`API를 호출하여 검색 결과를 업데이트: ${debouncedQuery}`);
+    }, [debouncedQuery]);
 
     const handleSearchItemClick = useCallback((index: number) => {
         setSelectedItemIndex(index);
@@ -43,7 +79,6 @@ export const NavigationBar = () => {
                 category: debouncedQuery 
             }
         });
-
 
         setQuery('');
         setSearchResults([]);
@@ -73,52 +108,9 @@ export const NavigationBar = () => {
         }
     }, [handleSearch]);
 
-    function handleInputChange(event: ChangeEvent<HTMLInputElement>): void {
+    const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
         setQuery(event.target.value);
     }
-    const debouncedQuery = useDebounce<string>(query, 300);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const url = '/check';
-                const post = 'GET';
-                const data = null;
-                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
-            } catch (error) {
-                console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
-            }
-        };
-        fetchData();
-    }, [setIsLoggedIn]);
-
-    useEffect(() => {
-        console.log('로그인 상태가 변경되었습니다:', isLoggedIn);
-    }, [isLoggedIn]);
-
-    useEffect(() => {
-        const fetchSearchResults = async () => {
-            if (!debouncedQuery) {
-                setSearchResults([]);
-                return;
-            }
-            try {
-                const response = await fetch(`http://localhost:8080/product/search?query=${debouncedQuery}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch search results');
-                }
-                const data = await response.json();
-                setSelectedItemIndex(null);
-                setSearchResults(data);
-            } catch (error) {
-                console.error('Error fetching search results:', error);
-                setSearchResults([]);
-            }
-        };
-        fetchSearchResults();
-        console.log(`API를 호출하여 검색 결과를 업데이트: ${debouncedQuery}`);
-    }, [debouncedQuery]);
-
 
     const toggleCategory = () => {
         setIsOpen(!isOpen); // isOpen 상태를 토글
