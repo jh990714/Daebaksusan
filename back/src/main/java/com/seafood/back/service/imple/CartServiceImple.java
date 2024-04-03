@@ -36,7 +36,7 @@ public class CartServiceImple implements CartService{
 
     @Override
     public List<CartDTO> getCartItemsForMember(String id) {
-        List<CartEntity> cartItems = cartRepository.findByMemberId(id);
+        List<CartEntity> cartItems = cartRepository.findByMemberIdOrderByUpdatedAtDesc(id);
         List<CartDTO> cartDTOs = new ArrayList<>();
         for (CartEntity cartItem : cartItems) {
             ProductEntity product = productService.getProductById(cartItem.getProductId());
