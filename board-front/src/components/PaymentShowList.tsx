@@ -29,7 +29,7 @@ export const PaymentShowList:React.FC<PaymentShowListProps> = ( {paymentDetails}
                             {paymentDetail.orderItems.map((paymentItem, innerIndex) => (
                                 <PaymentItemComp key={innerIndex} paymentItem={paymentItem} orderNumber={paymentDetail.orderNumber}/>
                             ))}
-                            {index !== paymentDetail.orderItems.length - 1 && <tr><td colSpan={7}></td></tr>}
+                            {<tr><td colSpan={7}></td></tr>}
                         </React.Fragment>
                     ))}
                 </tbody>

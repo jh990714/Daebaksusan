@@ -1,11 +1,15 @@
 package com.seafood.back.service.imple;
 
 import java.io.IOException;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,11 +55,17 @@ public class InfoServiceImple implements InfoService {
     }
 
     @Override
-    public List<PaymentDetailDTO> getPaymentDetails(String id) {
-        List<PaymentDetailsEntity> paymentDetails = paymentDetailsRepository.findByMemberIdOrderByPaymentDetailIdDesc(id);
-        List<PaymentDetailDTO> result = new ArrayList<>();
+    public Page<PaymentDetailDTO> getPaymentDetails(String id, int page, int size) {
+        // 페이지 번호를 0부터 시작하도록 수정
+        Pageable pageable = PageRequest.of(page - 1, size);
+        // 페이지네이션된 데이터를 가져옴
+        Page<PaymentDetailsEntity> paymentDetailsPage = paymentDetailsRepository.findByMemberIdOrderByPaymentDetailIdDesc(id, pageable);
+        
+        // PaymentDetailDTO 리스트를 담을 리스트 생성
+        List<PaymentDetailDTO> paymentDetailDTOs = new ArrayList<>();
 
-        for (PaymentDetailsEntity paymentDetail : paymentDetails) {
+        // 페이지네이션된 데이터를 PaymentDetailDTO로 변환하여 리스트에 추가
+        for (PaymentDetailsEntity paymentDetail : paymentDetailsPage.getContent()) {
             try {
                 PaymentDetailDTO paymentDetailDTO = new PaymentDetailDTO();
                 List<CartDTO> orderItems = extractOrderItems(paymentDetail);
@@ -63,15 +73,17 @@ public class InfoServiceImple implements InfoService {
                 paymentDetailDTO.setOrderNumber(paymentDetail.getOrderNumber());
                 paymentDetailDTO.setOrderItems(orderItems);
 
-                result.add(paymentDetailDTO);
+                paymentDetailDTOs.add(paymentDetailDTO);
             } catch (IamportResponseException | IOException e) {
                 // 예외 발생 시 처리
                 e.printStackTrace();
             }
         }
 
-        return result;
+    
+        return new PageImpl<>(paymentDetailDTOs, pageable, paymentDetailsPage.getTotalElements());
     }
+
     
     private List<CartDTO> extractOrderItems(PaymentDetailsEntity paymentDetail) throws IamportResponseException, IOException {
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());

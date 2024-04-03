@@ -2,11 +2,12 @@ package com.seafood.back.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 
 import com.seafood.back.dto.PaymentDetailDTO;
 
 public interface InfoService {
     String getUserInfo(String id);
 
-    List<PaymentDetailDTO> getPaymentDetails(String id);
+    Page<PaymentDetailDTO> getPaymentDetails(String id, int page, int size);
 }
