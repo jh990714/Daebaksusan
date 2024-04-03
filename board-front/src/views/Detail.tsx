@@ -38,6 +38,7 @@ export const Detail: React.FC = () => {
         const fetchOptions = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/product/${product.productId}/options`);
+                console.log(response.data)
                 setOptions(response.data);
                 setoption(response.data[0]);
                 setQuantity(1);
@@ -145,6 +146,12 @@ export const Detail: React.FC = () => {
 
     const handleAddToCart = async () => {
         try {
+
+            if (quantity > product.stockQuantity) {
+                alert('재고가 초과되었습니다.');
+                return;
+            }
+
             const cartInputItem = {
                 productId: product.productId,
                 optionId: option?.optionId,
@@ -178,6 +185,7 @@ export const Detail: React.FC = () => {
                 return cart;
             });
 
+
             const isNewItem = updatedCartItems.every(cart => cart.id !== response.cartId);
 
             if (isNewItem) {
@@ -192,7 +200,7 @@ export const Detail: React.FC = () => {
                     },
                     isSelected: true
                 };
-                setCartItems([...updatedCartItems, newCart]);
+                setCartItems([newCart, ...updatedCartItems]);
             } else {
                 // 기존 아이템을 업데이트한 경우 업데이트된 목록으로 설정
                 setCartItems(updatedCartItems);
@@ -228,6 +236,11 @@ export const Detail: React.FC = () => {
                 // 기존에 선택된 상품이 있을 경우, 수량을 합산하여 업데이트
                 const existingItem = existingCartCookie[existingItemIndex];
                 const updatedQuantity = existingItem.quantity + quantity;
+
+                if (updatedQuantity > existingItem.product.stockQuantity) {
+                    alert('재고가 초과되었습니다.');
+                    return;
+                }
                 const updatedBoxCnt = Math.ceil(updatedQuantity / existingItem.product.maxQuantityPerDelivery);
 
                 // 기존 아이템을 업데이트합니다.
@@ -241,7 +254,7 @@ export const Detail: React.FC = () => {
                 updatedCartItems = existingCartCookie;
             } else {
                 // 기존에 선택된 상품이 없을 경우, 새로운 상품으로 추가합니다.
-                updatedCartItems = [...existingCartCookie, newItem];
+                updatedCartItems = [newItem, ...existingCartCookie];
             }
             // 쿠키에 업데이트된 장바구니 정보 저장
             Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: 2 });
@@ -258,16 +271,20 @@ export const Detail: React.FC = () => {
         }
     };
 
-    return (
-        <div className="bg-white text-gray-700">
+    const isSoldOut = (product.stockQuantity === 0)
 
+    return (
+        <div className='bg-white text-gray-700'>
+    
             <main className="container mx-auto my-8 p-4">
-                <div className="flex flex-wrap md:flex-nowrap items-stretch">
+                <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
+                    
                     <div className="w-full md:w-1/2 p-4">
                         <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded shadow-lg " />
                     </div>
                     <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
-                        <h1 className="text-2xl text-blue-700 font-bold p-3">{product.name}</h1>
+                    
+                        <div className='text-2xl text-blue-700 font-bold p-3'>{product.name}</div>
                         <h1 className="text-xl text-gray-500 font-bold border-b-2 border-gray-200 p-2">{product.description}</h1>
 
                         <div className="text-start border-b-2 border-gray-200 px-4 py-1">
@@ -293,7 +310,12 @@ export const Detail: React.FC = () => {
                         </div>
                         <div className="border-b-2 border-gray-200 px-4 py-2">
                             <label htmlFor="option-select" className="mb-2"><strong className="text-blue-700">[필수]</strong> 옵션 선택 </label>
-                            <select id="option-select" className="w-full border-2 border-blue-700 rounded p-2 focus:ring-1 focus:ring-blue-700" onChange={handleOptionSelect}>
+                            <select
+                                id="option-select"
+                                className="w-full border-2 border-blue-700 rounded p-2 focus:ring-1 focus:ring-blue-700"
+                                onChange={handleOptionSelect}
+                                disabled={isSoldOut}
+                            >
                                 {options.map((option: Option) => (
                                     <option key={option.optionId} value={option.optionId}>
                                         <div> {option.name}</div>
@@ -308,26 +330,36 @@ export const Detail: React.FC = () => {
                         </>
 
                         <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)}>-</button>
+                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)} disabled={isSoldOut}>-</button>
                             <input
                                 type="text"
                                 value={quantity.toLocaleString()}
                                 onChange={handleQuantityInputChange}
                                 className="w-16 text-center text-sm border border-gray-300 rounded"
+                                disabled={isSoldOut}
                             />
-                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(1)}>+</button>
+                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(1)} disabled={isSoldOut}>+</button>
                         </div>
                         <div className="flex justify-between  border-2 border-blue-700 rounded">
                             <div className="text-2xl p-4 font-bold text-white bg-blue-700">최종 금액</div>
                             <div className='text-2xl p-4 font-bold text-blue-700 text-end'>{totalPrice.toLocaleString()} 원</div>
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-white px-4 py-2 rounded">구매하기</button>
+                            <button className="bg-blue-700 text-white px-4 py-2 rounded" disabled={isSoldOut}>구매하기</button>
                             <button className="bg-blue-700 text-white px-4 py-2 rounded" onClick={handleAddToCart}>장바구니 담기</button>
 
                         </div>
 
+
                     </div>
+                    {isSoldOut && (
+                            <div className="absolute top-0 left-0 w-full h-full bg-gray-500 bg-opacity-60  flex justify-center items-center">
+                                <div className="text-center">
+                                    <p className="text-3xl font-bold text-white">상품 품절</p>
+                                    <p className="text-lg text-white">죄송합니다. 이 상품은 현재 품절되었습니다.</p>
+                                </div>
+                            </div>
+                        )}
                 </div>
 
                 <div className="my-8 w-full ">

@@ -35,7 +35,6 @@ export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetState
                 boxCnt: parsedCartItem.boxCnt
             }));
 
-            console.log('bbbbb', cartItemsToSave)
             // 데이터베이스에 저장
             await saveCartItemsToDatabase(cartItemsToSave, setIsLoggedIn);
         }
