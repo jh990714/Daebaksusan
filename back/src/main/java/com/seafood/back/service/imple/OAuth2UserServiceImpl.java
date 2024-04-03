@@ -59,7 +59,11 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService{
             memberEntity = new MemberEntity(id, "pass", name, phone, email, "naver");
         }
 
-        memberRepository.save(memberEntity);
+        if (memberRepository.findById(id) == null) {
+            memberRepository.save(memberEntity);
+        }
+        
+
 
         return new CustomOAuth2User(id);
     }
