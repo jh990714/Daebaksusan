@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import ReviewTabComp from './DetailTab/ReviewTabComp';
 
 
 
@@ -38,7 +39,7 @@ export const DetailTabComp:React.FC = () => {
             case '관련상품':
                 return <div>관련상품 내용입니다.</div>;
             case '후기':
-                return <div>후기 내용입니다.</div>;
+                return <ReviewTabComp />;
             case 'QnA':
                 return <div>QnA 내용입니다.</div>;
             default:
