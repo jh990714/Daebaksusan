@@ -24,8 +24,8 @@ export const JoinStep3: React.FC = () => {
         const fullEmail = `${email}@${emailDomain}`;
 
         try {
-            const response = await axios.post('http://175.215.44.128:8080/members/signUp', {
-                memberId: memberId, 
+            const response = await axios.post('http://localhost:8080/members/signUp', {
+                id: memberId, 
                 password: password, 
                 name: name, 
                 phone: fullPhone, 

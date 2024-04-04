@@ -2,19 +2,19 @@ import { DetailTabComp } from 'components/DetailTabComp';
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 import { Cart, CartItem, Option } from 'types';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { CONNREFUSED } from 'dns';
 import Product from 'types/interface/product-item.interface';
-import sendRequestWithToken from 'apis/sendRequestWithToken';
+import {sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useCart } from 'hook/CartProvider';
 import { useAuthContext } from 'hook/AuthProvider';
 
 // interface CartItem {
 //     product: Product;
-//     selectedOption?: Option | null;
+//     option?: Option | null;
 //     quantity: number;
-//     box_cnt: number;
+//     boxCnt: number;
 // }
 
 
@@ -27,19 +27,20 @@ export const Detail: React.FC = () => {
     const [options, setOptions] = useState<Option[]>([]);
     const [quantity, setQuantity] = useState<number>(1);
 
-    const [selectedOption, setSelectedOption] = useState<Option | null>(null);
+    const [option, setoption] = useState<Option | null>(null);
     const [optionPrice, setOptionPrice] = useState<number>(0);
-    const [box_cnt, setBoxCnt] = useState<number>(1);
+    const [boxCnt, setBoxCnt] = useState<number>(1);
 
-    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + (product.shippingCost * box_cnt));
+    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + (product.shippingCost * boxCnt));
 
     // 옵션 받아오기
     useEffect(() => {
         const fetchOptions = async () => {
             try {
                 const response = await axios.get(`http://localhost:8080/product/${product.productId}/options`);
+                console.log(response.data)
                 setOptions(response.data);
-                setSelectedOption(response.data[0]);
+                setoption(response.data[0]);
                 setQuantity(1);
                 setTotalPrice((product.regularPrice - product.salePrice) * 1 + (product.shippingCost * 1));
             } catch (error) {
@@ -71,7 +72,7 @@ export const Detail: React.FC = () => {
     const handleQuantityChange = (value: number) => {
         const newQuantity = quantity + value;
         let q: number = 1;
-        let box_cnt = 1;
+        let boxCnt = 1;
         if (newQuantity >= 1 && newQuantity <= product.stockQuantity) {
             q = newQuantity;
         } else if (newQuantity < 1) {
@@ -80,9 +81,9 @@ export const Detail: React.FC = () => {
             q = product.stockQuantity; // 재고 수량으로 수량 조정
         }
         setQuantity(q);
-        box_cnt = (Math.ceil(q / product.maxQuantityPerDelivery));
-        setBoxCnt(box_cnt)
-        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * box_cnt))
+        boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
+        setBoxCnt(boxCnt)
+        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * boxCnt))
     };
 
 
@@ -90,7 +91,7 @@ export const Detail: React.FC = () => {
 
         const value = event.target.value;
         let q: number = 1;
-        let box_cnt = 1;
+        let boxCnt = 1;
         if (value === "" || value === "0") {
             q = 1; // 빈 문자열 또는 0 입력 시 최소 수량 1로 설정
 
@@ -103,22 +104,22 @@ export const Detail: React.FC = () => {
             }
         }
         setQuantity(q);
-        box_cnt = (Math.ceil(q / product.maxQuantityPerDelivery));
-        setBoxCnt(box_cnt)
-        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * box_cnt))
+        boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
+        setBoxCnt(boxCnt)
+        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * boxCnt))
     };
 
     const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const selectedOptionId = Number(event.target.value);
-        const selectedOption = options.find(option => option.optionId === selectedOptionId);
+        const optionId = Number(event.target.value);
+        const option = options.find(option => option.optionId === optionId);
 
         // 옵션 선택에 따른 추가 금액을 총 금액에 반영
-        if (selectedOption) {
-            setOptionPrice(selectedOption.addPrice);
-            setTotalPrice((product.regularPrice - product.salePrice + selectedOption.addPrice) * quantity + (product.shippingCost * box_cnt));
-            setSelectedOption(selectedOption);
+        if (option) {
+            setOptionPrice(option.addPrice);
+            setTotalPrice((product.regularPrice - product.salePrice + option.addPrice) * quantity + (product.shippingCost * boxCnt));
+            setoption(option);
         } else {
-            setSelectedOption(null);
+            setoption(null);
         }
     };
 
@@ -132,7 +133,7 @@ export const Detail: React.FC = () => {
                 <div className="border-b-2 border-gray-200 px-4 py-1 grid grid-cols-3 place-items-center">
                     <div>
                         <div>{product.name}</div>
-                        <div className='text-sm text-gray-400'>- {selectedOption?.name}({selectedOption?.addPrice.toLocaleString()})  배송 비({product.shippingCost.toLocaleString()}) - </div>
+                        <div className='text-sm text-gray-400'>- {option?.name}({option?.addPrice.toLocaleString()})  배송 비({product.shippingCost.toLocaleString()}) - </div>
                     </div>
                     <div className="">{count = Math.min(maxQuantityPerDelivery, quantity - (i * maxQuantityPerDelivery))}개</div>
                     <div className="">{((product.regularPrice - product.salePrice + optionPrice) * count + product.shippingCost).toLocaleString()} 원</div>
@@ -145,11 +146,17 @@ export const Detail: React.FC = () => {
 
     const handleAddToCart = async () => {
         try {
+
+            if (quantity > product.stockQuantity) {
+                alert('재고가 초과되었습니다.');
+                return;
+            }
+
             const cartInputItem = {
                 productId: product.productId,
-                optionId: selectedOption?.optionId,
+                optionId: option?.optionId,
                 quantity: quantity,
-                boxCnt: box_cnt
+                boxCnt: boxCnt
             };
 
             const url = '/cart/cartSave';
@@ -168,15 +175,16 @@ export const Detail: React.FC = () => {
                         id: response.cartId,
                         cartItem: {
                             product: product,
-                            selectedOption,
+                            option,
                             quantity: response.quantity,
-                            box_cnt: response.boxCnt,
+                            boxCnt: response.boxCnt,
                         },
                         isSelected: true
                     };
                 }
                 return cart;
             });
+
 
             const isNewItem = updatedCartItems.every(cart => cart.id !== response.cartId);
 
@@ -186,37 +194,41 @@ export const Detail: React.FC = () => {
                     id: response.cartId,
                     cartItem: {
                         product: product,
-                        selectedOption,
+                        option,
                         quantity,
-                        box_cnt,
+                        boxCnt,
                     },
                     isSelected: true
                 };
-                setCartItems([...updatedCartItems, newCart]);
+                setCartItems([newCart, ...updatedCartItems]);
             } else {
                 // 기존 아이템을 업데이트한 경우 업데이트된 목록으로 설정
                 setCartItems(updatedCartItems);
             }
 
 
-        } catch (error) {
-            console.log('errr')
+        } catch (error: any) {
+            if (error.response && error.response.data) {
+                console.log(error);
+                alert(error.response.data);
+                return;
+            }
 
             const existingCartCookie = Cookies.get('cartItems') ? JSON.parse(Cookies.get('cartItems')!) : [];;
 
             // 장바구니에 추가하려는 상품과 옵션에 대한 정보
             const newItem: CartItem = {
                 product: product,
-                selectedOption: selectedOption,
+                option: option,
                 quantity: quantity,
-                box_cnt: box_cnt,
+                boxCnt: boxCnt,
             };
 
             let updatedCartItems: CartItem[] = [];
 
             // 기존에 선택된 상품이 있는지 확인
             const existingItemIndex = existingCartCookie.findIndex((item: CartItem) => {
-                return item.product.productId === product.productId && item.selectedOption?.optionId === selectedOption?.optionId;
+                return item.product.productId === product.productId && item.option?.optionId === option?.optionId;
             });
 
             // 기존에 선택된 상품이 있을 경우, 쿠키에서 해당 아이템을 찾아 업데이트합니다.
@@ -224,20 +236,25 @@ export const Detail: React.FC = () => {
                 // 기존에 선택된 상품이 있을 경우, 수량을 합산하여 업데이트
                 const existingItem = existingCartCookie[existingItemIndex];
                 const updatedQuantity = existingItem.quantity + quantity;
+
+                if (updatedQuantity > existingItem.product.stockQuantity) {
+                    alert('재고가 초과되었습니다.');
+                    return;
+                }
                 const updatedBoxCnt = Math.ceil(updatedQuantity / existingItem.product.maxQuantityPerDelivery);
 
                 // 기존 아이템을 업데이트합니다.
                 existingCartCookie[existingItemIndex] = {
                     ...existingItem,
                     quantity: updatedQuantity,
-                    box_cnt: updatedBoxCnt
+                    boxCnt: updatedBoxCnt
                 };
 
                 // 업데이트된 아이템 목록을 새로운 카트 아이템 목록으로 설정합니다.
                 updatedCartItems = existingCartCookie;
             } else {
                 // 기존에 선택된 상품이 없을 경우, 새로운 상품으로 추가합니다.
-                updatedCartItems = [...existingCartCookie, newItem];
+                updatedCartItems = [newItem, ...existingCartCookie];
             }
             // 쿠키에 업데이트된 장바구니 정보 저장
             Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: 2 });
@@ -254,16 +271,20 @@ export const Detail: React.FC = () => {
         }
     };
 
-    return (
-        <div className="bg-white text-gray-700">
+    const isSoldOut = (product.stockQuantity === 0)
 
+    return (
+        <div className='bg-white text-gray-700'>
+    
             <main className="container mx-auto my-8 p-4">
-                <div className="flex flex-wrap md:flex-nowrap items-stretch">
+                <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
+                    
                     <div className="w-full md:w-1/2 p-4">
                         <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded shadow-lg " />
                     </div>
                     <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
-                        <h1 className="text-2xl text-blue-700 font-bold p-3">{product.name}</h1>
+                    
+                        <div className='text-2xl text-blue-700 font-bold p-3'>{product.name}</div>
                         <h1 className="text-xl text-gray-500 font-bold border-b-2 border-gray-200 p-2">{product.description}</h1>
 
                         <div className="text-start border-b-2 border-gray-200 px-4 py-1">
@@ -289,7 +310,12 @@ export const Detail: React.FC = () => {
                         </div>
                         <div className="border-b-2 border-gray-200 px-4 py-2">
                             <label htmlFor="option-select" className="mb-2"><strong className="text-blue-700">[필수]</strong> 옵션 선택 </label>
-                            <select id="option-select" className="w-full border-2 border-blue-700 rounded p-2 focus:ring-1 focus:ring-blue-700" onChange={handleOptionSelect}>
+                            <select
+                                id="option-select"
+                                className="w-full border-2 border-blue-700 rounded p-2 focus:ring-1 focus:ring-blue-700"
+                                onChange={handleOptionSelect}
+                                disabled={isSoldOut}
+                            >
                                 {options.map((option: Option) => (
                                     <option key={option.optionId} value={option.optionId}>
                                         <div> {option.name}</div>
@@ -304,26 +330,36 @@ export const Detail: React.FC = () => {
                         </>
 
                         <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)}>-</button>
+                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)} disabled={isSoldOut}>-</button>
                             <input
                                 type="text"
                                 value={quantity.toLocaleString()}
                                 onChange={handleQuantityInputChange}
                                 className="w-16 text-center text-sm border border-gray-300 rounded"
+                                disabled={isSoldOut}
                             />
-                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(1)}>+</button>
+                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(1)} disabled={isSoldOut}>+</button>
                         </div>
                         <div className="flex justify-between  border-2 border-blue-700 rounded">
                             <div className="text-2xl p-4 font-bold text-white bg-blue-700">최종 금액</div>
                             <div className='text-2xl p-4 font-bold text-blue-700 text-end'>{totalPrice.toLocaleString()} 원</div>
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-white px-4 py-2 rounded">구매하기</button>
+                            <button className="bg-blue-700 text-white px-4 py-2 rounded" disabled={isSoldOut}>구매하기</button>
                             <button className="bg-blue-700 text-white px-4 py-2 rounded" onClick={handleAddToCart}>장바구니 담기</button>
 
                         </div>
 
+
                     </div>
+                    {isSoldOut && (
+                            <div className="absolute top-0 left-0 w-full h-full bg-gray-500 bg-opacity-60  flex justify-center items-center">
+                                <div className="text-center">
+                                    <p className="text-3xl font-bold text-white">상품 품절</p>
+                                    <p className="text-lg text-white">죄송합니다. 이 상품은 현재 품절되었습니다.</p>
+                                </div>
+                            </div>
+                        )}
                 </div>
 
                 <div className="my-8 w-full ">

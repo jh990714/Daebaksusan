@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 
 import jakarta.persistence.Entity;
-
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,10 +22,13 @@ import lombok.Setter;
 @Entity
 public class MemberEntity{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
-    private String memberId;
+    private Integer memberId;
+
+    @Column(name = "id")
+    private String id;
     
-    @JsonIgnore
     @Column(name = "password")
     private String password;
 
@@ -54,9 +58,9 @@ public class MemberEntity{
 
 
 
-    public MemberEntity(String memberId, String name, String phone, String email, String type){
-        this.memberId = memberId;
-        this.password = "passw0rd";
+    public MemberEntity(String id, String password, String name, String phone, String email, String type) {
+        this.id = id;
+        this.password = password;
         this.name = name;
         this.phone = phone;
         this.email = email;

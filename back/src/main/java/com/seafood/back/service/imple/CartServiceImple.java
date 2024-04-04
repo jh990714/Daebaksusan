@@ -35,8 +35,8 @@ public class CartServiceImple implements CartService{
     private final ProductService productService;
 
     @Override
-    public List<CartDTO> getCartItemsForMember(String memberId) {
-        List<CartEntity> cartItems = cartRepository.findByMemberId(memberId);
+    public List<CartDTO> getCartItemsForMember(String id) {
+        List<CartEntity> cartItems = cartRepository.findByMemberIdOrderByUpdatedAtDesc(id);
         List<CartDTO> cartDTOs = new ArrayList<>();
         for (CartEntity cartItem : cartItems) {
             ProductEntity product = productService.getProductById(cartItem.getProductId());
@@ -55,8 +55,8 @@ public class CartServiceImple implements CartService{
 
     @Override
     @Transactional
-    public void deleteSelectedCartItems(String memberId, List<Long> cartItemIdsToDelete) {
-        cartRepository.deleteByMemberIdAndCartIdIn(memberId, cartItemIdsToDelete);
+    public void deleteSelectedCartItems(String id, List<Long> cartItemIdsToDelete) {
+        cartRepository.deleteByMemberIdAndCartIdIn(id, cartItemIdsToDelete);
     }
 
     private ProductDTO convertToProductDTO(ProductEntity productEntity) {
@@ -82,19 +82,26 @@ public class CartServiceImple implements CartService{
 
     @SuppressWarnings("null")
     @Override
-    public CartEntity addToCart(String memberId, Integer productId, Integer optionId, Integer quantity, Integer boxCnt) {
-        Optional<CartEntity> existingCartItemOptional = cartRepository.findByMemberIdAndProductIdAndOptionId(memberId,
+    public CartEntity addToCart(String id, Integer productId, Integer optionId, Integer quantity, Integer boxCnt) {
+        Optional<CartEntity> existingCartItemOptional = cartRepository.findByMemberIdAndProductIdAndOptionId(id,
                 productId, optionId);
+
+        Optional<ProductEntity> productOptional = productRepository.findById(productId);
 
         if (existingCartItemOptional.isPresent()) {
             // 이미 장바구니에 해당 상품과 옵션을 가진 아이템이 존재하는 경우
             CartEntity existingCartItem = existingCartItemOptional.get();
 
-            Optional<ProductEntity> productOptional = productRepository.findById(existingCartItem.getProductId());
+            
             // 기존 quantity와 새로운 quantity를 합산합니다.
             int totalQuantity = existingCartItem.getQuantity() + quantity;
-            // 상품의 maxQuantityPerDelivery로 나눈 후 올림하여 boxCnt에 할당합니다.
             int newboxCnt = (int) Math.ceil((double) totalQuantity / productOptional.get().getMaxQuantityPerDelivery());
+
+            // // 최대 수량을 초과하지 않는지 확인합니다.
+            if (totalQuantity > productOptional.get().getStockQuantity()) {
+                // 최대 수량을 초과할 경우 에러 처리 또는 예외 처리를 할 수 있습니다.
+                throw new IllegalArgumentException("최대 수량을 초과했습니다.");
+            }
 
             existingCartItem.setQuantity(existingCartItem.getQuantity() + quantity); // 수량을 합산합니다.
             existingCartItem.setBoxCnt(newboxCnt); // 박스 수량을 조정
@@ -103,9 +110,14 @@ public class CartServiceImple implements CartService{
 
             return savedCartItem;
         } else {
+            if (quantity > productOptional.get().getMaxQuantityPerDelivery()) {
+                // 최대 수량을 초과할 경우 에러 처리 또는 예외 처리를 할 수 있습니다.
+                throw new RuntimeException("최대 수량을 초과했습니다.");
+            }
+
             // 장바구니에 해당 상품과 옵션을 가진 아이템이 존재하지 않는 경우
             CartEntity cart = new CartEntity();
-            cart.setMemberId(memberId);
+            cart.setMemberId(id);
             cart.setProductId(productId);
             cart.setOptionId(optionId);
             cart.setQuantity(quantity);
@@ -120,10 +132,10 @@ public class CartServiceImple implements CartService{
     @Override
     
     @Transactional
-    public ResponseEntity<?> saveCartItems(String memberId, CartEntity[] cartItems) {
+    public ResponseEntity<?> saveCartItems(String id, CartEntity[] cartItems) {
         try {
             for (CartEntity cartItem : cartItems) {
-               addToCart(memberId, cartItem.getProductId(), cartItem.getOptionId(), cartItem.getQuantity(), cartItem.getBoxCnt());
+               addToCart(id, cartItem.getProductId(), cartItem.getOptionId(), cartItem.getQuantity(), cartItem.getBoxCnt());
             }
 
             return ResponseEntity.ok().build(); // 성공 응답

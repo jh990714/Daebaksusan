@@ -35,31 +35,36 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService{
         // }
 
         MemberEntity memberEntity = null;
-        String memberId = "";
+        String id = "";
         String name = "";
         String phone = "";
         String email = "email@email.com";
 
         if(oauthClientName.equals("kakao")){
-            memberId = "kakao_" + oAuth2User.getAttributes().get("id");
+            id = "kakao_" + oAuth2User.getAttributes().get("id");
             Map<String, String> reponseMap = (Map<String, String>) oAuth2User.getAttributes().get("kakao_account");
             name = reponseMap.get("name");
             phone = reponseMap.get("phone_number");
             email = reponseMap.get("email");
+        
 
-            memberEntity = new MemberEntity(memberId, name, phone, email, "kakao");
+            memberEntity = new MemberEntity(id, "pass", name, phone, email, "kakao");
         }
         if(oauthClientName.equals("naver")){
             Map<String, String> reponseMap = (Map<String, String>) oAuth2User.getAttributes().get("response");
-            memberId = "naver_" + reponseMap.get("id").substring(0, 14);
+            id = "naver_" + reponseMap.get("id").substring(0, 14);
             name = reponseMap.get("name");
             phone = reponseMap.get("mobile");
             email = reponseMap.get("email");
-            memberEntity = new MemberEntity(memberId, name, phone, email, "naver");
+            memberEntity = new MemberEntity(id, "pass", name, phone, email, "naver");
         }
 
-        memberRepository.save(memberEntity);
+        if (memberRepository.findById(id) == null) {
+            memberRepository.save(memberEntity);
+        }
+        
 
-        return new CustomOAuth2User(memberId);
+
+        return new CustomOAuth2User(id);
     }
 }

@@ -1,48 +1,76 @@
 import React from 'react';
-import { Pagination as BootstrapPagination } from 'react-bootstrap';
 
 interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (pageNumber: number) => void;
+    totalPages: number;
+    currentPage: number;
+    onPageChange: (page: number) => void;
 }
 
-export const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
-  const goToPreviousPage = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
-    }
-  };
+export const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPageChange }) => {
+    const pagesToShow = 5; // 보여줄 페이지 수
+    const pages: number[] = [];
 
-  const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
-    }
-  };
+     // 시작 페이지와 끝 페이지 계산
+     let startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
+     let endPage = Math.min(totalPages, startPage + pagesToShow - 1);
+ 
+     // 시작 페이지를 다시 계산하여 보여줄 페이지 수를 유지
+     startPage = Math.max(1, endPage - pagesToShow + 1);
+ 
+     // 페이지 번호 계산
+     for (let i = startPage; i <= endPage; i++) {
+         pages.push(i);
+     }
+ 
 
-  return (
-    <BootstrapPagination>
-      <BootstrapPagination.First onClick={() => onPageChange(1)} />
-      <BootstrapPagination.Prev onClick={goToPreviousPage} disabled={currentPage === 1} />
-
-      {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNum) => {
-        // 현재 페이지(currentPage)를 중심으로 앞뒤로 2개의 페이지만 표시
-        if (pageNum >= currentPage - 2 && pageNum <= currentPage + 2) {
-          return (
-            <BootstrapPagination.Item
-              key={pageNum}
-              onClick={() => onPageChange(pageNum)}
-              active={pageNum === currentPage}
-            >
-              {pageNum}
-            </BootstrapPagination.Item>
-          );
+    const goToPage = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            onPageChange(page);
         }
-        return null;
-      })}
+    };
 
-      <BootstrapPagination.Next onClick={goToNextPage} disabled={currentPage === totalPages} />
-      <BootstrapPagination.Last onClick={() => onPageChange(totalPages)} />
-    </BootstrapPagination>
-  );
+    return (
+        <div className="flex justify-center mt-4">
+            <nav>
+                <ul className="pagination">
+                    {/* First button */}
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={() => goToPage(1)} aria-label="First">
+                            <span aria-hidden="true">&laquo;</span>
+                        </button>
+                    </li>
+
+                    {/* Previous button */}
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={() => goToPage(currentPage - 1)} aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                        </button>
+                    </li>
+
+                    {/* Page numbers */}
+                    {pages.map((page) => (
+                        <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
+                            <button className="page-link" onClick={() => goToPage(page)}>
+                                {page}
+                            </button>
+                        </li>
+                    ))}
+
+                    {/* Next button */}
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={() => goToPage(currentPage + 1)} aria-label="Next">
+                            <span aria-hidden="true">&gt;</span>
+                        </button>
+                    </li>
+
+                    {/* Last button */}
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                        <button className="page-link" onClick={() => goToPage(totalPages)} aria-label="Last">
+                            <span aria-hidden="true">&raquo;</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    );
 };

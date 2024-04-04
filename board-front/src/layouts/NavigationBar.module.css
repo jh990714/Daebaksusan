@@ -104,10 +104,12 @@
     cursor: pointer;
     
 }
-
-.searchResults li:hover {
-    background-color: #f0f0f0;
+.selectedItem {
+    background-color: #f0f0f0; /* 선택된 항목의 배경색 */
+    font-weight: bold; /* 선택된 항목의 글꼴 두껍게 */
+    /* 추가적인 스타일링을 원하는대로 적용할 수 있습니다 */
 }
+
 .searchInput {
     border: 2px solid #333;
     border-radius: 50px;

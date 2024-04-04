@@ -3,7 +3,7 @@ import Option from "./option-item.interface";
 
 export default interface CartItem {
     product: Product,
-    selectedOption?: Option | null;
+    option?: Option | null;
     quantity: number,
-    box_cnt: number,
+    boxCnt: number,
 };

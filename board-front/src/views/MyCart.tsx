@@ -17,11 +17,7 @@ export const MyCart = () => {
         fetchCartItems(setCartItems, setIsLoggedIn);
     }, [isLoggedIn]);
 
-    useEffect(() => {
-        console.log(cartItems)
-    }, [cartItems]);
-
-    const handleQuantityChange = (id: number, quantity: number, box_cnt: number) => {
+    const handleQuantityChange = (id: number, quantity: number, boxCnt: number) => {
         setCartItems(prevItems =>
             prevItems.map(item => {
                 if (item.id === id) {
@@ -30,7 +26,7 @@ export const MyCart = () => {
                         cartItem: {
                             ...item.cartItem,
                             quantity: quantity,
-                            box_cnt: box_cnt,
+                            boxCnt: boxCnt,
                         }
                     };
                 } else {
@@ -68,7 +64,7 @@ export const MyCart = () => {
             .filter(item => item.isSelected)
             .reduce((total, item) => {
                 const itemPrice = (item.cartItem.product.regularPrice - item.cartItem.product.salePrice) * item.cartItem.quantity;
-                const itemOptionCost = item.cartItem.selectedOption!.addPrice * item.cartItem.box_cnt;
+                const itemOptionCost = item.cartItem.option!.addPrice * item.cartItem.boxCnt;
                 console.log(item)
                 return total + itemPrice + itemOptionCost; // 각 항목의 상품 가격과 배송비를 합산
             }, 0);
@@ -79,7 +75,7 @@ export const MyCart = () => {
         return cartItems
             .filter(item => item.isSelected)
             .reduce((total, item) => {
-                const itemShippingCost = item.cartItem.product.shippingCost * item.cartItem.box_cnt;
+                const itemShippingCost = item.cartItem.product.shippingCost * item.cartItem.boxCnt;
                 return total + itemShippingCost; // 각 항목의 상품 가격과 배송비를 합산
             }, 0);
     };

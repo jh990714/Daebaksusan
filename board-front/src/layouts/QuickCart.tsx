@@ -59,11 +59,11 @@ export const QuickCart = () => {
             .filter(item => item.isSelected)
             .reduce((total, item) => {
 
-                const optionPrice = item.cartItem.box_cnt * item.cartItem.selectedOption!.addPrice
+                const optionPrice = item.cartItem.boxCnt * item.cartItem.option!.addPrice
 
                 const itemTotal = (item.cartItem.product.regularPrice - item.cartItem.product.salePrice) * item.cartItem.quantity;
 
-                const shippingCost = item.cartItem.box_cnt * item.cartItem.product.shippingCost;
+                const shippingCost = item.cartItem.boxCnt * item.cartItem.product.shippingCost;
                 return total + itemTotal + shippingCost + optionPrice;
             }, 0)
             .toLocaleString();
@@ -76,7 +76,7 @@ export const QuickCart = () => {
                 const newBoxcnt = Math.ceil(newQuantity / item.cartItem.product.maxQuantityPerDelivery);
                 console.log(Math.ceil(newQuantity / item.cartItem.product.maxQuantityPerDelivery))
 
-                return { ...item, cartItem: { ...item.cartItem, quantity: newQuantity >= 1 ? newQuantity : 1, box_cnt: newBoxcnt } };
+                return { ...item, cartItem: { ...item.cartItem, quantity: newQuantity >= 1 ? newQuantity : 1, boxCnt: newBoxcnt } };
             } else {
                 return item;
             }
@@ -117,7 +117,7 @@ export const QuickCart = () => {
                     <li key={item.id}>
                         <ProductListComp product={item.cartItem.product} size='110px' fontSize='4px' />
                     </li>
-                    <div className={styles.option}> - {item.cartItem.selectedOption!.name} + {item.cartItem.selectedOption!.addPrice}</div>
+                    <div className={styles.option}> - {item.cartItem.option!.name} + {item.cartItem.option!.addPrice}</div>
                     <div className={styles.quantityContainer}>
                         <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.id, -1)}>-</button>
                         {item.cartItem.quantity}

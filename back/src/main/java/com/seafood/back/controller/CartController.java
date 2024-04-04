@@ -14,8 +14,11 @@ import com.seafood.back.dto.CartDTO;
 import com.seafood.back.entity.CartEntity;
 import com.seafood.back.service.CartService;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/cart")
 public class CartController {
@@ -31,17 +34,17 @@ public class CartController {
     }
 
     @PostMapping("/delete")
-    public String deleteSelectedCartItems(@RequestBody List<Long> cartItemIdsToDelete, Authentication authentication) {
+    public ResponseEntity<?> deleteSelectedCartItems(@RequestBody List<Long> cartItemIdsToDelete, Authentication authentication) {
         try { 
             if (cartItemIdsToDelete == null) {
                 throw new IllegalArgumentException("cartItemIdsToDelete cannot be null");
             }
             String memberId = authentication.getName();
             cartService.deleteSelectedCartItems(memberId, cartItemIdsToDelete);
-            return "Selected cart items deleted successfully.";
+            return ResponseEntity.ok("Selected cart items deleted successfully.");
         } catch (Exception e) {
             e.printStackTrace();
-            return "Error deleting selected cart items.";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting selected cart items.");
         }
     }
 
@@ -51,23 +54,24 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        String memberId = authentication.getName();
-        return  cartService.saveCartItems(memberId, cartItems);
+        String id = authentication.getName();
+        return  cartService.saveCartItems(id, cartItems);
     }
 
     @PostMapping("/cartSave")
-    public ResponseEntity<CartEntity > addToCart(@RequestBody CartEntity cart, Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
+    public ResponseEntity<?> addToCart(@RequestBody CartEntity cart, Authentication authentication) {
+        try {
+            String id = authentication.getName();
+            CartEntity saveCart = cartService.addToCart(id, cart.getProductId(), cart.getOptionId(), cart.getQuantity(), cart.getBoxCnt());
 
-        String memberId = authentication.getName();
-        CartEntity saveCart = cartService.addToCart(memberId, cart.getProductId(), cart.getOptionId(), cart.getQuantity(), cart.getBoxCnt());
-
-        if (saveCart != null) {
-            return ResponseEntity.ok().body(saveCart);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+            if (saveCart != null) {
+                return ResponseEntity.ok().body(saveCart);
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
+        } catch (IllegalArgumentException e) {
+            log.info("재고초과");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("재고를 초과했습니다.");
+        } 
     }
 }
