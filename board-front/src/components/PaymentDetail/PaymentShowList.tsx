@@ -1,14 +1,15 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { PaymentDetail, PaymentItem, Product } from 'types';
-import { PaymentItemComp } from './PaymentItemComp';
+
 import styles from './PaymentShowList.module.css';
+import { PaymentItemComp } from './PaymentItemComp';
 
 interface PaymentShowListProps {
-    paymentDetails : PaymentDetail[]
+    paymentDetails: PaymentDetail[]
 }
 
-export const PaymentShowList:React.FC<PaymentShowListProps> = ( {paymentDetails} ) => {
+export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails }) => {
     return (
         <div className={styles.paymentItemList}>
             <table>
@@ -27,13 +28,22 @@ export const PaymentShowList:React.FC<PaymentShowListProps> = ( {paymentDetails}
                     {paymentDetails.map((paymentDetail, index) => (
                         <React.Fragment key={index}>
                             {paymentDetail.orderItems.map((paymentItem, innerIndex) => (
-                                <PaymentItemComp key={innerIndex} paymentItem={paymentItem} orderNumber={paymentDetail.orderNumber}/>
+                                <PaymentItemComp
+                                    key={innerIndex}
+                                    paymentItem={paymentItem}
+                                    orderNumber={innerIndex === 0 ? paymentDetail.orderNumber : ''}
+                                    isCancelled={paymentDetail.cancel}
+                                    rowspan={paymentDetail.orderItems.length}
+                                />
                             ))}
-                            {<tr><td colSpan={7}></td></tr>}
+                            
+                            <tr>
+                                <td colSpan={7}></td>
+                            </tr>
                         </React.Fragment>
                     ))}
                 </tbody>
             </table>
         </div>
     );
-}
+};

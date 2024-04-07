@@ -139,7 +139,7 @@ export const Order: React.FC = () => {
 
         let id = null
         try {
-            refreshAccessToken();
+            await refreshAccessToken();
             
             const url = '/info';
             const post = 'GET';
@@ -147,7 +147,7 @@ export const Order: React.FC = () => {
 
             const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
             id = response.id
-            console.log(id)
+
         } catch (error: any) {
             if (error.response && error.response.data) {
                 alert('결제호출 중 에러가 발생했습니다.')
