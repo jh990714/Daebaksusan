@@ -41,8 +41,8 @@ public class InfoController {
                                                @RequestParam(defaultValue = "1") int page,
                                                @RequestParam(defaultValue = "10") int pageSize) {
         try {
-            String Id = authentication.getName();
-            Page<PaymentDetailDTO> paymentDetails = infoService.getPaymentDetails(Id, page, pageSize);
+            String id = authentication.getName();
+            Page<PaymentDetailDTO> paymentDetails = infoService.getPaymentDetails(id, page, pageSize);
             return ResponseEntity.ok().body(paymentDetails);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("실패");
