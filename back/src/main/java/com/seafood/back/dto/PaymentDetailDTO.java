@@ -9,4 +9,5 @@ import lombok.Setter;
 public class PaymentDetailDTO {
     private String orderNumber;
     private List<CartDTO> orderItems;
+    private boolean isCancel = false;
 }

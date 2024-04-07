@@ -55,7 +55,7 @@ public class InfoServiceImple implements InfoService {
     }
 
     @Override
-    public Page<PaymentDetailDTO> getPaymentDetails(String id, int page, int size) {
+    public Page<PaymentDetailDTO> getOrdertDetails(String id, int page, int size) {
         // 페이지 번호를 0부터 시작하도록 수정
         Pageable pageable = PageRequest.of(page - 1, size);
         // 페이지네이션된 데이터를 가져옴
@@ -68,11 +68,17 @@ public class InfoServiceImple implements InfoService {
         for (PaymentDetailsEntity paymentDetail : paymentDetailsPage.getContent()) {
             try {
                 PaymentDetailDTO paymentDetailDTO = new PaymentDetailDTO();
-                List<CartDTO> orderItems = extractOrderItems(paymentDetail);
+
+                IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
+
+                List<CartDTO> orderItems = extractOrderItems(iamportResponse);
 
                 paymentDetailDTO.setOrderNumber(paymentDetail.getOrderNumber());
                 paymentDetailDTO.setOrderItems(orderItems);
-
+                if (iamportResponse.getResponse().getStatus().equals("cancelled")) {
+                    paymentDetailDTO.setCancel(true);
+                }
+                
                 paymentDetailDTOs.add(paymentDetailDTO);
             } catch (IamportResponseException | IOException e) {
                 // 예외 발생 시 처리
@@ -85,8 +91,7 @@ public class InfoServiceImple implements InfoService {
     }
 
     
-    private List<CartDTO> extractOrderItems(PaymentDetailsEntity paymentDetail) throws IamportResponseException, IOException {
-        IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
+    private List<CartDTO> extractOrderItems(IamportResponse<Payment> iamportResponse) throws IamportResponseException, IOException {
             
         // JSON 문자열 파싱하여 Map 객체로 변환
         ObjectMapper objectMapper = new ObjectMapper();

@@ -28,4 +28,6 @@ public class PaymentDetailsEntity {
     @Column(name = "imp_uid")
     private String impUid;
 
+    @Column(name = "is_cancel")
+    private Boolean isCancel;
 }
