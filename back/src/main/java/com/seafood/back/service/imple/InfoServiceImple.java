@@ -28,7 +28,9 @@ import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class InfoServiceImple implements InfoService {
@@ -58,9 +60,11 @@ public class InfoServiceImple implements InfoService {
     public Page<PaymentDetailDTO> getOrdertDetails(String id, int page, int size) {
         // 페이지 번호를 0부터 시작하도록 수정
         Pageable pageable = PageRequest.of(page - 1, size);
+
         // 페이지네이션된 데이터를 가져옴
-        Page<PaymentDetailsEntity> paymentDetailsPage = paymentDetailsRepository.findByMemberIdOrderByPaymentDetailIdDesc(id, pageable);
-        
+        Page<PaymentDetailsEntity> paymentDetailsPage = paymentDetailsRepository
+                .findByMemberIdOrderByPaymentDetailIdDesc(id, pageable);
+
         // PaymentDetailDTO 리스트를 담을 리스트 생성
         List<PaymentDetailDTO> paymentDetailDTOs = new ArrayList<>();
 
@@ -86,7 +90,6 @@ public class InfoServiceImple implements InfoService {
             }
         }
 
-    
         return new PageImpl<>(paymentDetailDTOs, pageable, paymentDetailsPage.getTotalElements());
     }
 
@@ -95,9 +98,14 @@ public class InfoServiceImple implements InfoService {
             
         // JSON 문자열 파싱하여 Map 객체로 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(), new TypeReference<Map<String, Object>>() {});
-            
-        List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"), new TypeReference<List<CartDTO>>() {});
+        Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
+                new TypeReference<Map<String, Object>>() {
+                });
+
+        List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
+                new TypeReference<List<CartDTO>>() {
+                });
+
         return orderItems;
     }
 

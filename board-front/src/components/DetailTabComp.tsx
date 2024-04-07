@@ -3,7 +3,7 @@ import ReviewTabComp from './DetailTab/ReviewTabComp';
 
 
 
-export const DetailTabComp:React.FC = () => {
+export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
 
     const [activeTab, setActiveTab] = useState<string>('상품정보');
 
@@ -39,7 +39,7 @@ export const DetailTabComp:React.FC = () => {
             case '관련상품':
                 return <div>관련상품 내용입니다.</div>;
             case '후기':
-                return <ReviewTabComp />;
+                return <ReviewTabComp productId={productId}/>;
             case 'QnA':
                 return <div>QnA 내용입니다.</div>;
             default:

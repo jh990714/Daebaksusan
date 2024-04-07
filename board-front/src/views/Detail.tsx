@@ -376,7 +376,7 @@ export const Detail: React.FC = () => {
                 </div>
 
                 <div className={"my-8 w-full"}>
-                    <DetailTabComp />
+                    <DetailTabComp productId={product.productId}/>
                 </div>
             </main>
 
