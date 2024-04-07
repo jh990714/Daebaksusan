@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PaymentShowList } from 'components/PaymentShowList';
+import { PaymentShowList } from 'components/PaymentDetail/PaymentShowList';
 import { Link, useNavigate } from 'react-router-dom';
 import {sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
@@ -18,12 +18,15 @@ export const PaymentDetails: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const url = `/info/paymentDetails?page=${page}&pageSize=${pageSize}`;
+                const url = `/info/orderDetails?page=${page}&pageSize=${pageSize}`;
                 const post = 'GET';
                 const data = null;
                 const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
 
                 setPaymentDetails(response.content);
+
+
+                console.log(response.content)
                 setTotalPages(Math.ceil(response.totalElements / pageSize));
             } catch (error) {
                 navigate('/login');
