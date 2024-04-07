@@ -9,5 +9,5 @@ import com.seafood.back.dto.PaymentDetailDTO;
 public interface InfoService {
     String getUserInfo(String id);
 
-    Page<PaymentDetailDTO> getPaymentDetails(String id, int page, int size);
+    Page<PaymentDetailDTO> getOrdertDetails(String id, int page, int size);
 }

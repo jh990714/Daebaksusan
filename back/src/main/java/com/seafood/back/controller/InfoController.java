@@ -1,9 +1,5 @@
 package com.seafood.back.controller;
 
-
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.seafood.back.dto.CartDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.service.InfoService;
 
@@ -36,18 +31,18 @@ public class InfoController {
         return ResponseEntity.ok().body(userInfo);
     }
 
-    @GetMapping("/paymentDetails")
-    public ResponseEntity<?> getPaymentDetails(Authentication authentication,
+    @GetMapping("/orderDetails")
+    public ResponseEntity<?> getOrderDetails(Authentication authentication,
                                                @RequestParam(defaultValue = "1") int page,
                                                @RequestParam(defaultValue = "10") int pageSize) {
         try {
-            String Id = authentication.getName();
-            Page<PaymentDetailDTO> paymentDetails = infoService.getPaymentDetails(Id, page, pageSize);
+            String id = authentication.getName();
+            Page<PaymentDetailDTO> paymentDetails = infoService.getOrdertDetails(id, page, pageSize);
             return ResponseEntity.ok().body(paymentDetails);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("실패");
         }
     }
-    
+
 
 }

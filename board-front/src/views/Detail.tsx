@@ -83,7 +83,7 @@ export const Detail: React.FC = () => {
         setQuantity(q);
         boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
         setBoxCnt(boxCnt)
-        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * boxCnt))
+        setTotalPrice((product.regularPrice - product.salePrice ) * q + ((product.shippingCost + optionPrice) * boxCnt))
     };
 
 
@@ -106,7 +106,7 @@ export const Detail: React.FC = () => {
         setQuantity(q);
         boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
         setBoxCnt(boxCnt)
-        setTotalPrice((product.regularPrice - product.salePrice + optionPrice) * q + (product.shippingCost * boxCnt))
+        setTotalPrice((product.regularPrice - product.salePrice ) * q + ((product.shippingCost + optionPrice) * boxCnt))
     };
 
     const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -116,7 +116,7 @@ export const Detail: React.FC = () => {
         // 옵션 선택에 따른 추가 금액을 총 금액에 반영
         if (option) {
             setOptionPrice(option.addPrice);
-            setTotalPrice((product.regularPrice - product.salePrice + option.addPrice) * quantity + (product.shippingCost * boxCnt));
+            setTotalPrice((product.regularPrice - product.salePrice ) * quantity + ((product.shippingCost + optionPrice) * boxCnt))
             setoption(option);
         } else {
             setoption(null);
