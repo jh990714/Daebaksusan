@@ -35,8 +35,8 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
     const calculateItemTotal = (item: Cart) => {
         const product = item.cartItem.product;
         const quantity = item.cartItem.quantity;
-        const boxCount = item.cartItem.box_cnt;
-        const optionPrice = boxCount * item.cartItem.selectedOption!.addPrice;
+        const boxCount = item.cartItem.boxCnt;
+        const optionPrice = boxCount * item.cartItem.option!.addPrice;
         const shippingCost = boxCount * product.shippingCost;
         const itemPrice = (product.regularPrice - product.salePrice) * quantity;
         const totalPrice = itemPrice + optionPrice + shippingCost;
@@ -81,7 +81,7 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
                         </td>
                         <td className={styles.orderName} data-label="주문 상품 정보">
                             <p className={styles.title}>{cartItem.cartItem.product.name}</p>
-                            <p className={styles.option}>{cartItem.cartItem.selectedOption!.name} + {cartItem.cartItem.selectedOption!.addPrice}</p>
+                            <p className={styles.option}>{cartItem.cartItem.option!.name} + {cartItem.cartItem.option!.addPrice}</p>
                         </td>
                         <td className={styles.orderPrice} data-label="상품가격">
 
@@ -101,9 +101,9 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
                             </div>
                         </td>
                         <td data-label="가격정보" className={styles.priceInfo}>
-                            <p>박스 개수: {cartItem.cartItem.box_cnt}</p>
-                            <p>옵션 가격: {(cartItem.cartItem.box_cnt * cartItem.cartItem.selectedOption!.addPrice).toLocaleString()}원</p>
-                            <p>배송비: {(cartItem.cartItem.box_cnt * cartItem.cartItem.product.shippingCost).toLocaleString()}원</p>
+                            <p>박스 개수: {cartItem.cartItem.boxCnt}</p>
+                            <p>옵션 가격: {(cartItem.cartItem.boxCnt * cartItem.cartItem.option!.addPrice).toLocaleString()}원</p>
+                            <p>배송비: {(cartItem.cartItem.boxCnt * cartItem.cartItem.product.shippingCost).toLocaleString()}원</p>
                         </td>
                         <td data-label="합계">
                             <p className={styles.orderTotal}>{calculateItemTotal(cartItem)}원</p>
@@ -146,9 +146,9 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
 
                     <div className={styles_m.orderTotal}>
                         <div className={styles_m.priceInfo}>
-                            <p>박스 개수: {cartItem.cartItem.box_cnt}</p>
-                            <p>옵션 가격: {(cartItem.cartItem.box_cnt * cartItem.cartItem.selectedOption!.addPrice).toLocaleString()}원</p>
-                            <p>배송비: {(cartItem.cartItem.box_cnt * cartItem.cartItem.product.shippingCost).toLocaleString()}원</p>
+                            <p>박스 개수: {cartItem.cartItem.boxCnt}</p>
+                            <p>옵션 가격: {(cartItem.cartItem.boxCnt * cartItem.cartItem.option!.addPrice).toLocaleString()}원</p>
+                            <p>배송비: {(cartItem.cartItem.boxCnt * cartItem.cartItem.product.shippingCost).toLocaleString()}원</p>
                             <p className={styles_m.total}>합계 : {calculateItemTotal(cartItem)}원</p>
                         </div>
                     </div>

@@ -1,36 +1,61 @@
 package com.seafood.back.service.imple;
 
-
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.CartDTO;
-import com.seafood.back.dto.OptionDTO;
-import com.seafood.back.dto.ProductDTO;
+import com.seafood.back.dto.PaymentAndOrderInfo;
 import com.seafood.back.entity.OptionEntity;
+import com.seafood.back.entity.PaymentDetailsEntity;
 import com.seafood.back.entity.ProductEntity;
 import com.seafood.back.respository.OptionRepository;
+import com.seafood.back.respository.PaymentDetailsRepository;
 import com.seafood.back.respository.ProductRepository;
+import com.seafood.back.service.CartService;
 import com.seafood.back.service.PaymentService;
+import com.seafood.back.service.ProductService;
+import com.siot.IamportRestClient.IamportClient;
+import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.request.CancelData;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PaymentServiceImple implements PaymentService{
-    
+public class PaymentServiceImple implements PaymentService {
+
+    private final ProductService productService;
+    private final CartService cartService;
+
+    private final IamportClient iamportClient;
+
     private final OptionRepository optionRepository;
     private final ProductRepository productRepository;
+    private final PaymentDetailsRepository paymentDetailsRepository;
 
+    @Transactional
     @Override
-    public BigDecimal orderAmount(List<CartDTO> orderItems) {
+    public BigDecimal orderAmount(String imp_uid, List<CartDTO> orderItems) {
         BigDecimal sum = BigDecimal.ZERO;
-        for (CartDTO orderItem: orderItems) {
+        for (CartDTO orderItem : orderItems) {
             int productId = orderItem.getProduct().getProductId(); // 상품 ID
             int optionId = orderItem.getOption().getOptionId(); // 옵션 ID
 
@@ -40,16 +65,17 @@ public class PaymentServiceImple implements PaymentService{
 
             // 상품과 옵션 정보가 존재할 경우, 가격을 더합니다.
             if (productOptional.isPresent() && optionOptional.isPresent()) {
-                
+
                 ProductEntity product = productOptional.get();
                 OptionEntity option = optionOptional.get();
 
                 // 주문된 상품의 수량체크
                 int orderedQuantity = orderItem.getQuantity();
                 int remainingStock = product.getStockQuantity() - orderedQuantity;
-                
+
                 if (remainingStock < 0) {
-                    throw new RuntimeException("주문 수량이 재고보다 많습니다.");
+                    cancelPayment(imp_uid);
+                    throw new IllegalArgumentException("주문 수량이 재고보다 많습니다. 상품명: " + product.getName());
                 }
 
                 BigDecimal productPrice = product.getRegularPrice().subtract(product.getSalePrice());
@@ -58,11 +84,10 @@ public class PaymentServiceImple implements PaymentService{
 
                 BigDecimal optionPrice = option.getAddPrice();
                 int quantity = orderItem.getQuantity();
-                int boxCnt = (int) Math.ceil((double)quantity / maxQuantityPerDelivery);
-                
+                int boxCnt = (int) Math.ceil((double) quantity / maxQuantityPerDelivery);
+
                 BigDecimal productTotalPrice = productPrice.multiply(new BigDecimal(quantity));
                 BigDecimal optionTotalPrice = optionPrice.add(shippingCost).multiply(new BigDecimal(boxCnt));
-    
 
                 sum = sum.add(productTotalPrice.add(optionTotalPrice));
             }
@@ -71,4 +96,186 @@ public class PaymentServiceImple implements PaymentService{
         return sum;
     }
 
+    @Override
+    public String savePaymentDetails(String id, String impUid) {
+        PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
+
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String currentTime = now.format(formatter);
+
+        // auto_increment의 id 값 가져오기
+        Long autoIncrementId = paymentDetailsRepository.getAutoIncrementId();
+
+        // 현재 시간과 auto_increment id를 조합하여 16자리의 사용자 ID 생성
+        String orderNumber = currentTime + '_' + String.format("%08d", autoIncrementId);
+
+        if (id != null) {
+            paymentDetails.setMemberId(id);
+        }
+
+        paymentDetails.setOrderNumber(orderNumber);
+        paymentDetails.setImpUid(impUid);
+        paymentDetails.setIsCancel(true);
+        paymentDetailsRepository.save(paymentDetails);
+
+        return orderNumber;
+    }
+
+    @Transactional
+    @Override
+    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid) {
+        // 결제가 성공하면 상품 수량 변경
+        productService.updateProductQuantities(orderItems);
+
+        // 결제가 성공하면 카트 아이템 삭제
+        if (id != null) {
+            List<Long> cartItemIdsToDelete = orderItems.stream()
+                    .map(CartDTO::getCartId)
+                    .collect(Collectors.toList());
+
+            cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
+        }
+        // 결제 정보 저장
+        String orderNumber = savePaymentDetails(id, impUid);
+
+        return orderNumber;
+    }
+
+    @Override
+    public Map<String, Object> verifyAndProcessPayment(String imp_uid) throws Exception {
+        log.info(imp_uid);
+        IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(imp_uid);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
+                new TypeReference<Map<String, Object>>() {
+                });
+        String id = (String) jsonMap.get("id");
+        List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
+                new TypeReference<List<CartDTO>>() {
+                });
+
+        BigDecimal paidAmount = iamportResponse.getResponse().getAmount();
+        BigDecimal orderAmount = orderAmount(imp_uid, orderItems);
+
+        if (orderAmount.compareTo(paidAmount) == 0) {
+            String orderNumber = processSuccessfulPayment(id, orderItems, imp_uid);
+            Map<String, Object> response = new HashMap<>();
+            response.put("orderNumber", orderNumber);
+            response.put("iamportResponse", iamportResponse);
+            return response;
+        } else {
+            cancelPayment(imp_uid);
+            throw new IllegalArgumentException("주문 가격과 결제된 금액이 일치하지 않습니다.");
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> cancelPayment(String imp_uid) {
+        try {
+            CancelData cancelData = new CancelData(imp_uid, true);
+            IamportResponse<Payment> cancelResponse = iamportClient.cancelPaymentByImpUid(cancelData);
+            if (cancelResponse.getResponse().getStatus().equals("cancelled")) {
+                return ResponseEntity.ok(Map.of("message", "결제 취소 성공"));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("결제 취소 실패: " + cancelResponse.getResponse().getFailReason());
+            }
+        } catch (IamportResponseException | IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("결제 취소 중 오류 발생");
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> refundIamport(String memberId, String orderNumber) {
+        try {
+            PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByMemberIdAndOrderNumber(memberId, orderNumber);
+            
+            if (paymentDetail.getIsCancel() == false) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("취소가 불가능합니다.");
+            }
+            ResponseEntity<?> cancelResponse = cancelPayment(paymentDetail.getImpUid());
+
+
+            return ResponseEntity.ok(cancelResponse.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("환불 처리 중 오류 발생");
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> getPaymentAndOrderInfo(String memberId, String orderNumber) {
+        try {
+            PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByMemberIdAndOrderNumber(memberId, orderNumber);
+            IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
+    
+            PaymentAndOrderInfo paymentAndOrderInfo = new PaymentAndOrderInfo();
+            paymentAndOrderInfo.setOrderNumber(orderNumber);
+            paymentAndOrderInfo.setOrderAt(iamportResponse.getResponse().getStartedAt());
+            paymentAndOrderInfo.setProductName(iamportResponse.getResponse().getName());
+            paymentAndOrderInfo.setName(iamportResponse.getResponse().getBuyerName());
+            paymentAndOrderInfo.setPostCode(iamportResponse.getResponse().getBuyerPostcode());
+            paymentAndOrderInfo.setAddress(iamportResponse.getResponse().getBuyerAddr());
+            paymentAndOrderInfo.setPhone(iamportResponse.getResponse().getBuyerTel());
+    
+            paymentAndOrderInfo.setPaymentAt(iamportResponse.getResponse().getPaidAt());
+            paymentAndOrderInfo.setPaymentStatus(iamportResponse.getResponse().getStatus());
+            paymentAndOrderInfo.setPgProvider(iamportResponse.getResponse().getPgProvider());
+            paymentAndOrderInfo.setPaymentMethod(iamportResponse.getResponse().getPayMethod());
+            paymentAndOrderInfo.setAmount(iamportResponse.getResponse().getAmount());
+    
+            // 결제 종류에 따라 추가 정보 설정
+            switch (iamportResponse.getResponse().getPayMethod()) {
+                case "card":
+                    paymentAndOrderInfo.setPaymentMethod("신용/체크카드");
+                    paymentAndOrderInfo.setCardName(iamportResponse.getResponse().getCardName());
+                    paymentAndOrderInfo.setInstallmentMonths(iamportResponse.getResponse().getCardQuota());
+                    paymentAndOrderInfo.setCardNumber(iamportResponse.getResponse().getCardNumber());
+                    paymentAndOrderInfo.setVbanIssuedAt(iamportResponse.getResponse().getVbankIssuedAt());
+                    break;
+                case "vbank":
+                    // 무통장입금인 경우 추가 정보 설정
+                    paymentAndOrderInfo.setPaymentMethod("무통장 입금");
+                    paymentAndOrderInfo.setVbankName(iamportResponse.getResponse().getVbankName());
+                    paymentAndOrderInfo.setVbankNum(iamportResponse.getResponse().getVbankNum());
+                    paymentAndOrderInfo.setVbankHolder(iamportResponse.getResponse().getVbankHolder());
+            
+                    break;
+                case "trans":
+                    // 계좌이체인 경우 추가 정보 설정
+                    paymentAndOrderInfo.setPaymentMethod("계좌이체");
+                    paymentAndOrderInfo.setBankName(iamportResponse.getResponse().getBankName());
+                    break;
+                case "point":
+                // 계좌이체인 경우 추가 정보 설정
+                    paymentAndOrderInfo.setPaymentMethod("간편결제");
+
+                    break;
+                default:
+                    break;
+            }
+
+            // 결제 상태에 따라 수정
+            if (iamportResponse.getResponse().getStatus().equals("cancelled")) {
+                paymentAndOrderInfo.setPaymentStatus("결제 취소");
+            } else if (iamportResponse.getResponse().getStatus().equals("paid")) {
+                paymentAndOrderInfo.setPaymentStatus("결제 완료");
+            }
+
+            // PG사가 카카오페이인 경우
+            if (iamportResponse.getResponse().getPgProvider().equalsIgnoreCase("kakaopay")) {
+                paymentAndOrderInfo.setPaymentMethod("카카오페이");
+            }
+
+    
+            return ResponseEntity.ok(paymentAndOrderInfo);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("결제 정보 확인 중 오류 발생");
+        }
+    }
+    
 }

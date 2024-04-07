@@ -1,9 +1,4 @@
-/* 테이블 전체 스타일 */
-.paymentItemList table {
-    min-width: 800px; 
-    width: 100%;
-    margin: 20px 0;
-}
+
 
 /* 테이블 헤더 스타일 */
 .paymentItemList table th {

@@ -2,12 +2,18 @@ import React, { useEffect, useState } from 'react';
 import DaumPost from 'components/DaumPost';
 import { OrderFlow } from 'components/OrderFlow';
 import './Order.css';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AddressObj, Cart, CartItem, InputErrors, Option, OrdererInfo, Product, } from 'types';
 import { OrderItemListComp } from 'components/product/OrderItemListComp';
-import sendRequestWithToken from 'apis/sendRequestWithToken';
+import {refreshAccessToken, sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
 import axios from 'axios';
+import { PayMethodButton } from 'components/Button/PayMethodButton';
+import kakaoPayIcon from '../assets/payment/kakaoPay.png'
+import tossPayIcon from '../assets/payment/tossPay.png'
+import cardIcon from '../assets/payment/card.png'
+import { useCart } from 'hook/CartProvider';
+import { fetchCartItemsDelete } from 'utils/cartUtils';
 
 declare const window: typeof globalThis & {
     IMP: any;
@@ -15,27 +21,43 @@ declare const window: typeof globalThis & {
 
 // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
+    const orderItems = useLocation().state.cartItems;
+    const {cartItems,  setCartItems} = useCart();
+    const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [ordererName, setOrdererName] = useState<string>('');
+    const [ordererPhoneFirst, setOrdererPhoneFirst] = useState('010');
     const [ordererPhoneMid, setOrdererPhoneMid] = useState<string>('');
     const [ordererPhoneLast, setOrdererPhoneLast] = useState<string>('');
     const [receiverName, setReceiverName] = useState<string>('');
+    const [receiverPhoneFirst, setReceiverPhoneFirst] = useState('010');
     const [receiverPhoneMid, setReceiverPhoneMid] = useState<string>('');
     const [receiverPhoneLast, setReceiverPhoneLast] = useState<string>('');
-    const { IMP } = window; // 아임포트 라이브러리 추출
     const [addressObj, setAddressObj] = useState<AddressObj>({
         address: '',
         zip: '',
         details: ''
     });
-
-    const url = '/info';
-    const post = 'GET';
-    const data = null;
+    const [pg, setPg] = useState<string>('nice'); // pg 상태 추가
+    const [paymentMethod, setPaymentMethod] = useState<string>('card'); // 결제 수단 상태 추가
     const [ordererInfo, setOrdererInfo] = useState<OrdererInfo>();
 
+    const firstItemProductName = orderItems.length > 0 ? orderItems[0].cartItem.product.name : '';
+    const remainingItemNames = orderItems.slice(1).map((item: { cartItem: { product: { name: any; }; }; }) => item.cartItem.product.name).join(', ');
+    
     useEffect(() => {
+        // orderItems가 비어 있는지 확인
+        if (!orderItems || orderItems.length === 0) {
+            alert("주문할 상품이 없습니다.");
+            navigate('/')
+        }
+        // orderItems가 비어있지 않은 경우에만 실행
         const fetchData = async () => {
+            const url = '/info';
+            const post = 'GET';
+            const data = null;
+
+
             try {
                 const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
 
@@ -45,25 +67,29 @@ export const Order: React.FC = () => {
 
                     const [phoneFirst, phoneMid, phoneLast] = phone.split('-');
 
-                    setOrdererName(name || '');
-                    setOrdererPhoneMid(phoneMid || '');
-                    setOrdererPhoneLast(phoneLast || '');
+                    setOrdererName(name);
+                    setOrdererPhoneFirst(phoneFirst);
+                    setOrdererPhoneMid(phoneMid);
+                    setOrdererPhoneLast(phoneLast);
+                    setReceiverName(name);
+                    setReceiverPhoneFirst(phoneFirst);
+                    setReceiverPhoneMid(phoneMid);
+                    setReceiverPhoneLast(phoneLast);
                     setAddressObj({
                         address: address,
                         zip: postalCode,
                         details: detailAddress
                     });
-
-
                 }
-
             } catch (error) {
                 console.error('비회원 주문', error);
             }
         };
 
         fetchData();
-    }, []);
+
+
+    }, [orderItems]);
 
     const [inputErrors, setInputErrors] = useState<InputErrors>({
         ordererName: false,
@@ -77,23 +103,21 @@ export const Order: React.FC = () => {
     });
 
 
-    const orderItems = useLocation().state.cartItems;
-
     const totalPrice: number = orderItems.reduce((total: number, orderItem: Cart) => {
         const itemPrice = (orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice) * orderItem.cartItem.quantity;
-        const optionCost = orderItem.cartItem.box_cnt * orderItem.cartItem.selectedOption!.addPrice;
+        const optionCost = orderItem.cartItem.boxCnt * orderItem.cartItem.option!.addPrice;
 
 
         return total + itemPrice + optionCost;
     }, 0);
 
     const totalShippingCost: number = orderItems.reduce((total: number, orderItem: Cart) => {
-        const shippingCost = orderItem.cartItem.box_cnt * orderItem.cartItem.product.shippingCost;
+        const shippingCost = orderItem.cartItem.boxCnt * orderItem.cartItem.product.shippingCost;
         return total + shippingCost;
     }, 0);
 
 
-    const handlePayment = () => {
+    const handlePayment = async () => {
         const errors: InputErrors = {
             ordererName: !ordererName,
             ordererPhoneMid: !ordererPhoneMid,
@@ -113,54 +137,86 @@ export const Order: React.FC = () => {
             return;
         }
 
+        let id = null
+        try {
+            await refreshAccessToken();
+            
+            const url = '/info';
+            const post = 'GET';
+            const data = null;
+
+            const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
+            id = response.id
+
+        } catch (error: any) {
+            if (error.response && error.response.data) {
+                alert('결제호출 중 에러가 발생했습니다.')
+            }
+
+            alert('비회원 결제입니다.')
+        }
+
         // 주문 상품 정보를 requestData 객체에 담음
-        const requestData = orderItems.map((orderItem: { cartItem: { product: Product; selectedOption: Option; quantity: number; box_cnt: number; }; }) => ({
+        const requestData = orderItems.map((orderItem: { id: number; cartItem: { product: Product; option: Option; quantity: number; boxCnt: number; }; }) => ({
+            cartId: orderItem.id,
             product: orderItem.cartItem.product,
-            option: orderItem.cartItem.selectedOption,
+            option: orderItem.cartItem.option,
             quantity: orderItem.cartItem.quantity,
-            boxCnt: orderItem.cartItem.box_cnt
+            boxCnt: orderItem.cartItem.boxCnt
         }));
-        
+
         // requestPay();
         var IMP = window.IMP;
         IMP.init('imp02022068'); // iamport 가맹점 식별코드
+        console.log(pg, paymentMethod)
         const paymentData = {
-            pg: 'kakaopay',
-            pay_method: "card",
+            pg: pg,
+            pay_method: paymentMethod,
             merchant_uid: new Date().getTime(),// 상점에서 관리하는 주문 번호
-            name: '테스트 상품',
+            name: firstItemProductName + (remainingItemNames ? ` 외 ${orderItems.length - 1}개` : ''),
             amount: totalPrice + totalShippingCost,
             buyer_email: ordererInfo?.email,
-            buyer_name: '코드쿡',
-            buyer_tel: '010-1234-5678',
-            buyer_addr: addressObj.address + addressObj.details,
+            buyer_name: ordererName,
+            buyer_tel: '010-' + ordererPhoneMid + '-' +  ordererPhoneLast,
+            buyer_addr: addressObj.address + ' ' + addressObj.details,
             buyer_postcode: addressObj.zip,
+            custom_data: {
+                orderItems: requestData,
+                id: id
+            }
         };
 
         IMP.request_pay(paymentData, async function (rsp: any) {
+
             if (rsp.success) {
                 try {
-
-                     // 카트 아이템들을 데이터베이스에 저장하는 API 요청
-                    const url = '/payment/verifyIamport/' + rsp.imp_uid;
-                    const post = 'POST';
-                    const data = requestData;
-                    const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
-        
-
                     // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
-                    // const { response } = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid, requestData);
+                    const response = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid);
 
+                    const orderNumber = response.data.orderNumber
+                    const iamportRespons =  response.data.iamportResponse.response
+                    console.log(response)
                     // 결제 확인 응답 처리
-                    if (rsp.paid_amount === response.response.amount) {
+                    if (rsp.paid_amount === iamportRespons.amount) {
+
                         alert('결제 성공');
+
+                        fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn);
+                        navigate('/successOrder', { 
+                            state: {
+                                orderNumber: orderNumber,
+                                iamportResponse: iamportRespons
+                            }
+                        });
                     }
+                    
                 } catch (error: any) {
                     console.error('결제 확인 중 오류 발생:', error);
-                    // 여기서는 네트워크 오류 등의 클라이언트 측 에러를 처리할 수 있습니다
+                    // 여기서는 네트워크 오류 등의 클라이언트 측 에러를 처리할 수 있습니다p
                     if (error.response && error.response.data) {
                         alert(error.response.data); // 서버에서 전달한 에러 메시지를 사용자에게 알립니다
                     } else {
+
                         alert('결제 실패');
                     }
 
@@ -199,6 +255,11 @@ export const Order: React.FC = () => {
         }
     }
 
+    const handlePaymentMethodClick = (selectedPg: string, method: string) => {
+        setPg(selectedPg);
+        setPaymentMethod(method);
+    };
+
     const postcodeScriptUrl = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
 
     return (
@@ -222,7 +283,9 @@ export const Order: React.FC = () => {
                     <select
                         className={'phoneNumFirst'}
                         title=''
-                        id='ordererPhoneFist'
+                        id='ordererPhoneFirst'
+                        value={ordererPhoneFirst}
+                        onChange={(e) => setOrdererPhoneFirst(e.target.value)}
                     >
 
                         <option>010</option>
@@ -272,6 +335,8 @@ export const Order: React.FC = () => {
                         className={'phoneNumFirst'}
                         title=''
                         id='receiverPhoneFirst'
+                        value={receiverPhoneFirst}
+                        onChange={(e) => setReceiverPhoneFirst(e.target.value)}
                     >
                         <option>010</option>
                         <option>011</option>
@@ -306,6 +371,49 @@ export const Order: React.FC = () => {
                 <div className='addressContainer'>
                     <DaumPost addressObj={addressObj} setAddressObj={setAddressObj} postcodeScriptUrl={postcodeScriptUrl} inputErrors={inputErrors} setInputErrors={setInputErrors} />
                 </div>
+                <div className='orderTitle'> 결제 수단 </div>
+            <div className='mt-4'>
+                <div className='font-bold mb-2'> 간편결제 </div>
+                <div className='flex flex-wrap gap-4 mb-4 pl-4'>
+                    <PayMethodButton
+                        label='kakao pay'
+                        imageUrl={kakaoPayIcon}
+                        onClick={() => handlePaymentMethodClick('kakaopay', 'card')}
+                        selected={pg === 'kakaopay'}
+                    />
+                    <PayMethodButton
+                        label='toss pay'
+                        imageUrl={tossPayIcon}
+                        onClick={() => handlePaymentMethodClick('tosspay', 'card')}
+                        selected={pg === 'tosspay'}
+                        
+                    />
+        
+                </div>
+
+                <div className='font-bold mb-2'> 카드결제●계좌이체 </div>
+                <div className='flex flex-wrap gap-4 pl-4'>
+                    <PayMethodButton
+                        label='신용/체크 카드'
+                        imageUrl={cardIcon}
+                        onClick={() => handlePaymentMethodClick('nice', 'card')}
+                        selected={pg === 'nice' && paymentMethod === 'card'} // 선택된 결제 수단에 따라 selected prop을 설정
+                    />
+                    <PayMethodButton
+                        label='무통장 입금'
+                        imageUrl={cardIcon}
+                        onClick={() => handlePaymentMethodClick('nice', 'vbank')}
+                        selected={pg === 'nice' && paymentMethod === 'vbank'} // 선택된 결제 수단에 따라 selected prop을 설정
+                    />
+                    <PayMethodButton
+                        label='계좌이체'
+                        imageUrl={cardIcon}
+                        onClick={() => handlePaymentMethodClick('nice', 'trans')}
+                        selected={pg === 'nice' && paymentMethod === 'trans'} // 선택된 결제 수단에 따라 selected prop을 설정
+                    />
+                </div>
+
+            </div>
 
                 <div className='orderItems'>
                     <div className='orderTitle'> 구매 상품 </div>
@@ -352,6 +460,8 @@ export const Order: React.FC = () => {
 
 
             </div>
+
+
 
         </div>
     );

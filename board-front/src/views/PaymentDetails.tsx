@@ -1,25 +1,33 @@
-import React, { useEffect } from 'react'
-import styles from "./Mypage.module.css";
-import { PaymentShowList } from 'components/PaymentShowList';
+import React, { useEffect, useState } from 'react';
+import { PaymentShowList } from 'components/PaymentDetail/PaymentShowList';
 import { Link, useNavigate } from 'react-router-dom';
-import sendRequestWithToken from 'apis/sendRequestWithToken';
-import { url } from 'inspector';
+import {sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
+import { PaymentDetail } from 'types';
+import { MyPageMenu } from 'components/MyPage/MyPageMenu';
+import { Pagination } from 'components/Pagination';
 
-
-export const PaymentDetails:React.FC = () => {
-    const url = '/info';
-    const post = 'GET';
-    const data = null;
+export const PaymentDetails: React.FC = () => {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
-    
+    const [paymentDetails, setPaymentDetails] = useState<PaymentDetail[] | null>(null);
+    const [page, setPage] = useState<number>(1); // 페이지 번호
+    const [pageSize, setPageSize] = useState<number>(5); // 페이지 크기
+    const [totalPages, setTotalPages] = useState<number>(1); // 전체 페이지 수
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);            
-                
-                
+                const url = `/info/orderDetails?page=${page}&pageSize=${pageSize}`;
+                const post = 'GET';
+                const data = null;
+                const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
+
+                setPaymentDetails(response.content);
+
+
+                console.log(response.content)
+                setTotalPages(Math.ceil(response.totalElements / pageSize));
             } catch (error) {
                 navigate('/login');
                 console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
@@ -27,8 +35,12 @@ export const PaymentDetails:React.FC = () => {
         };
 
         fetchData();
-    }, []);
-    
+    }, [page, pageSize]);
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
+
     return (
         <div className="container mx-auto mt-10 p-5 rounded-lg">
             <div className="flex justify-between items-center border-b pb-4">
@@ -41,25 +53,26 @@ export const PaymentDetails:React.FC = () => {
             </div>
             <div className="py-5">
                 <div className="flex">
-                    <div className="w-1/6 border-r text-l font-semibold" >
-                        <ul className="space-y-6">
-                            <li><Link to='/paymentDetails' className={styles.myPageCategory}>주문 내역 {'>'}</Link></li>
-                            <li><Link to='/cart' className={styles.myPageCategory}>장바구니 {'>'}</Link></li>
-                            <li><Link to="#" className={styles.myPageCategory}>상품 후기 {'>'}</Link></li>
-                            <li><Link to="#" className={styles.myPageCategory}>1:1 문의 {'>'}</Link></li>
-                            <li><Link to="#" className={styles.myPageCategory}>회원 탈퇴 {'>'}</Link></li>
-                        </ul>
+                    <div className="w-1/6 border-r text-l font-semibold">
+                        <MyPageMenu />
                     </div>
 
                     <div>
                         <div className='text-left ml-10 text-2xl border-b font-semibold'> 주문 내역 </div>
                         <div className='ml-10 font-medium'>
-                            <PaymentShowList />
-                        </div> 
+                            {paymentDetails ? (
+                                <>
+                                    <PaymentShowList paymentDetails={paymentDetails} />
+                                    <Pagination totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
+                                </>
+                            ) : (
+                                <p>Loading...</p>
+                            )}
+                        </div>
+
                     </div>
-                            
                 </div>
             </div>
         </div>
     );
-}
+};

@@ -54,10 +54,8 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
                     <p className={styles.productTitle}>{product.name}</p>
                     <p className={styles.productSp}>{product.description}</p>
                     <div className={styles.productPrice}>
-
-
-                        <p className={styles.productDiscount}>{(product.regularPrice && product.salePrice) ? (product.regularPrice - product.salePrice).toLocaleString() : 0}원</p>
-                        <p className={styles.productPriceBefore}>{product.regularPrice ? product.regularPrice.toLocaleString() : 0}원</p>
+                        <p className={styles.productDiscount}>{(product.regularPrice - product.salePrice).toLocaleString()}원</p>
+                        <p className={styles.productPriceBefore}>{product.regularPrice.toLocaleString()}원</p>
 
                     </div>
                 </div>

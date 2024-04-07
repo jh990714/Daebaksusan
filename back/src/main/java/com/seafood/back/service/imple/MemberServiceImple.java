@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 
-
 public class MemberServiceImple implements MemberService {
 
     private final MemberRepository memberRepository;
@@ -42,7 +41,7 @@ public class MemberServiceImple implements MemberService {
 
     @Override
     public boolean authenticateMember(String memberId, String password) {
-        MemberEntity user = memberRepository.findByMemberId(memberId);
+        MemberEntity user = memberRepository.findById(memberId);
 
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             return false;
@@ -54,6 +53,8 @@ public class MemberServiceImple implements MemberService {
     @Override
     public MemberEntity registerNewMember(MemberEntity member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
+        member.setRole("ROLE_USER");
+        member.setType("sign");
         return memberRepository.save(member);
     }
 
