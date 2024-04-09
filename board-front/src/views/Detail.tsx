@@ -1,5 +1,5 @@
 import { DetailTabComp } from 'components/DetailTabComp';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 import { Cart, CartItem, Option } from 'types';
 import axios, { AxiosError } from 'axios';
@@ -19,6 +19,7 @@ import { useAuthContext } from 'hook/AuthProvider';
 
 
 export const Detail: React.FC = () => {
+    const navigate = useNavigate();
     const { cartItems, setCartItems } = useCart();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const product = useLocation().state.product;
@@ -31,7 +32,7 @@ export const Detail: React.FC = () => {
     const [optionPrice, setOptionPrice] = useState<number>(0);
     const [boxCnt, setBoxCnt] = useState<number>(1);
 
-    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + (product.shippingCost * boxCnt));
+    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice ) * quantity + ((product.shippingCost + optionPrice) * boxCnt))
 
     // 옵션 받아오기
     useEffect(() => {
@@ -116,7 +117,7 @@ export const Detail: React.FC = () => {
         // 옵션 선택에 따른 추가 금액을 총 금액에 반영
         if (option) {
             setOptionPrice(option.addPrice);
-            setTotalPrice((product.regularPrice - product.salePrice ) * quantity + ((product.shippingCost + optionPrice) * boxCnt))
+            setTotalPrice((product.regularPrice - product.salePrice ) * quantity + ((product.shippingCost + option.addPrice) * boxCnt))
             setoption(option);
         } else {
             setoption(null);
@@ -136,13 +137,12 @@ export const Detail: React.FC = () => {
                         <div className='text-sm text-gray-400'>- {option?.name}({option?.addPrice.toLocaleString()})  배송 비({product.shippingCost.toLocaleString()}) - </div>
                     </div>
                     <div className="">{count = Math.min(maxQuantityPerDelivery, quantity - (i * maxQuantityPerDelivery))}개</div>
-                    <div className="">{((product.regularPrice - product.salePrice + optionPrice) * count + product.shippingCost).toLocaleString()} 원</div>
+                    <div className="">{((product.regularPrice - product.salePrice) * count + optionPrice + product.shippingCost).toLocaleString()} 원</div>
                 </div>
             )
         }
         return (arr);
     }
-
 
     const handleAddToCart = async () => {
         try {
@@ -165,7 +165,6 @@ export const Detail: React.FC = () => {
 
             const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
             console.log(response);
-            alert('장바구니에 상품이 추가되었습니다.');
 
             const updatedCartItems = cartItems.map(cart => {
                 if (cart.id === response.cartId) {
@@ -266,11 +265,39 @@ export const Detail: React.FC = () => {
             }));
             setCartItems(newCartItems);
 
-            alert('장바구니에 상품이 추가되었습니다.');
-
         }
+        alert('장바구니에 상품이 추가되었습니다.');
     };
 
+    const handleGoToOrder = () => {
+        if (quantity > product.stockQuantity) {
+            alert('재고가 초과되었습니다.');
+            return;
+        }
+
+        const newItem: CartItem = {
+            product: product,
+            option: option,
+            quantity: quantity,
+            boxCnt: boxCnt,
+        };
+
+        const newCart: Cart = {
+            id: 1,
+            cartItem: newItem,
+            isSelected: true
+        }
+
+        // 장바구니 isSelect false로 해야함
+
+
+        navigate('/order', {
+            state: {
+                cartItems: [newCart] 
+            }
+        });
+    }
+    
     const isSoldOut = (product.stockQuantity === 0)
 
     return (
@@ -345,7 +372,7 @@ export const Detail: React.FC = () => {
                             <div className='text-2xl p-4 font-bold text-blue-700 text-end'>{totalPrice.toLocaleString()} 원</div>
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-white px-4 py-2 rounded" disabled={isSoldOut}>구매하기</button>
+                            <button className="bg-blue-700 text-white px-4 py-2 rounded" disabled={isSoldOut} onClick={handleGoToOrder}>구매하기</button>
                             <button className="bg-blue-700 text-white px-4 py-2 rounded" onClick={handleAddToCart}>장바구니 담기</button>
 
                         </div>
