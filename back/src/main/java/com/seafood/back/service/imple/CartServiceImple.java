@@ -98,6 +98,7 @@ public class CartServiceImple implements CartService{
             int newboxCnt = (int) Math.ceil((double) totalQuantity / productOptional.get().getMaxQuantityPerDelivery());
 
             // // 최대 수량을 초과하지 않는지 확인합니다.
+            
             if (totalQuantity > productOptional.get().getStockQuantity()) {
                 // 최대 수량을 초과할 경우 에러 처리 또는 예외 처리를 할 수 있습니다.
                 throw new IllegalArgumentException("최대 수량을 초과했습니다.");
@@ -110,7 +111,7 @@ public class CartServiceImple implements CartService{
 
             return savedCartItem;
         } else {
-            if (quantity > productOptional.get().getMaxQuantityPerDelivery()) {
+            if (quantity > productOptional.get().getStockQuantity()) {
                 // 최대 수량을 초과할 경우 에러 처리 또는 예외 처리를 할 수 있습니다.
                 throw new RuntimeException("최대 수량을 초과했습니다.");
             }

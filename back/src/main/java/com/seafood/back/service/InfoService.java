@@ -10,4 +10,5 @@ public interface InfoService {
     String getUserInfo(String id);
 
     Page<PaymentDetailDTO> getOrdertDetails(String id, int page, int size);
+    List<PaymentDetailDTO> getPaymentByOrderNumberAndPassword(String orderNumber, String password);
 }

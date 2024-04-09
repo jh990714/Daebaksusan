@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -39,6 +40,8 @@ public class InfoServiceImple implements InfoService {
     private final PaymentDetailsRepository paymentDetailsRepository;
     private final ObjectMapper objectMapper; // JSON 변환을 위한 ObjectMapper
     private final IamportClient iamportClient;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public String getUserInfo(String id) {
@@ -91,6 +94,41 @@ public class InfoServiceImple implements InfoService {
         }
 
         return new PageImpl<>(paymentDetailDTOs, pageable, paymentDetailsPage.getTotalElements());
+    }
+
+    @Override
+    public List<PaymentDetailDTO> getPaymentByOrderNumberAndPassword(String orderNumber, String password) {
+        PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByOrderNumber(orderNumber);
+        
+        if (paymentDetail == null || paymentDetail.getMemberId() != null || !passwordEncoder.matches(password, paymentDetail.getPassword())) {
+            throw new RuntimeException("주문 정보를 찾을 수 없습니다.");
+        }
+
+        List<PaymentDetailDTO> paymentDetailDTOs = new ArrayList<>();
+
+        try {
+            PaymentDetailDTO paymentDetailDTO = new PaymentDetailDTO();
+
+            IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
+
+            List<CartDTO> orderItems = extractOrderItems(iamportResponse);
+
+            paymentDetailDTO.setOrderNumber(paymentDetail.getOrderNumber());
+            paymentDetailDTO.setOrderItems(orderItems);
+            if (iamportResponse.getResponse().getStatus().equals("cancelled")) {
+                paymentDetailDTO.setCancel(true);
+            }
+
+            paymentDetailDTOs.add(paymentDetailDTO);
+
+            return paymentDetailDTOs;
+        } catch (IamportResponseException | IOException e) {
+            // 예외 발생 시 처리
+            e.printStackTrace();
+        }
+        return null;
+
+        
     }
 
     

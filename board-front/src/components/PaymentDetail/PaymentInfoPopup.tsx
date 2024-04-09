@@ -43,18 +43,14 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
     useEffect(() => {
         // API 호출하여 결제 정보 및 주문 정보 가져오기
         console.log(orderNumber)
-        const url = `/payment/getPaymentAndOrderInfo/${orderNumber}`;
-        const method = 'POST';
-        const data = null;
 
         const fetchPaymentInfo = async () => {
             try {
-                const response = await sendRequestWithToken(url, method, data, setIsLoggedIn);
+                const response = await axios.post('http://localhost:8080/payment/getPaymentAndOrderInfo/' + orderNumber)
                 console.log(response)
-                setPaymentInfo(response.body);
+                setPaymentInfo(response.data.body);
             } catch (error) {
-                console.error('결제 취소 오류:', error);
-                alert('결제 취소 중 오류가 발생했습니다.');
+                alert('결제 정보를 불러오는 중 오류가 발생하였습니다.');
             }
         };
 
@@ -88,9 +84,9 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
 
 
     return (
-        
-            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-                <div className="bg-white p-8 rounded-lg max-w-xl w-full overflow-y-auto max-h-[60%]">
+
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-8 rounded-lg max-w-xl w-full overflow-y-auto max-h-[60%]">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-lg font-bold">주문 정보</h2>
                     <button className="text-gray-500 hover:text-gray-700" onClick={onClose}>
@@ -146,7 +142,7 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
                             <td className="py-2">{paymentInfo?.paymentMethod}</td>
                         </tr>
 
-    
+
 
                         {/* paymentMethod에 따라 다른 정보 표시 */}
                         {paymentInfo?.paymentMethod === '무통장 입금' && (
@@ -187,11 +183,11 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
                             </>
                         )}
 
-<tr>
-                        <td className="font-bold pr-4 py-2">결제 금액:</td>
+                        <tr>
+                            <td className="font-bold pr-4 py-2">결제 금액:</td>
                             <td className="py-2">{paymentInfo?.amount.toLocaleString()} 원</td>
                         </tr>
-                        
+
                         <tr>
                             <td className="font-bold pr-4 py-2">결제 상태:</td>
                             <td className="py-2">{paymentInfo?.paymentStatus}</td>

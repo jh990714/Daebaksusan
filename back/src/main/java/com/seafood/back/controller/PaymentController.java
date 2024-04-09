@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.seafood.back.dto.GuestInfo;
 import com.seafood.back.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,10 @@ public class PaymentController {
     
 
     @PostMapping("/verifyIamport/{imp_uid}")
-    public ResponseEntity<?> paymentByImpUid(@PathVariable String imp_uid) {
+    public ResponseEntity<?> paymentByImpUid(@PathVariable String imp_uid, @RequestBody GuestInfo guestInfo) {
         try {
-            Map<String, Object> response = paymentService.verifyAndProcessPayment(imp_uid);
+            
+            Map<String, Object> response = paymentService.verifyAndProcessPayment(imp_uid, guestInfo.getPassword());
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("오류 발생: " + e.getMessage(), e);
@@ -49,10 +52,9 @@ public class PaymentController {
     }
 
     @PostMapping("/getPaymentAndOrderInfo/{orderNumber}")
-    public ResponseEntity<?> getPaymentAndOrderInfo(Authentication authentication, @PathVariable String orderNumber) {
+    public ResponseEntity<?> getPaymentAndOrderInfo(@PathVariable String orderNumber) {
         try {
-            String id = authentication.getName();
-            ResponseEntity<?> response  = paymentService.getPaymentAndOrderInfo(id, orderNumber);
+            ResponseEntity<?> response  = paymentService.getPaymentAndOrderInfo(orderNumber);
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

@@ -16,6 +16,8 @@ public interface PaymentDetailsRepository extends JpaRepository<PaymentDetailsEn
     Long getAutoIncrementId();
     Page<PaymentDetailsEntity> findByMemberIdOrderByPaymentDetailIdDesc(String id, Pageable pageable);
     PaymentDetailsEntity findByMemberIdAndOrderNumber(String id, String orderNumber);
+    PaymentDetailsEntity findByOrderNumber(String orderNumber);
+    PaymentDetailsEntity findByPasswordAndOrderNumber(String password, String orderNumber);
     
     
 }

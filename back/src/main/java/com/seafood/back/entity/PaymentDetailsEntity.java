@@ -30,4 +30,7 @@ public class PaymentDetailsEntity {
 
     @Column(name = "is_cancel")
     private Boolean isCancel;
+
+    @Column(name = "password")
+    private String password;
 }
