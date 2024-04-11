@@ -13,7 +13,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 	const category = useLocation().state.category;
 
 
-	const [visibleCount, setVisibleCount] = useState<number>(12);
+	const [visibleCount, setVisibleCount] = useState<number>(16);
 	const [products, setProducts] = useState<Product[]>([])
 
 	let pageTitle;
@@ -86,7 +86,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 	};
 
 	const handleMoreClick = () => {
-		setVisibleCount(prevCount => Math.min(prevCount + 4, products.length));
+		setVisibleCount(prevCount => Math.min(prevCount + 16, products.length));
 	}
 	return (
 		<div className={styles.homeContainer}>
