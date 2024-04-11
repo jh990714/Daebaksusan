@@ -91,10 +91,11 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
                 <div className="flex text-yellow-500 mr-3 content-center text-sm">{renderStars(review.score)}</div>
                 <div className="content-center text-sm text-gray-400">{review.reviewDate}</div>
             </div>
-            <div className="w-[1000px] h-[220px]">
-                {review.imageUrls.length > 4 ? (
-                    <ImageGalleryComp imageUrls={review.imageUrls} />
-                ) : (
+            {review.imageUrls.length > 0 && (
+                <div className="w-[1000px] h-[220px]">
+                    {review.imageUrls.length > 4 ? (
+                        <ImageGalleryComp imageUrls={review.imageUrls} />
+                    ) : (
                         <div className="flex">
                             {review.imageUrls.map((imageUrl, index) => (
                                 <div key={index} className="w-[250px] h-[200px] p-1">
@@ -102,17 +103,20 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
                                 </div>
                             ))}
                         </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
+
+
             <div className="m-2 text-start text-xs text-gray-500">{review.productName + review.optionName}</div>
-            <div className="m-2 text-sm text-gray-600">{review.contents}</div>
+            <div className="mt-4 m-2 text-start text-sm text-gray-600">{review.contents}</div>
             
             {review.responses.map((response, index) => (
-                <div className="bg-gray-100 mt-4 rounded-md">
+                <div className="bg-gray-100 mt-4 p-2 text-sm rounded-md">
                     <div key={index}>
                         {/* <div className="p-2 text-start text-black font-bold">{response.name}</div> */}
                         <div className="p-2 text-start text-black font-bold">대박수산</div>
-                        <div className="p-2 text-gray-600">{response.responseText}</div>
+                        <div className="p-2 text-start text-gray-600">{response.responseText}</div>
                     </div>
                 </div>
             ))}

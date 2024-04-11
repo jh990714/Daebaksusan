@@ -25,7 +25,7 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
   }, [productId]);
 
   return (
-    <div className="grid grid-rows">
+    <div className="grid grid-rows w-full">
       {reviews.map((review, index) => (
         <ReviewComp key={index} review={review}/>
       ))}
