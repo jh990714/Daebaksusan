@@ -7,6 +7,7 @@ import { HomeBanner1 } from 'components/HomeBanner/HomeBanner1';
 import { useAnimateOnScroll } from 'hook/useAnimateOnScroll '
 import './Home.css'
 import { HomeBanner2 } from 'components/HomeBanner/HomeBanner2';
+import TimeLimitedDeals from 'components/Deals/TimeLimitedDeals';
 
 export const Home: React.FC = () => {
   const ref1 = useAnimateOnScroll();
@@ -22,7 +23,7 @@ export const Home: React.FC = () => {
       </div>
 
       <div ref={ref1} className='HomeBanner'>
-        <HomeBanner1 />
+        <TimeLimitedDeals />
       </div>
 
       <div ref={ref2} className='HomeBanner'>
