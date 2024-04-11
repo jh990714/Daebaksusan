@@ -5,7 +5,7 @@ import './Order.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AddressObj, Cart, CartItem, InputErrors, Option, OrdererInfo, Product, } from 'types';
 import { OrderItemListComp } from 'components/product/OrderItemListComp';
-import {refreshAccessToken, sendRequestWithToken} from 'apis/sendRequestWithToken';
+import { refreshAccessToken, sendRequestWithToken } from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
 import axios from 'axios';
 import { PayMethodButton } from 'components/Button/PayMethodButton';
@@ -14,6 +14,7 @@ import tossPayIcon from '../assets/payment/tossPay.png'
 import cardIcon from '../assets/payment/card.png'
 import { useCart } from 'hook/CartProvider';
 import { fetchCartItemsDelete } from 'utils/cartUtils';
+import { GuestPaymentModal } from 'components/GuestPaymentModal';
 
 declare const window: typeof globalThis & {
     IMP: any;
@@ -21,8 +22,12 @@ declare const window: typeof globalThis & {
 
 // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [guestPassword, setGuestPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [isPaymentInProgress, setIsPaymentInProgress] = useState(false); // 결제 진행 중인지 여부를 관리하는 상태 추가
     const orderItems = useLocation().state.cartItems;
-    const {cartItems,  setCartItems} = useCart();
+    const { cartItems, setCartItems } = useCart();
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [ordererName, setOrdererName] = useState<string>('');
@@ -44,7 +49,7 @@ export const Order: React.FC = () => {
 
     const firstItemProductName = orderItems.length > 0 ? orderItems[0].cartItem.product.name : '';
     const remainingItemNames = orderItems.slice(1).map((item: { cartItem: { product: { name: any; }; }; }) => item.cartItem.product.name).join(', ');
-    
+
     useEffect(() => {
         // orderItems가 비어 있는지 확인
         if (!orderItems || orderItems.length === 0) {
@@ -118,6 +123,11 @@ export const Order: React.FC = () => {
 
 
     const handlePayment = async () => {
+        // 결제 진행 중일 때는 중복해서 실행되지 않도록 처리
+        if (isPaymentInProgress) {
+            return;
+        }
+
         const errors: InputErrors = {
             ordererName: !ordererName,
             ordererPhoneMid: !ordererPhoneMid,
@@ -140,7 +150,7 @@ export const Order: React.FC = () => {
         let id = null
         try {
             await refreshAccessToken();
-            
+
             const url = '/info';
             const post = 'GET';
             const data = null;
@@ -148,14 +158,48 @@ export const Order: React.FC = () => {
             const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
             id = response.id
 
+            startPayment(id)
+
         } catch (error: any) {
             if (error.response && error.response.data) {
                 alert('결제호출 중 에러가 발생했습니다.')
+                return
             }
-
-            alert('비회원 결제입니다.')
+            setIsModalOpen(true);
         }
 
+    }
+    const handleGuestPayment = () => {
+        if (guestPassword.length >= 4 && guestPassword === confirmPassword) {
+            // 비밀번호가 유효하면 모달을 닫고 결제를 진행합니다.
+            setIsModalOpen(false);
+            startPayment(null);
+        } else if (guestPassword.length < 4) {
+            // 비밀번호가 4글자 미만이면 오류 메시지를 표시합니다.
+            alert('비밀번호는 4글자 이상이어야 합니다.');
+        } else {
+            // 비밀번호가 일치하지 않으면 오류 메시지를 표시합니다.
+            alert('비밀번호가 일치하지 않습니다.');
+        }
+    };
+
+
+    const compareAndSetSelect = () => {
+        const updatedCartItems = cartItems.map(cartItem => {
+            const foundOrderItem = orderItems.find((orderItem: { id: number; }) => orderItem.id === cartItem.id);
+            console.log(foundOrderItem)
+            if (foundOrderItem) {
+                return { ...cartItem, isSelected: true };
+            } else {
+                return { ...cartItem, isSelected: false };
+            }
+        });
+        console.log(updatedCartItems)
+        return updatedCartItems
+    };
+    
+    const startPayment = (id: string | null) => {
+        setIsPaymentInProgress(true);
         // 주문 상품 정보를 requestData 객체에 담음
         const requestData = orderItems.map((orderItem: { id: number; cartItem: { product: Product; option: Option; quantity: number; boxCnt: number; }; }) => ({
             cartId: orderItem.id,
@@ -177,7 +221,7 @@ export const Order: React.FC = () => {
             amount: totalPrice + totalShippingCost,
             buyer_email: ordererInfo?.email,
             buyer_name: ordererName,
-            buyer_tel: '010-' + ordererPhoneMid + '-' +  ordererPhoneLast,
+            buyer_tel: '010-' + ordererPhoneMid + '-' + ordererPhoneLast,
             buyer_addr: addressObj.address + ' ' + addressObj.details,
             buyer_postcode: addressObj.zip,
             custom_data: {
@@ -188,28 +232,31 @@ export const Order: React.FC = () => {
 
         IMP.request_pay(paymentData, async function (rsp: any) {
 
+            setIsPaymentInProgress(false); // 결제 진행 중 상태를 해제
+
             if (rsp.success) {
                 try {
                     // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
-                    const response = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid);
-
+                    const response = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid, {
+                        password: guestPassword // 비밀번호 추가
+                    });
                     const orderNumber = response.data.orderNumber
-                    const iamportRespons =  response.data.iamportResponse.response
+                    const iamportRespons = response.data.iamportResponse.response
                     console.log(response)
                     // 결제 확인 응답 처리
                     if (rsp.paid_amount === iamportRespons.amount) {
 
                         alert('결제 성공');
-
-                        fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn);
-                        navigate('/successOrder', { 
+                        const updatedCartItems = compareAndSetSelect()
+                        fetchCartItemsDelete(updatedCartItems, setCartItems, setIsLoggedIn);
+                        navigate('/successOrder', {
                             state: {
                                 orderNumber: orderNumber,
                                 iamportResponse: iamportRespons
                             }
                         });
                     }
-                    
+
                 } catch (error: any) {
                     console.error('결제 확인 중 오류 발생:', error);
                     // 여기서는 네트워크 오류 등의 클라이언트 측 에러를 처리할 수 있습니다p
@@ -229,8 +276,6 @@ export const Order: React.FC = () => {
 
         });
     }
-
-
 
     // 입력 필드 변경 시 에러 상태를 해제하는 함수
     const handleChange = (field: string, value: string) => {
@@ -261,6 +306,10 @@ export const Order: React.FC = () => {
     };
 
     const postcodeScriptUrl = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
 
     return (
         <div className='orderContainer'>
@@ -372,48 +421,48 @@ export const Order: React.FC = () => {
                     <DaumPost addressObj={addressObj} setAddressObj={setAddressObj} postcodeScriptUrl={postcodeScriptUrl} inputErrors={inputErrors} setInputErrors={setInputErrors} />
                 </div>
                 <div className='orderTitle'> 결제 수단 </div>
-            <div className='mt-4'>
-                <div className='font-bold mb-2'> 간편결제 </div>
-                <div className='flex flex-wrap gap-4 mb-4 pl-4'>
-                    <PayMethodButton
-                        label='kakao pay'
-                        imageUrl={kakaoPayIcon}
-                        onClick={() => handlePaymentMethodClick('kakaopay', 'card')}
-                        selected={pg === 'kakaopay'}
-                    />
-                    <PayMethodButton
-                        label='toss pay'
-                        imageUrl={tossPayIcon}
-                        onClick={() => handlePaymentMethodClick('tosspay', 'card')}
-                        selected={pg === 'tosspay'}
-                        
-                    />
-        
-                </div>
+                <div className='mt-4'>
+                    <div className='font-bold mb-2'> 간편결제 </div>
+                    <div className='flex flex-wrap gap-4 mb-4 pl-4'>
+                        <PayMethodButton
+                            label='kakao pay'
+                            imageUrl={kakaoPayIcon}
+                            onClick={() => handlePaymentMethodClick('kakaopay', 'point')}
+                            selected={pg === 'kakaopay'}
+                        />
+                        <PayMethodButton
+                            label='toss pay'
+                            imageUrl={tossPayIcon}
+                            onClick={() => handlePaymentMethodClick('tosspay', 'point')}
+                            selected={pg === 'tosspay'}
 
-                <div className='font-bold mb-2'> 카드결제●계좌이체 </div>
-                <div className='flex flex-wrap gap-4 pl-4'>
-                    <PayMethodButton
-                        label='신용/체크 카드'
-                        imageUrl={cardIcon}
-                        onClick={() => handlePaymentMethodClick('nice', 'card')}
-                        selected={pg === 'nice' && paymentMethod === 'card'} // 선택된 결제 수단에 따라 selected prop을 설정
-                    />
-                    <PayMethodButton
-                        label='무통장 입금'
-                        imageUrl={cardIcon}
-                        onClick={() => handlePaymentMethodClick('nice', 'vbank')}
-                        selected={pg === 'nice' && paymentMethod === 'vbank'} // 선택된 결제 수단에 따라 selected prop을 설정
-                    />
-                    <PayMethodButton
-                        label='계좌이체'
-                        imageUrl={cardIcon}
-                        onClick={() => handlePaymentMethodClick('nice', 'trans')}
-                        selected={pg === 'nice' && paymentMethod === 'trans'} // 선택된 결제 수단에 따라 selected prop을 설정
-                    />
-                </div>
+                        />
 
-            </div>
+                    </div>
+
+                    <div className='font-bold mb-2'> 카드결제●계좌이체 </div>
+                    <div className='flex flex-wrap gap-4 pl-4'>
+                        <PayMethodButton
+                            label='신용/체크 카드'
+                            imageUrl={cardIcon}
+                            onClick={() => handlePaymentMethodClick('nice', 'card')}
+                            selected={pg === 'nice' && paymentMethod === 'card'} // 선택된 결제 수단에 따라 selected prop을 설정
+                        />
+                        <PayMethodButton
+                            label='무통장 입금'
+                            imageUrl={cardIcon}
+                            onClick={() => handlePaymentMethodClick('nice', 'vbank')}
+                            selected={pg === 'nice' && paymentMethod === 'vbank'} // 선택된 결제 수단에 따라 selected prop을 설정
+                        />
+                        <PayMethodButton
+                            label='계좌이체'
+                            imageUrl={cardIcon}
+                            onClick={() => handlePaymentMethodClick('nice', 'trans')}
+                            selected={pg === 'nice' && paymentMethod === 'trans'} // 선택된 결제 수단에 따라 selected prop을 설정
+                        />
+                    </div>
+
+                </div>
 
                 <div className='orderItems'>
                     <div className='orderTitle'> 구매 상품 </div>
@@ -454,9 +503,20 @@ export const Order: React.FC = () => {
                         </li>
                     </ul>
                     <div className='paymentContainer'>
-                        <button className='paymentButton' onClick={handlePayment} >결제하기</button>
+                        <button className='paymentButton' onClick={handlePayment} disabled={isPaymentInProgress}>
+                            {isPaymentInProgress ? '결제 진행 중...' : '결제하기'}
+                        </button>
                     </div>
                 </div>
+                <GuestPaymentModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    onConfirm={handleGuestPayment}
+                    password={guestPassword}
+                    setPassword={setGuestPassword}
+                    confirmPassword={confirmPassword}
+                    setConfirmPassword={setConfirmPassword}
+                />
 
 
             </div>

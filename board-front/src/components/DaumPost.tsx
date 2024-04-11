@@ -28,7 +28,7 @@ export const DaumPost: React.FC<DaumPostProps> = ({ addressObj, setAddressObj, p
       const newAddressObj = {
         address: localAddress + fullAddress,
         zip: zonecode,
-        details: addressObj.details
+        details: ''
       };
       setInputErrors({
         ...inputErrors,
@@ -51,6 +51,7 @@ export const DaumPost: React.FC<DaumPostProps> = ({ addressObj, setAddressObj, p
 
   const handleOpenPostcodePopup = () => {
     openPostcodePopup({ onComplete: onCompletePostcode });
+    
   };
 
   return (

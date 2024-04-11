@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -50,6 +51,8 @@ public class PaymentServiceImple implements PaymentService {
     private final OptionRepository optionRepository;
     private final ProductRepository productRepository;
     private final PaymentDetailsRepository paymentDetailsRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -97,7 +100,7 @@ public class PaymentServiceImple implements PaymentService {
     }
 
     @Override
-    public String savePaymentDetails(String id, String impUid) {
+    public String savePaymentDetails(String id, String impUid, String password) {
         PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
         LocalDateTime now = LocalDateTime.now();
@@ -117,6 +120,7 @@ public class PaymentServiceImple implements PaymentService {
         paymentDetails.setOrderNumber(orderNumber);
         paymentDetails.setImpUid(impUid);
         paymentDetails.setIsCancel(true);
+        paymentDetails.setPassword(passwordEncoder.encode(password));
         paymentDetailsRepository.save(paymentDetails);
 
         return orderNumber;
@@ -124,7 +128,7 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid) {
+    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password) {
         // 결제가 성공하면 상품 수량 변경
         productService.updateProductQuantities(orderItems);
 
@@ -137,13 +141,13 @@ public class PaymentServiceImple implements PaymentService {
             cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
         }
         // 결제 정보 저장
-        String orderNumber = savePaymentDetails(id, impUid);
+        String orderNumber = savePaymentDetails(id, impUid, password);
 
         return orderNumber;
     }
 
     @Override
-    public Map<String, Object> verifyAndProcessPayment(String imp_uid) throws Exception {
+    public Map<String, Object> verifyAndProcessPayment(String imp_uid, String password) throws Exception {
         log.info(imp_uid);
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(imp_uid);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -159,7 +163,7 @@ public class PaymentServiceImple implements PaymentService {
         BigDecimal orderAmount = orderAmount(imp_uid, orderItems);
 
         if (orderAmount.compareTo(paidAmount) == 0) {
-            String orderNumber = processSuccessfulPayment(id, orderItems, imp_uid);
+            String orderNumber = processSuccessfulPayment(id, orderItems, imp_uid, password);
             Map<String, Object> response = new HashMap<>();
             response.put("orderNumber", orderNumber);
             response.put("iamportResponse", iamportResponse);
@@ -207,9 +211,9 @@ public class PaymentServiceImple implements PaymentService {
     }
 
     @Override
-    public ResponseEntity<?> getPaymentAndOrderInfo(String memberId, String orderNumber) {
+    public ResponseEntity<?> getPaymentAndOrderInfo(String orderNumber) {
         try {
-            PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByMemberIdAndOrderNumber(memberId, orderNumber);
+            PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByOrderNumber(orderNumber);
             IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
     
             PaymentAndOrderInfo paymentAndOrderInfo = new PaymentAndOrderInfo();
