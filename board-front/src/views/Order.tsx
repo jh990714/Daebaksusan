@@ -184,6 +184,20 @@ export const Order: React.FC = () => {
     };
 
 
+    const compareAndSetSelect = () => {
+        const updatedCartItems = cartItems.map(cartItem => {
+            const foundOrderItem = orderItems.find((orderItem: { id: number; }) => orderItem.id === cartItem.id);
+            console.log(foundOrderItem)
+            if (foundOrderItem) {
+                return { ...cartItem, isSelected: true };
+            } else {
+                return { ...cartItem, isSelected: false };
+            }
+        });
+        console.log(updatedCartItems)
+        return updatedCartItems
+    };
+    
     const startPayment = (id: string | null) => {
         setIsPaymentInProgress(true);
         // 주문 상품 정보를 requestData 객체에 담음
@@ -233,8 +247,8 @@ export const Order: React.FC = () => {
                     if (rsp.paid_amount === iamportRespons.amount) {
 
                         alert('결제 성공');
-
-                        fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn);
+                        const updatedCartItems = compareAndSetSelect()
+                        fetchCartItemsDelete(updatedCartItems, setCartItems, setIsLoggedIn);
                         navigate('/successOrder', {
                             state: {
                                 orderNumber: orderNumber,

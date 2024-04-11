@@ -77,6 +77,7 @@ export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetState
 export const fetchCartItemsDelete = async (cartItems: Cart[], setCartItems: React.Dispatch<React.SetStateAction<Cart[]>>, setIsLoggedIn: (value: boolean) => void) => {
     // 선택되지 않은 아이템만 필터링하여 상태에서 유지
     try {
+        console.log(cartItems)
         const remainingItemsNotSelect = cartItems.filter(item => !item.isSelected);
         const remainingItemstSelect = cartItems.filter(item => item.isSelected);
 
