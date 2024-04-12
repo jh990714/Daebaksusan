@@ -237,7 +237,7 @@ export const Order: React.FC = () => {
             if (rsp.success) {
                 try {
                     // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
-                    const response = await axios.post('http://localhost:8080/payment/verifyIamport/' + rsp.imp_uid, {
+                    const response = await axios.post(`${process.env.REACT_APP_API_URL}/payment/verifyIamport/` + rsp.imp_uid, {
                         password: guestPassword // 비밀번호 추가
                     });
                     const orderNumber = response.data.orderNumber

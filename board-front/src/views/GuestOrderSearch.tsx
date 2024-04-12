@@ -28,7 +28,7 @@ const OrderSearchForm: React.FC = () => {
         e.preventDefault();
         setFormState(prevState => ({ ...prevState, isLoading: true }));
         try {
-            const response = await axios.post('http://localhost:8080/guest/orderDetail', {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/guest/orderDetail`, {
                 orderNumber: formState.ordererNumber,
                 password: formState.orderPassword // 비밀번호 추가
             });

@@ -24,7 +24,7 @@ export const JoinStep3: React.FC = () => {
         const fullEmail = `${email}@${emailDomain}`;
 
         try {
-            const response = await axios.post('http://localhost:8080/members/signUp', {
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/members/signUp`, {
                 id: memberId, 
                 password: password, 
                 name: name, 

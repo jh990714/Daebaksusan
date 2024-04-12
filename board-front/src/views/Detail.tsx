@@ -38,7 +38,7 @@ export const Detail: React.FC = () => {
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/product/${product.productId}/options`);
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/product/${product.productId}/options`);
                 console.log(response.data)
                 setOptions(response.data);
                 setoption(response.data[0]);
