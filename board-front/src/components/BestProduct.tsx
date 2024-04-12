@@ -107,7 +107,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
       <div className={styles.productListContainer}>
         <div className={styles.titleContainer}>
           <div className={styles.productListTitleContainer}>
-            <Link to={category} className={styles.productListTitle}> {pageTitle} </Link>
+            <Link to={category} state={{ category: null }} className={styles.productListTitle}> {pageTitle} </Link>
             <CategoryMenuBar onCategoryChange={handleCategoryChange} />
           </div>
           
