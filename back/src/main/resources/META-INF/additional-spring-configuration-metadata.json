@@ -18,5 +18,10 @@
     "name": "iamport.secret",
     "type": "java.lang.String",
     "description": "A description for 'iamport.secret'"
+  },
+  {
+    "name": "frontend.url",
+    "type": "java.lang.String",
+    "description": "A description for 'frontend.url'"
   }
 ]}
