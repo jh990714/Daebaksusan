@@ -4,15 +4,15 @@ import { Cart } from 'types';
 import { MyCartListComp } from 'components/product/MyCartListComp';
 import { OrderFlow } from 'components/OrderFlow';
 import { Link } from 'react-router-dom';
-import { fetchCartItemsDelete, fetchCartItems} from 'utils/cartUtils';
+import { fetchCartItemsDelete, fetchCartItems } from 'utils/cartUtils';
 import { useAuthContext } from 'hook/AuthProvider';
 import { useCart } from 'hook/CartProvider';
 
 export const MyCart = () => {
-    const {cartItems,  setCartItems} = useCart();
+    const { cartItems, setCartItems } = useCart();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [selectAll, setSelectAll] = useState(true);
-    
+
     useEffect(() => {
         fetchCartItems(setCartItems, setIsLoggedIn);
     }, [isLoggedIn]);
@@ -57,8 +57,8 @@ export const MyCart = () => {
     const deleteSelectedItems = async () => {
         fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn)
     };
-    
-    
+
+
     const productCostTotal = () => {
         return cartItems
             .filter(item => item.isSelected)
@@ -135,11 +135,18 @@ export const MyCart = () => {
                     </li>
                 </ul>
 
-                <Link to='/order' state={{ cartItems: filteredCartItems }} >
+                {filteredCartItems.length > 0 ? (
+                    <Link to="/order" state={{ cartItems: filteredCartItems }}>
+                        <div className={styles.orderBtn}>
+                            선택상품 주문하기
+                        </div>
+                    </Link>
+                ) : (
                     <div className={styles.orderBtn}>
-                        선택상품 주문하기
+                        선택된 상품이 없습니다.
                     </div>
-                </Link>
+                )}
+
             </div>
         </div>
     )
