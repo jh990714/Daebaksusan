@@ -31,15 +31,15 @@ export const Home: React.FC = () => {
       </div>
 
       <div ref={ref3}>
-        <BestProduct category='./bestProducts'/>
+        <BestProduct category='best'/>
       </div>
 
       <div ref={ref4}>
-        <BestProduct category='./newProducts'/>
+        <BestProduct category='new'/>
       </div>
 
       <div ref={ref5}>
-        <BestProduct category='./allProducts'/>
+        <BestProduct category='all'/>
       </div>
     </div>
   );

@@ -139,19 +139,19 @@ export const NavigationBar = () => {
                     <div className={styles.productCategory}>
                         <ul>
                             <li>
-                                <Link to='/bestProducts' state={{ category: null }} className={styles.icon}>
+                                <Link to='/best' state={{ category: null }} className={styles.icon}>
                                     <img src={bestIcon} alt='인기 상품' style={{ width: 50, height: 50 }} />
                                     <span className={styles.iconTitle}> 인기 상품 </span>
                                 </Link>
                             </li>
                             <li>
-                                <Link to='/newProducts' state={{ category: null }} className={styles.icon}>
+                                <Link to='/new' state={{ category: null }} className={styles.icon}>
                                     <img src={newIcon} alt='최신 상품' style={{ width: 50, height: 50 }} />
                                     <span className={styles.iconTitle}> 최신 상품 </span>
                                 </Link>
                             </li>
                             <li>
-                                <Link to='/allProducts' state={{ category: null }} className={styles.icon}>
+                                <Link to='/all' state={{ category: null }} className={styles.icon}>
                                     <div className={styles.icon} onMouseEnter={toggleCategory}>
                                         <img src={cartIcon} alt='모든 상품' style={{ width: 50, height: 50 }} />
                                         <span className={styles.iconTitle}> 모든 상품 </span>

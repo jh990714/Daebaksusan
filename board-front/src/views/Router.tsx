@@ -20,9 +20,9 @@ export const Router:React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/bestProducts" element={<CategoryProduct path='./bestProducts'/>} />
-      <Route path="/newProducts" element={<CategoryProduct path='./newProducts'/>} />
-      <Route path="/allProducts" element={<CategoryProduct path='./allProducts'/>} />
+      <Route path="/best" element={<CategoryProduct path='new'/>} />
+      <Route path="/new" element={<CategoryProduct path='new'/>} />
+      <Route path="/all" element={<CategoryProduct path='all'/>} />
       <Route path="/detail" element={<Detail />} />
       <Route path="/login" element={<Login />} />
       <Route path="/mypage" element={<Mypage />} />
@@ -32,9 +32,9 @@ export const Router:React.FC = () => {
       <Route path="/cart" element={<MyCart />} />
       <Route path="/order" element={<Order />} />
       <Route path="/paymentDetails" element={<PaymentDetails />} />
-      <Route path="/categoryProducts/:category" element={<CategoryProduct path='./categoryProducts/category'/>} />
-      <Route path="/categoryProducts/:category/:sub" element={<CategoryProduct path='./categoryProducts/category/sub'/>} />
-      <Route path="/product/search" element={<CategoryProduct path='./search'/>} />
+      <Route path="/categoryProducts/:category" element={<CategoryProduct path='categoryProducts/category'/>} />
+      <Route path="/categoryProducts/:category/:sub" element={<CategoryProduct path='categoryProducts/category/sub'/>} />
+      <Route path="/product/search" element={<CategoryProduct path='search'/>} />
       <Route path='/auth/oauth-response/:token' element={<OAuth/>} />
       <Route path='/successOrder' element={<SuccessOrder/>} />
       <Route path='/guestOrderSearch' element={<GuestOrderSearch/>} />
