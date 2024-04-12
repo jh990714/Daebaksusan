@@ -31,16 +31,17 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
   let pageTitle;
 
   switch (category) {
-    case './bestProducts':
+    case 'best':
       pageTitle = '인기 상품';
+      category = 'new'
       break;
-    case './newProducts':
+    case 'new':
       pageTitle = '최신 상품';
       break;
-    case './recommendedProducts':
+    case 'recommendedProducts':
       pageTitle = '추천 상품';
       break;
-    case './allProducts':
+    case 'all':
       pageTitle = '모든 상품';
       break;
   }
@@ -48,16 +49,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({category}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let url = '';
-        if (category === './bestProducts') {
-          url = 'http://localhost:8080/product/new';
-        } else if (category === './newProducts') {
-          url = 'http://localhost:8080/product/new';
-        }
-        else if (category === './allProducts') {
-          url = 'http://localhost:8080/product/all';
-        }
-
+        let url = `${process.env.REACT_APP_API_URL}/product/${category}`;
         const response = await axios.get<Product[]>(url);
         console.log(response)
         setProducts(response.data.slice(0, 10));

@@ -19,25 +19,25 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 	let pageTitle;
 
 	switch (path) {
-		case './bestProducts':
+		case 'best':
 			pageTitle = '인기 상품';
 			break;
-		case './newProducts':
+		case 'new':
 			pageTitle = '최신 상품';
 			break;
-		case './recommendedProducts':
+		case 'recommendedProducts':
 			pageTitle = '추천 상품';
 			break;
-		case './allProducts':
+		case 'all':
 			pageTitle = '모든 상품';
 			break;
-		case './categoryProducts/category':
+		case 'categoryProducts/category':
 			pageTitle = category.name;
 			break;
-		case './categoryProducts/category/sub':
+		case 'categoryProducts/category/sub':
 			pageTitle = category.name;
 			break;
-		case './search':
+		case 'search':
 			pageTitle = '\'' + category + '\'의 검색 결과 입니다.';
 			break;
 	}
@@ -47,24 +47,17 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 			try {
 				let url = '';
 				switch (path) {
-					case './bestProducts':
-						url = 'http://localhost:8080/product/new';
-						break;
-					case './newProducts':
-						url = 'http://localhost:8080/product/new';
-						break;
-					case './allProducts':
-						url = 'http://localhost:8080/product/all';
-						break;
-					case './categoryProducts/category':
+					case 'categoryProducts/category':
 						url = `http://localhost:8080/product/category/${category.id}`;
 						break;
-					case './categoryProducts/category/sub':
+					case 'categoryProducts/category/sub':
 						url = `http://localhost:8080/product/category/sub/${category.id}`;
 						break;
-					case './search':
+					case 'search':
 						url = `http://localhost:8080/product/search?query=${category}`;
 						break;
+					default:
+						url = `${process.env.REACT_APP_API_URL}/product/${path}`;
 				}
 
 				const response = await axios.get<Product[]>(url);

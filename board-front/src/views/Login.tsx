@@ -108,13 +108,13 @@ export const Login:React.FC = () => {
             <div className="border-b-2 border-blue-700 h-3"></div>
         </div>
         
-        <div>
-            <button className="w-full flex justify-center mt-3 py-3 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Google 계정으로 계속</button>
+        <div className="grid grid-rows-2 place-content-center">
+            {/* <button className="w-full flex justify-center mt-3 py-3 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Google 계정으로 계속</button> */}
             
-            <img src={process.env.PUBLIC_URL + `/login/naver_login_btnG_complete.png`} width="222"
+            <img src={process.env.PUBLIC_URL + `/login/naver_login_btnG_complete.png`} className='mb-1 h-[45px] w-full'
               alt="네이버 로그인 버튼" onClick={() => onSnsLoginButtonClickHandler('naver')}/>
 
-            <img src={process.env.PUBLIC_URL + `/login/kakao_login_medium_narrow.png`} width="222"
+            <img src={process.env.PUBLIC_URL + `/login/kakao_login_medium_wide.png`} className=""
               alt="카카오 로그인 버튼" onClick={() => onSnsLoginButtonClickHandler('kakao')}/>
             {/* <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-green-600 text-sm font-medium text-white hover:bg-green-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600" onClick={() => onSnsLoginButtonClickHandler('kakao')}>Naver 계정으로 계속</button> */}
             {/* <button className="w-full flex justify-center mt-3 py-3 px-4 rounded-md bg-yellow-300 text-sm font-medium text-yellow-950 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300">Kakao 계정으로 계속</button> */}
