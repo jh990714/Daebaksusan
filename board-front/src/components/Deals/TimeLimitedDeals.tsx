@@ -15,7 +15,7 @@ const TimeLimitedDeals: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const url = 'http://localhost:8080/product/all';
+                const url = `${process.env.REACT_APP_API_URL}/product/all`;
                 const response = await axios.get<Product[]>(url);
                 setProducts(response.data.slice(0, 4));
             } catch (error) {
