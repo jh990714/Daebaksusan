@@ -48,13 +48,13 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 				let url = '';
 				switch (path) {
 					case 'categoryProducts/category':
-						url = `http://localhost:8080/product/category/${category.id}`;
+						url = `${process.env.REACT_APP_API_URL}/product/category/${category.id}`;
 						break;
 					case 'categoryProducts/category/sub':
-						url = `http://localhost:8080/product/category/sub/${category.id}`;
+						url = `${process.env.REACT_APP_API_URL}/product/category/sub/${category.id}`;
 						break;
 					case 'search':
-						url = `http://localhost:8080/product/search?query=${category}`;
+						url = `${process.env.REACT_APP_API_URL}/product/search?query=${category}`;
 						break;
 					default:
 						url = `${process.env.REACT_APP_API_URL}/product/${path}`;

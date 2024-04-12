@@ -6,7 +6,7 @@ import { useAuthContext } from 'hook/AuthProvider';
 
 
 export const Login:React.FC = () => {
-    const DOMAIN = 'http://localhost:8080';
+    const DOMAIN = `${process.env.REACT_APP_API_URL}`;
     const API_DOMAIN = `${DOMAIN}/api/v1`;
 
     const SNS_LOGIN_URL = (type: 'kakao' | 'naver') => `${API_DOMAIN}/auth/oauth2/${type}`;
@@ -28,7 +28,7 @@ export const Login:React.FC = () => {
         setTimeout(() => setInputShake(false), 500);
       } else {
         try {
-          const response = await axios.post('http://localhost:8080/members/login', {
+          const response = await axios.post(`${process.env.REACT_APP_API_URL}/members/login`, {
             id: id,
             password: password,
           });
