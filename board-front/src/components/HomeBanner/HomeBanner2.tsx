@@ -10,7 +10,7 @@ export const HomeBanner2 = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response: AxiosResponse<Product[]> = await axios.get<Product[]>('http://localhost:8080/product/new');
+        const response: AxiosResponse<Product[]> = await axios.get<Product[]>(`${process.env.REACT_APP_API_URL}/product/new`);
         console.log(response);
         setProducts(response.data.slice(6, 10));
       } catch (error) {

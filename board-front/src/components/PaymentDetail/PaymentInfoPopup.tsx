@@ -46,7 +46,7 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
 
         const fetchPaymentInfo = async () => {
             try {
-                const response = await axios.post('http://localhost:8080/payment/getPaymentAndOrderInfo/' + orderNumber)
+                const response = await axios.post(`${process.env.REACT_APP_API_URL}/payment/getPaymentAndOrderInfo/` + orderNumber)
                 console.log(response)
                 setPaymentInfo(response.data.body);
             } catch (error) {

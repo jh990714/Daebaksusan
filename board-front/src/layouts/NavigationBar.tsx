@@ -28,7 +28,7 @@ export const NavigationBar = () => {
     
     useEffect(() => {
         // API 호출
-        fetch('http://localhost:8080/categories')
+        fetch(`${process.env.REACT_APP_API_URL}/categories`)
             .then(response => response.json())
             .then(data => setCategories(data))
             .catch(error => console.error('Error fetching categories:', error));
@@ -46,7 +46,7 @@ export const NavigationBar = () => {
                 return;
             }
             try {
-                const response = await fetch(`http://localhost:8080/product/search?query=${debouncedQuery}`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/product/search?query=${debouncedQuery}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch search results');
                 }
