@@ -1,3 +1,14 @@
+.detailLink {
+    text-decoration: none;
+    color: inherit;
+    text-align: start;
+
+}
+
+.detailLink:hover{
+    color: inherit;
+}
+
 .container {
     display: flex;
 }
