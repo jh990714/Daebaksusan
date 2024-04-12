@@ -25,6 +25,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
     @Value("${jwt.secret}")
     private String accessSecretKey;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     private Long accessTokenExpiredMs = (long) (1000 * 60 * 30); // 액세스 토큰 만료 시간 (30분)
 
 
@@ -40,6 +43,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
         String memberId = oAuth2User.getName();
         String token = JwtUtil.createJwt(memberId, accessSecretKey, accessTokenExpiredMs);
 
-        response.sendRedirect("http://localhost:3000/auth/oauth-response/" + token);
+        response.sendRedirect(frontendUrl + "/auth/oauth-response/" + token);
     }
 }

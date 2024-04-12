@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useLocation  } from 'react-router-dom';
 import styles from './QuickCart.module.css';
 import topArrow from '../assets/topArrow.png';
 import bottomArrow from '../assets/bottomArrow.png';
@@ -17,10 +18,18 @@ export const QuickCart = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [buttonImage, setButtonImage] = useState(topArrow);
     const [startIndex, setStartIndex] = useState(0);
+    const location  = useLocation();
     // const [cartItems, setCartItems] = useState<Cart[]>([]);
 
     const filteredCartItems = cartItems.filter(item => item.isSelected === true);
 
+    useEffect(() => {
+        // 페이지 이동 시 QuickCart를 닫습니다.
+        setIsVisible(false);
+        setButtonImage(topArrow);
+    }, [location]);
+
+    
     useEffect(() => {
         fetchCartItems(setCartItems, setIsLoggedIn);
     }, [isLoggedIn]);

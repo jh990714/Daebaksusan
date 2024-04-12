@@ -12,13 +12,10 @@
 .productInfoCard {
     width: var(--card-size, 255px); /* 기본값 100% */
     font-size: var(--card-font-size, 7px); /* 기본값 16px */
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
 }
 
 .productInfoCard:hover {
-    transform: scale(1.1);
+    transform: scale(1.02);
 }
 
 .productImgWrapper {
@@ -31,7 +28,7 @@
     height: var(--card-size, 255px);
 }
 
-.saleIcon {
+.bestProductIcon {
     position: absolute;
     top: 0;
     left: 0;
@@ -46,6 +43,9 @@
     font-size: 2.5em;
     font-weight: bold;
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .productSp {
@@ -55,6 +55,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    height: 2em;
 }
 
 .productPrice {
@@ -74,6 +75,15 @@
     margin-left: 10px;
     text-decoration: line-through;
     text-decoration-color: #959595;
+}
+
+.discountRateBox {
+    background-color: #3498db;
+    color: white;
+    border-radius: 5px;
+    padding: 3px 5px;
+    font-size: 0.8em;
+    margin-right: 10px;
 }
 
 @media (max-width: 1280px) {
