@@ -37,7 +37,7 @@ const TimeLimitedDeals: React.FC = () => {
 
         return () => clearInterval(intervalId);
     }, [products]);
-    
+
     const calculateRemainingTime = (startDate: Date, endDate: Date): string => {
         const now = new Date();
         const remainingTime = endDate.getTime() - now.getTime();
@@ -57,7 +57,7 @@ const TimeLimitedDeals: React.FC = () => {
     return (
         <div className="container mx-auto mt-8">
             <p className='text-4xl font-bold'>💣 타임특가 </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex gap-6 justify-center">
                 {products.map((product: Product, index) => (
                     <div key={product.productId} className="bg-white rounded-lg shadow-md p-4">
                         <ProductListComp product={product} size='255px' fontSize='7px' />

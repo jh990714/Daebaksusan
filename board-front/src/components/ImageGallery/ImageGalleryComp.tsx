@@ -15,7 +15,6 @@ interface ImageGalleryProps {
 
 function CustomArrow(props: any) {
     const { className, style, onClick } = props;
-    console.log(className)
     return (
         <div
             className={`${className}`}
