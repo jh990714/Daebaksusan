@@ -4,9 +4,13 @@ import CustomPrevArrowComp from './CustomPrevArrowComp';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './ArrowStyles.css'; // ArrowStyles.css 파일 import
+import { Product } from 'types';
+import { ProductListComp } from 'components/product/ProductListComp';
+
+
 
 interface ImageGalleryProps {
-    imageUrls: string[];
+    items: (Product | string)[]; // 상품과 후기 모두를 포함하는 배열
 }
 
 function CustomArrow(props: any) {
@@ -21,35 +25,38 @@ function CustomArrow(props: any) {
     );
 }
 
-const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ imageUrls }) => {
-    
+const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items }) => {
     const settings = {
         centerSlides: false,
         accessibility: true,
         dots: true,
-        infinite: false,
-        speed: 1000,
+        infinite: true,
+        speed: 800,
+        autoplay: true,
+        autoplaySpeed: 2000,
         slidesToShow: 4,
         slidesToScroll: 1,
         vertical: false,
-        swipe: true, // 슬라이드 스와이프 활성화
+        swipe: true,
         swipeToSlide: true,
         arrows: true,
-        prevArrow: <CustomArrow />, // 이전 화살표 커스터마이징
-        nextArrow: <CustomArrow />, // 다음 화살표 커스터마이징
-        
+        prevArrow: <CustomArrow />,
+        nextArrow: <CustomArrow />,
     };
 
     return (
         <Slider {...settings}>
-            {imageUrls.map((imageUrl, index) => (
-                <div key={index} className="w-1/4 h-[200px] p-1">
-                    <img src={`${process.env.PUBLIC_URL}/review/${imageUrl}`} alt={`Image ${index}`} className="w-full h-full object-cover rounded-md" />
+            {items.map((item, index) => (
+                <div key={index} className={`w-1/4 p-1 ${typeof item === 'string' ? 'h-[200px]' : 'h-auto'}`}>
+                    {typeof item === 'string' ? ( // 후기인 경우
+                        <img src={`${process.env.PUBLIC_URL}/review/${item}`} alt={`Review ${index}`} className="w-full h-full object-cover rounded-md" />
+                    ) : ( // 상품인 경우
+                            <ProductListComp product={item} size="275px" fontSize="7px" />
+                    )}
                 </div>
             ))}
         </Slider>
     );
 };
-
 
 export default ImageGalleryComp;

@@ -15,7 +15,7 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
       try {
         const response = await axios.get(`/reviews/${productId}`);
         setReviews(response.data);
-        console.log(response);
+        console.log(response.data);
       } catch (error) {
         console.error('Error fetching reviews:', error);
       }
@@ -27,7 +27,7 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
   return (
     <div className="grid grid-rows w-full">
       {reviews.map((review, index) => (
-        <ReviewComp key={index} review={review}/>
+        <ReviewComp key={index} review={review} />
       ))}
     </div>
   )
