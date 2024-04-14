@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductEntity;
 
@@ -25,22 +26,22 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<ProductEntity>> getAllProduct() {
-        List<ProductEntity> product = productService.findProductAll();
+    public ResponseEntity<List<ProductDTO>> getAllProduct() {
+        List<ProductDTO> product = productService.findProductAll();
     
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("/best")
-    public ResponseEntity<List<ProductEntity>> getBestProduct() {
-        List<ProductEntity> product = productService.findProductBest();
+    public ResponseEntity<List<ProductDTO>> getBestProduct() {
+        List<ProductDTO> product = productService.findProductBest();
     
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("/new")
-    public ResponseEntity<List<ProductEntity>> getNewProduct() {
-        List<ProductEntity> product = productService.findProductNew();
+    public ResponseEntity<List<ProductDTO>> getNewProduct() {
+        List<ProductDTO> product = productService.findProductNew();
     
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
@@ -53,25 +54,34 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductEntity>> getProductsByCategoryAndSubcategories(@PathVariable Long categoryId) {
-        List<ProductEntity> products = productService.getProductsByCategoryAndSubcategories(categoryId);
+    public ResponseEntity<List<ProductDTO>> getProductsByCategoryAndSubcategories(@PathVariable Long categoryId) {
+        List<ProductDTO> products = productService.getProductsByCategoryAndSubcategories(categoryId);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @GetMapping("/category/sub/{categoryId}")
-    public ResponseEntity<List<ProductEntity>> getProductsByCategorySub(@PathVariable Long categoryId) {
-        List<ProductEntity> product = productService.getProductsByCategorySub(categoryId);
+    public ResponseEntity<List<ProductDTO>> getProductsByCategorySub(@PathVariable Long categoryId) {
+        List<ProductDTO> product = productService.getProductsByCategorySub(categoryId);
 
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public  ResponseEntity<List<ProductEntity>>  searchProducts(@RequestParam String query) {
-        List<ProductEntity> product = productService.searchProducts(query);
+    public  ResponseEntity<List<ProductDTO>>  searchProducts(@RequestParam String query) {
+        List<ProductDTO> product = productService.searchProducts(query);
         
         return new ResponseEntity<>(product, HttpStatus.OK);
         
     }
+
+    @GetMapping("/timeDeal")
+    public ResponseEntity<List<ProductDTO>> getTimeDealProducts() {
+        List<ProductDTO> product = productService.getTimeDealProducts();
+
+        return new ResponseEntity<>(product, HttpStatus.OK);
+
+    }
+    
     
 }
 

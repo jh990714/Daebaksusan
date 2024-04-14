@@ -1,17 +1,23 @@
 package com.seafood.back.service.imple;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.seafood.back.dto.CartDTO;
+import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.CategoryEntity;
 import com.seafood.back.entity.OptionEntity;
+import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
 import com.seafood.back.respository.CategoryRepository;
 import com.seafood.back.respository.OptionRepository;
+import com.seafood.back.respository.ProductDealsRepository;
 import com.seafood.back.respository.ProductRepository;
 import com.seafood.back.service.ProductService;
 
@@ -24,26 +30,33 @@ public class ProductServiceImple implements ProductService{
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final OptionRepository optionRepository;
-
+    private final ProductDealsRepository productDealsRepository;
 
     @Override
-    public List<ProductEntity> findProductAll() {
-        List<ProductEntity> products = new ArrayList<>();
-        productRepository.findAll().forEach(e -> products.add(e));
-        return products;
+    public List<ProductDTO> findProductAll() {
+    // 모든 상품 조회
+        List<ProductEntity> products = productRepository.findAll();
+
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
     }
+    
+    
 
     @Override
-    public List<ProductEntity> findProductBest() {
+    public List<ProductDTO> findProductBest() {
         
         return null;
     }
 
     @Override
-    public List<ProductEntity> findProductNew() {
-        List<ProductEntity> products = new ArrayList<>();
-        productRepository.findTop10ByOrderByProductIdDesc().forEach(e -> products.add(e));
-        return products;
+    public List<ProductDTO> findProductNew() {
+        List<ProductEntity> products = productRepository.findTop10ByOrderByProductIdDesc();
+        
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
     }
 
     @Override
@@ -54,19 +67,18 @@ public class ProductServiceImple implements ProductService{
     }
 
     @Override
-    public List<ProductEntity> getProductsByCategoryAndSubcategories(Long categoryId) {
-         List<ProductEntity> products = new ArrayList<>();
-
-         if (categoryId == 1) {
+    public List<ProductDTO> getProductsByCategoryAndSubcategories(Long categoryId) {
+        List<ProductEntity> products = new ArrayList<>();
+    
+        if (categoryId == 1) {
             // categoryId가 1이면 모든 제품을 반환
             products.addAll(productRepository.findAll());
         } else {
-        
             // 상위 카테고리 조회
             Optional<CategoryEntity> categoryOptional = categoryRepository.findById(categoryId);
             if (categoryOptional.isPresent()) {
                 CategoryEntity category = categoryOptional.get();
-                
+    
                 // 상위 카테고리의 하위 카테고리들 조회
                 List<CategoryEntity> subcategories = category.getSubcategories();
                 if (subcategories.isEmpty()) {
@@ -79,20 +91,29 @@ public class ProductServiceImple implements ProductService{
                     }
                 }
             }
-            
-            
         }
-        return products;
+    
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
     }
+    
 
     @Override
-    public List<ProductEntity> getProductsByCategorySub(Long categoryId) {
+    public List<ProductDTO> getProductsByCategorySub(Long categoryId) {
         // 카테고리에 따른 제품 데이터를 데이터베이스에서 조회하여 반환
-        return productRepository.findByCategory(categoryId);
+        List<ProductEntity> products = productRepository.findByCategory(categoryId);
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
     }
 
-    public List<ProductEntity> searchProducts(String query) {
-        return productRepository.findTop5ByNameContaining(query);
+    public List<ProductDTO> searchProducts(String query) {
+        List<ProductEntity> products = productRepository.findTop5ByNameContaining(query);
+
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
     }
 
     @Override
@@ -133,5 +154,80 @@ public class ProductServiceImple implements ProductService{
             }
         }
     }
+
+    @Override
+    public List<ProductDealsEntity> findProductDeal() {
+        // 현재 시간
+        Date now = new Date();
+        
+        // 현재 시간에 해당하는 타임 특가가 적용되는 상품들 조회
+        List<ProductDealsEntity> productDeals = productDealsRepository.findByStartDateBeforeAndEndDateAfter(now, now);
+        
+        return productDeals;
+    }
+
+    @Override
+    public ProductDTO convertToProductDTO(ProductEntity product, List<ProductDealsEntity> dealProducts) {
+        ProductDTO productDTO = new ProductDTO();
+        // ProductEntity의 필드 값을 ProductDTO로 복사
+        productDTO.setProductId(product.getProductId());
+        productDTO.setCategory(product.getCategory());
+        productDTO.setName(product.getName());
+        productDTO.setImageUrl(product.getImageUrl());
+        productDTO.setStockQuantity(product.getStockQuantity());
+        productDTO.setRegularPrice(product.getRegularPrice());
+        productDTO.setSalePrice(product.getSalePrice());
+        productDTO.setShippingCost(product.getShippingCost());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setArrivalDate(product.getArrivalDate());
+        productDTO.setRecommended(product.getRecommended());
+        productDTO.setMaxQuantityPerDelivery(product.getMaxQuantityPerDelivery());
     
+        // 타임 특가가 적용된 경우에만 sale_price 변경
+        for (ProductDealsEntity dealProduct : dealProducts) {
+            if (product.getProductId().equals(dealProduct.getProductId())) {
+                productDTO.setSalePrice(productDTO.getSalePrice().add(dealProduct.getDealPrice()));
+                productDTO.setStartDate(dealProduct.getStartDate());
+                productDTO.setEndDate(dealProduct.getEndDate());
+                break;
+            }
+        }
+    
+        return productDTO;
+    }
+
+    @Override
+    public List<ProductDTO> convertProductEntitiesToDTOs(List<ProductEntity> products) {
+        // 결과를 저장할 리스트
+        List<ProductDTO> productDTOs = new ArrayList<>();
+        List<ProductDealsEntity> productDeals = findProductDeal();
+
+        // 상품을 DTO로 변환하여 리스트에 추가
+        for (ProductEntity product : products) {
+            ProductDTO productDTO = convertToProductDTO(product, productDeals);
+            productDTOs.add(productDTO);
+        }
+    
+        return productDTOs;
+    }
+
+
+
+    @Override
+    public List<ProductDTO> getTimeDealProducts() {
+        List<ProductDealsEntity> productDeals = findProductDeal();
+
+            // 타임딜 상품들의 productId들을 가져옵니다.
+        List<Integer> productIds = productDeals.stream()
+            .map(ProductDealsEntity::getProductId)
+            .collect(Collectors.toList());
+        
+        // productId들로 해당 상품들을 조회합니다.
+        List<ProductEntity> products = productRepository.findAllByProductIdIn(productIds);
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+        return productDTOs;
+        
+    }
+    
+ 
 }
