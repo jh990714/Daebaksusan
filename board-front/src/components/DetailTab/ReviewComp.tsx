@@ -94,7 +94,7 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
             {review.imageUrls.length > 0 && (
                 <div className="w-[1000px] h-[220px]">
                     {review.imageUrls.length > 4 ? (
-                        <ImageGalleryComp imageUrls={review.imageUrls} />
+                        <ImageGalleryComp items={review.imageUrls} />
                     ) : (
                         <div className="flex">
                             {review.imageUrls.map((imageUrl, index) => (
