@@ -6,7 +6,7 @@ import axios, { AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 import { CONNREFUSED } from 'dns';
 import Product from 'types/interface/product-item.interface';
-import {sendRequestWithToken} from 'apis/sendRequestWithToken';
+import { sendRequestWithToken } from 'apis/sendRequestWithToken';
 import { useCart } from 'hook/CartProvider';
 import { useAuthContext } from 'hook/AuthProvider';
 
@@ -32,7 +32,7 @@ export const Detail: React.FC = () => {
     const [optionPrice, setOptionPrice] = useState<number>(0);
     const [boxCnt, setBoxCnt] = useState<number>(1);
 
-    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice ) * quantity + ((product.shippingCost + optionPrice) * boxCnt))
+    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + ((product.shippingCost + optionPrice) * boxCnt))
 
     // 옵션 받아오기
     useEffect(() => {
@@ -84,7 +84,7 @@ export const Detail: React.FC = () => {
         setQuantity(q);
         boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
         setBoxCnt(boxCnt)
-        setTotalPrice((product.regularPrice - product.salePrice ) * q + ((product.shippingCost + optionPrice) * boxCnt))
+        setTotalPrice((product.regularPrice - product.salePrice) * q + ((product.shippingCost + optionPrice) * boxCnt))
     };
 
 
@@ -107,7 +107,7 @@ export const Detail: React.FC = () => {
         setQuantity(q);
         boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
         setBoxCnt(boxCnt)
-        setTotalPrice((product.regularPrice - product.salePrice ) * q + ((product.shippingCost + optionPrice) * boxCnt))
+        setTotalPrice((product.regularPrice - product.salePrice) * q + ((product.shippingCost + optionPrice) * boxCnt))
     };
 
     const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -117,7 +117,7 @@ export const Detail: React.FC = () => {
         // 옵션 선택에 따른 추가 금액을 총 금액에 반영
         if (option) {
             setOptionPrice(option.addPrice);
-            setTotalPrice((product.regularPrice - product.salePrice ) * quantity + ((product.shippingCost + option.addPrice) * boxCnt))
+            setTotalPrice((product.regularPrice - product.salePrice) * quantity + ((product.shippingCost + option.addPrice) * boxCnt))
             setoption(option);
         } else {
             setoption(null);
@@ -256,7 +256,12 @@ export const Detail: React.FC = () => {
                 updatedCartItems = [newItem, ...existingCartCookie];
             }
             // 쿠키에 업데이트된 장바구니 정보 저장
-            Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: 2 });
+            // 현재 날짜와 시간
+            const currentDate = new Date();
+            // 0.5일 후의 시간 (12시간 * 60분 * 60초 * 1000밀리초)
+            const halfDayLater = currentDate.getTime() + (12 * 60 * 60 * 1000);
+
+            Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: new Date(halfDayLater) });
 
             const newCartItems = updatedCartItems.map((item, index) => ({
                 id: index,
@@ -293,24 +298,24 @@ export const Detail: React.FC = () => {
 
         navigate('/order', {
             state: {
-                cartItems: [newCart] 
+                cartItems: [newCart]
             }
         });
     }
-    
+
     const isSoldOut = (product.stockQuantity === 0)
 
     return (
         <div className='bg-white text-gray-700'>
-    
+
             <main className="container mx-auto my-8 p-4">
                 <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
-                    
+
                     <div className="w-full md:w-1/2 p-4">
                         <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded shadow-lg " />
                     </div>
                     <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
-                    
+
                         <div className='text-2xl text-blue-700 font-bold p-3'>{product.name}</div>
                         <h1 className="text-xl text-gray-500 font-bold border-b-2 border-gray-200 p-2">{product.description}</h1>
 
@@ -380,13 +385,13 @@ export const Detail: React.FC = () => {
 
                     </div>
                     {isSoldOut && (
-                            <div className="absolute top-0 left-0 w-full h-full bg-gray-500 bg-opacity-60  flex justify-center items-center">
-                                <div className="text-center">
-                                    <p className="text-3xl font-bold text-white">상품 품절</p>
-                                    <p className="text-lg text-white">죄송합니다. 이 상품은 현재 품절되었습니다.</p>
-                                </div>
+                        <div className="absolute top-0 left-0 w-full h-full bg-gray-500 bg-opacity-60  flex justify-center items-center">
+                            <div className="text-center">
+                                <p className="text-3xl font-bold text-white">상품 품절</p>
+                                <p className="text-lg text-white">죄송합니다. 이 상품은 현재 품절되었습니다.</p>
                             </div>
-                        )}
+                        </div>
+                    )}
                 </div>
 
                 <div className="my-8 w-full ">
@@ -403,7 +408,7 @@ export const Detail: React.FC = () => {
                 </div>
 
                 <div className={"my-8 w-full"}>
-                    <DetailTabComp productId={product.productId}/>
+                    <DetailTabComp productId={product.productId} />
                 </div>
             </main>
 
