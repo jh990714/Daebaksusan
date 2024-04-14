@@ -79,7 +79,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
                 
                 scrollRef.current.scrollTo({ left: newScrollRight, behavior: 'smooth' });
             }
-        }, 7000);
+        }, 2000);
     
         return () => clearInterval(timer);
     }, [scrollAmount]);

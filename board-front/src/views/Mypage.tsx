@@ -3,7 +3,6 @@ import styles from "./Mypage.module.css";
 import { Link, useNavigate } from 'react-router-dom';
 import {sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';import { MyPageMenu } from 'components/MyPage/MyPageMenu';
-;
 
 
 export const Mypage: React.FC = () => {
