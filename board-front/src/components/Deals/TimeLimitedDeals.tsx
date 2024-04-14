@@ -49,7 +49,7 @@ const TimeLimitedDeals: React.FC = () => {
         <div className="container mx-auto mt-8">
             
           
-            <p className='text-4xl font-bold'> 타임특가 </p>
+            <p className='text-4xl font-bold'>💣 타임특가 </p>
            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {products.map((product: Product, index) => (

@@ -57,7 +57,7 @@ export const Home: React.FC = () => {
       </div>
 
       <div ref={ref8} className="HomeBanner">
-        <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/review_event.jpg`} title="리뷰 이벤트"/>
+        <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/review_event3.jpg`} title="리뷰 이벤트"/>
       </div>
     </div>
   );

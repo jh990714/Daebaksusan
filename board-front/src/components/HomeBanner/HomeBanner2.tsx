@@ -23,7 +23,7 @@ export const HomeBanner2 = () => {
 
   return (
     <div className='HomeBanner2Container'>
-      <p className='text-4xl font-bold'>이달의 추천 상품</p>
+      <p className='text-4xl font-bold'>✨ 이달의 추천 상품 ✨</p>
       <div className='flex'>
         <div className='section center'>
           {products.length >= 1 && (
