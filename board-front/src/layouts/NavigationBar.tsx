@@ -1,17 +1,27 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import logo from '../assets/logo.jpg'
 import styles from './NavigationBar.module.css'
-import cartIcon from '../assets/Cart.png'
+import cartIcon from '../assets/cart.png'
 import loginIcon from '../assets/login.png'
 import newIcon from '../assets/newIcon.png'
 import bestIcon from '../assets/bestIcon.png'
+import allIcon from '../assets/allIcon.png'
 import menuIcon from '../assets/tabBar.png'
+
+import newBlueIcon from '../assets/newBlueIcon.png'
+import bestBlueIcon from '../assets/bestBlueIcon.png'
+import allBlueIcon from '../assets/allBlueIcon.png'
+import cartBlueIcon from '../assets/cartBlue.png'
+import loginBlueIcon from '../assets/loginBlue.png'
+
+
 
 import searchIcon from '../assets/search.png'
 import { Link, useNavigate } from 'react-router-dom'
 import { Category } from 'types';
 import useDebounce from 'hook/useDebounce'
 import { useAuthContext } from 'hook/AuthProvider'
+import IconComp from 'components/NavigationBar/IconComp'
 
 type SearchResults = Array<any>
 
@@ -25,6 +35,15 @@ export const NavigationBar = () => {
     const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
     const debouncedQuery = useDebounce<string>(query, 300);
     const navigate = useNavigate();
+
+    // 마우스 오버 시 아이콘 색 변경
+    const [isHovered, setIsHovered] = useState(false);
+    const handleMouseOver = () => {
+        setIsHovered(true);
+    };
+    const handleMouseOut = () => {
+        setIsHovered(false);
+    };
     
     useEffect(() => {
         // API 호출
@@ -126,7 +145,7 @@ export const NavigationBar = () => {
             <div className={styles.navBar}>
                 <div className={styles.navLeft}>
                     <Link to='' className={styles.logo}>
-                        <img src={logo} alt="로고" width="130" height="180"></img>
+                        <img src={logo} alt="로고" width="130" height="auto"></img>
                     </Link>
 
                     <div className={styles.menuIcon} onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -138,27 +157,9 @@ export const NavigationBar = () => {
                 <div className={`${styles.navMenu} ${isMenuOpen ? styles.show : ''}`}>
                     <div className={styles.productCategory}>
                         <ul>
-                            <li>
-                                <Link to='/best' state={{ category: null }} className={styles.icon}>
-                                    <img src={bestIcon} alt='인기 상품' style={{ width: 50, height: 50 }} />
-                                    <span className={styles.iconTitle}> 인기 상품 </span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to='/new' state={{ category: null }} className={styles.icon}>
-                                    <img src={newIcon} alt='최신 상품' style={{ width: 50, height: 50 }} />
-                                    <span className={styles.iconTitle}> 최신 상품 </span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link to='/all' state={{ category: null }} className={styles.icon}>
-                                    <div className={styles.icon} onMouseEnter={toggleCategory}>
-                                        <img src={cartIcon} alt='모든 상품' style={{ width: 50, height: 50 }} />
-                                        <span className={styles.iconTitle}> 모든 상품 </span>
-                                    </div>
-                                </Link>
-
-                            </li>
+                            <IconComp defaultIcon={bestIcon} hoverIcon={bestBlueIcon} title={'인기 상품'} link={'/best'} />
+                            <IconComp defaultIcon={newIcon} hoverIcon={newBlueIcon} title={'최신 상품'} link={'/new'} />
+                            <IconComp defaultIcon={allIcon} hoverIcon={allBlueIcon} title={'모든 상품'} link={'/all'} />
                         </ul>
                     </div>
 
@@ -193,28 +194,12 @@ export const NavigationBar = () => {
                             <ul>
                                 {!isLoggedIn ? (
                                     // 로그인 되지 않았을 때 로그인 버튼 표시
-                                    <li>
-                                        <Link to='/login' className={styles.icon}>
-                                            <img src={loginIcon} alt='로그인' style={{ width: 50, height: 50 }} />
-                                            <span className={styles.iconTitle}> 로그인 </span>
-                                        </Link>
-                                    </li>
+                                    <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'로그인'} link={'/login'} />
                                 ) : (
                                     // 로그인 되었을 때 마이페이지 버튼 표시
-                                    <li>
-                                        {/* 마이페이지 아이콘과 링크를 여기에 구현 */}
-                                        <Link to='/myPage' className={styles.icon}>
-                                            <img src={loginIcon} alt='마이페이지' style={{ width: 40, height: 'auto' }} />
-                                            <span className={styles.iconTitle}> 마이페이지 </span>
-                                        </Link>
-                                    </li>
+                                    <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'마이페이지'} link={'/myPage'} />
                                 )}
-                                <li>
-                                    <Link to='/cart' className={styles.icon}>
-                                        <img src={cartIcon} alt='장바구니' style={{ width: 50, height: 50 }} />
-                                        <span className={styles.iconTitle}> 장바구니 </span>
-                                    </Link>
-                                </li>
+                                <IconComp defaultIcon={cartIcon} hoverIcon={cartBlueIcon} title={'장바구니'} link={'/cart'} />
                             </ul>
                         </div>
                     </div>
