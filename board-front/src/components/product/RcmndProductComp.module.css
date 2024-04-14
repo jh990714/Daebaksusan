@@ -14,13 +14,15 @@
 }
 
 .imgContainer {
-    width: 60%;
+    width: var(--w-size, 60%);
+    height: var(--h-size, 250px);
     position: relative;
 }
 
 .rcmdImg {
+    border-radius: var(--border-radius, 0);
     width: 100%;
-    height: 250px;
+    height: var(--h-size, 250px);
 }
 
 .rcmdTag {
@@ -29,9 +31,8 @@
     width: 20%;
 }
 .rcmdInfo {
-    width: 40%;
     padding: 2rem;
-    font-size: 8px;
+    font-size: var(--font-size, 8px);
     text-align: start;
 }
 

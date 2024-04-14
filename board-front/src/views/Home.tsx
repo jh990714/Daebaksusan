@@ -48,7 +48,7 @@ export const Home: React.FC = () => {
         <BestProduct category='new'/>
       </div>
 
-      <div ref={ref6} className="HomeBanner">
+      <div className="HomeBanner">
         <VideoPlayer videoUrl={process.env.PUBLIC_URL + `/video/1.mp4`}/>
       </div>
 
