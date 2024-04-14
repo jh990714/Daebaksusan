@@ -9,6 +9,7 @@ import com.seafood.back.dto.OptionDTO;
 import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.CartEntity;
 import com.seafood.back.entity.OptionEntity;
+import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
 import com.seafood.back.respository.CartRepository;
 import com.seafood.back.respository.ProductRepository;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 @RequiredArgsConstructor
 public class CartServiceImple implements CartService{
@@ -38,9 +38,12 @@ public class CartServiceImple implements CartService{
     public List<CartDTO> getCartItemsForMember(String id) {
         List<CartEntity> cartItems = cartRepository.findByMemberIdOrderByUpdatedAtDesc(id);
         List<CartDTO> cartDTOs = new ArrayList<>();
+        List<ProductDealsEntity> productDeals = productService.findProductDeal();
+
+        
         for (CartEntity cartItem : cartItems) {
             ProductEntity product = productService.getProductById(cartItem.getProductId());
-            ProductDTO productDTO = productService.convertToProductDTO(product, productService.findProductDeal());
+            ProductDTO productDTO = productService.convertToProductDTO(product, productDeals);
 
             OptionEntity option = productService.getOptionById(cartItem.getOptionId());
 

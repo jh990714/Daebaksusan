@@ -1,6 +1,5 @@
 package com.seafood.back.service.imple;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -217,7 +216,6 @@ public class ProductServiceImple implements ProductService{
     public List<ProductDTO> getTimeDealProducts() {
         List<ProductDealsEntity> productDeals = findProductDeal();
 
-            // 타임딜 상품들의 productId들을 가져옵니다.
         List<Integer> productIds = productDeals.stream()
             .map(ProductDealsEntity::getProductId)
             .collect(Collectors.toList());
