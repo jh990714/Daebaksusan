@@ -21,17 +21,17 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
 
     switch (category) {
         case 'best':
-            pageTitle = '인기 상품';
+            pageTitle = '🔥 인기 상품';
             category = 'new';
             break;
         case 'new':
-            pageTitle = '최신 상품';
+            pageTitle = '🔔 최신 상품';
             break;
         case 'recommendedProducts':
-            pageTitle = '추천 상품';
+            pageTitle = '✨🎉 추천 상품';
             break;
         case 'all':
-            pageTitle = '모든 상품';
+            pageTitle = '🐟 모든 상품';
             break;
     }
 
@@ -118,7 +118,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
                         <Link to={category} state={{ category: null }} className={styles.productListTitle}>
                             {pageTitle}
                         </Link>
-                        <CategoryMenuBar onCategoryChange={handleCategoryChange} />
+                        {/* <CategoryMenuBar onCategoryChange={handleCategoryChange} /> */}
                     </div>
 
                     <Link to={category} state={{ category: null }} className={styles.moreButton}>
