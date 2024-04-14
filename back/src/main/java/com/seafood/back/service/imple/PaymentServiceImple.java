@@ -19,8 +19,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.CartDTO;
 import com.seafood.back.dto.PaymentAndOrderInfo;
+import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.PaymentDetailsEntity;
+import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
 import com.seafood.back.respository.OptionRepository;
 import com.seafood.back.respository.PaymentDetailsRepository;
@@ -58,6 +60,8 @@ public class PaymentServiceImple implements PaymentService {
     @Override
     public BigDecimal orderAmount(String imp_uid, List<CartDTO> orderItems) {
         BigDecimal sum = BigDecimal.ZERO;
+        List<ProductDealsEntity> productDeals = productService.findProductDeal();
+
         for (CartDTO orderItem : orderItems) {
             int productId = orderItem.getProduct().getProductId(); // 상품 ID
             int optionId = orderItem.getOption().getOptionId(); // 옵션 ID
@@ -70,20 +74,23 @@ public class PaymentServiceImple implements PaymentService {
             if (productOptional.isPresent() && optionOptional.isPresent()) {
 
                 ProductEntity product = productOptional.get();
+                ProductDTO productDTO = productService.convertToProductDTO(product, productDeals);
+
                 OptionEntity option = optionOptional.get();
 
                 // 주문된 상품의 수량체크
                 int orderedQuantity = orderItem.getQuantity();
-                int remainingStock = product.getStockQuantity() - orderedQuantity;
+                int remainingStock = productDTO.getStockQuantity() - orderedQuantity;
 
                 if (remainingStock < 0) {
                     cancelPayment(imp_uid);
-                    throw new IllegalArgumentException("주문 수량이 재고보다 많습니다. 상품명: " + product.getName());
+                    throw new IllegalArgumentException("주문 수량이 재고보다 많습니다. 상품명: " + productDTO.getName());
                 }
 
-                BigDecimal productPrice = product.getRegularPrice().subtract(product.getSalePrice());
-                BigDecimal shippingCost = product.getShippingCost();
-                int maxQuantityPerDelivery = product.getMaxQuantityPerDelivery();
+                
+                BigDecimal productPrice = productDTO.getRegularPrice().subtract(productDTO.getSalePrice());
+                BigDecimal shippingCost = productDTO.getShippingCost();
+                int maxQuantityPerDelivery = productDTO.getMaxQuantityPerDelivery();
 
                 BigDecimal optionPrice = option.getAddPrice();
                 int quantity = orderItem.getQuantity();
@@ -148,7 +155,6 @@ public class PaymentServiceImple implements PaymentService {
 
     @Override
     public Map<String, Object> verifyAndProcessPayment(String imp_uid, String password) throws Exception {
-        log.info(imp_uid);
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(imp_uid);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),

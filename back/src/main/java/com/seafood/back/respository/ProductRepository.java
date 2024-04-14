@@ -13,4 +13,6 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
     List<ProductEntity> findByCategory(Long category);
     List<ProductEntity> findTop5ByNameContaining(String query);
     ProductEntity findByProductId(Integer productId);
+    List<ProductEntity> findAllByProductIdIn(List<Integer> productIds);
+
 }

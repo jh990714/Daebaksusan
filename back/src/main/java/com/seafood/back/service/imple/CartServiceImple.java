@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Slf4j
+
 @Service
 @RequiredArgsConstructor
 public class CartServiceImple implements CartService{
@@ -40,11 +40,13 @@ public class CartServiceImple implements CartService{
         List<CartDTO> cartDTOs = new ArrayList<>();
         for (CartEntity cartItem : cartItems) {
             ProductEntity product = productService.getProductById(cartItem.getProductId());
+            ProductDTO productDTO = productService.convertToProductDTO(product, productService.findProductDeal());
+
             OptionEntity option = productService.getOptionById(cartItem.getOptionId());
 
             CartDTO cartDTO = new CartDTO();
             cartDTO.setCartId(cartItem.getCartId());
-            cartDTO.setProduct(convertToProductDTO(product));
+            cartDTO.setProduct(productDTO);
             cartDTO.setOption(convertToOptionDTO(option));
             cartDTO.setQuantity(cartItem.getQuantity());
             cartDTO.setBoxCnt(cartItem.getBoxCnt());
@@ -59,26 +61,6 @@ public class CartServiceImple implements CartService{
         cartRepository.deleteByMemberIdAndCartIdIn(id, cartItemIdsToDelete);
     }
 
-    private ProductDTO convertToProductDTO(ProductEntity productEntity) {
-        ProductDTO productDTO = new ProductDTO();
-        // ProductEntity의 필드들을 ProductDTO로 복사
-        productDTO.setProductId(productEntity.getProductId());
-        productDTO.setCategory(productEntity.getCategory());
-        productDTO.setName(productEntity.getName());
-        productDTO.setImageUrl(productEntity.getImageUrl());
-        productDTO.setStockQuantity(productEntity.getStockQuantity());
-        productDTO.setRegularPrice(productEntity.getRegularPrice());
-        productDTO.setSalePrice(productEntity.getSalePrice());
-        productDTO.setShippingCost(productEntity.getShippingCost());
-        productDTO.setDescription(productEntity.getDescription());
-        productDTO.setArrivalDate(productEntity.getArrivalDate());
-        productDTO.setRecommended(productEntity.getRecommended());
-        productDTO.setMaxQuantityPerDelivery(productEntity.getMaxQuantityPerDelivery());
-
-
-        // 나머지 필드들도 복사
-        return productDTO;
-    }
 
     @SuppressWarnings("null")
     @Override
@@ -157,5 +139,27 @@ public class CartServiceImple implements CartService{
         }
         return optionDTO;
     }
+
+    
+    // private ProductDTO convertToProductDTO(ProductEntity productEntity) {
+    //     ProductDTO productDTO = new ProductDTO();
+    //     // ProductEntity의 필드들을 ProductDTO로 복사
+    //     productDTO.setProductId(productEntity.getProductId());
+    //     productDTO.setCategory(productEntity.getCategory());
+    //     productDTO.setName(productEntity.getName());
+    //     productDTO.setImageUrl(productEntity.getImageUrl());
+    //     productDTO.setStockQuantity(productEntity.getStockQuantity());
+    //     productDTO.setRegularPrice(productEntity.getRegularPrice());
+    //     productDTO.setSalePrice(productEntity.getSalePrice());
+    //     productDTO.setShippingCost(productEntity.getShippingCost());
+    //     productDTO.setDescription(productEntity.getDescription());
+    //     productDTO.setArrivalDate(productEntity.getArrivalDate());
+    //     productDTO.setRecommended(productEntity.getRecommended());
+    //     productDTO.setMaxQuantityPerDelivery(productEntity.getMaxQuantityPerDelivery());
+
+
+    //     // 나머지 필드들도 복사
+    //     return productDTO;
+    // }
 }
     

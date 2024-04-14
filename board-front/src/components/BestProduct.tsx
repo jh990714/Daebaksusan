@@ -69,16 +69,12 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
     useEffect(() => {
         const timer = setInterval(() => {
             if (scrollRef.current) {
-                const maxScroll = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
-                let newScrollRight = (scrollRef.current.scrollLeft + scrollAmount) % maxScroll;
-                
-                // 만약 맨 오른쪽에서 다음으로 넘어갈 수 없을 때
-                if (newScrollRight >= maxScroll) {
-                    newScrollRight = 0; // 처음으로 이동
+                if (scrollRef.current.scrollWidth <= scrollRef.current.scrollLeft + scrollRef.current.clientWidth) {
+                  scrollRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                  scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                 }
-                
-                scrollRef.current.scrollTo({ left: newScrollRight, behavior: 'smooth' });
-            }
+              }
         }, 2000);
     
         return () => clearInterval(timer);
@@ -133,7 +129,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
                         <ul>
                             {products.map((product: Product) => (
                                 <li key={product.productId}>
-                                    <ProductListComp product={product} size="255px" fontSize="7px" />
+                                    <ProductListComp product={product} size="270px" fontSize="7px" />
                                 </li>
                             ))}
                         </ul>

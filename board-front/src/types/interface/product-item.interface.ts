@@ -19,4 +19,6 @@ export default interface Product {
     arrivalDate: Date;
     recommended: boolean;
     maxQuantityPerDelivery: number;
+    startDate: Date;
+    endDate: Date;
 }
