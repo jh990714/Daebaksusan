@@ -28,24 +28,24 @@ export const HomeBanner2 = () => {
         <div className='section center'>
           {products.length >= 1 && (
             <div className='item'>
-              <RcmndProductComp product={products[0]} />
+              <RcmndProductComp product={products[0]} imgSize_w_per={"60%"} imgSize_h_px={"250px"}font_size='8px' border='0'/>
             </div>
           )}
           {products.length >= 2 && (
             <div className='item'>
-              <RcmndProductComp product={products[1]} />
+              <RcmndProductComp product={products[0]} imgSize_w_per={"60%"} imgSize_h_px={"250px"} font_size='8px' border='0'/>
             </div>
           )}
         </div>
         <div className='section right'>
           {products.length >= 3 && (
             <div className='item'>
-              <RcmndProductComp product={products[2]} />
+              <RcmndProductComp product={products[0]} imgSize_w_per={"60%"} imgSize_h_px={"250px"} font_size='8px' border='0'/>
             </div>
           )}
           {products.length >= 4 && (
             <div className='item'>
-              <RcmndProductComp product={products[3]} />
+              <RcmndProductComp product={products[0]} imgSize_w_per={"60%"} imgSize_h_px={"250px"} font_size='8px' border='0'/>
             </div>
           )}
         </div>

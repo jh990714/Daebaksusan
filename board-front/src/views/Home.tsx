@@ -18,6 +18,7 @@ export const Home: React.FC = () => {
   const ref4 = useAnimateOnScroll();
   const ref5 = useAnimateOnScroll();
   const ref6 = useAnimateOnScroll();
+  const ref7 = useAnimateOnScroll();
   
   return (
     <div className='homeContainer'>
@@ -45,11 +46,11 @@ export const Home: React.FC = () => {
         <BestProduct category='new'/>
       </div>
 
-      <div className="HomeBanner">
+      <div className="HomeBanner" ref={ref6}>
         <VideoPlayer videoUrl={process.env.PUBLIC_URL + `/video/1.mp4`}/>
       </div>
 
-      <div ref={ref6}>
+      <div ref={ref7}>
         <BestProduct category='all'/>
       </div>
     </div>

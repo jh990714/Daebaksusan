@@ -26,23 +26,38 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoUrl }) => {
     }, []);
 
     return (
-        <div>
+        <div className=''>
             <div className="m-10 font-bold text-2xl">👀 대박수산 TV </div>
-            <div className="rounded-lg grid grid-cols-2 gap-2 border-2 ">
-                <ReactPlayer
-                    style={{ borderRadius: '10px', overflow: 'hidden' }}
-                    loop={true}
-                    url={videoUrl}    // 플레이어 url
-                    width='100%'         // 플레이어 크기 (가로)
-                    height='100%'        // 플레이어 크기 (세로)
-                    playing={true}        // 자동 재생 on
-                    muted={true}          // 자동 재생 on
-                    controls={false}       // 플레이어 컨트롤 노출 여부
-                    light={false}         // 플레이어 모드
-                    pip={false}            // pip 모드 설정 여부
-                //onEnded={() => handleVideo()}  // 플레이어 끝났을 때 이벤트
-                />
-                <div className=''></div>
+            <div className="rounded-lg grid grid-cols-10 gap-3 border-2 ">
+                <div className='col-span-7'>
+                    <ReactPlayer
+                        style={{ borderRadius: '10px 0 0 10px', overflow: 'hidden' }}
+                        loop={true}
+                        url={videoUrl}    // 플레이어 url
+                        width='100%'         // 플레이어 크기 (가로)
+                        height='100%'        // 플레이어 크기 (세로)
+                        playing={true}        // 자동 재생 on
+                        muted={true}          // 자동 재생 on
+                        controls={false}       // 플레이어 컨트롤 노출 여부
+                        light={false}         // 플레이어 모드
+                        pip={false}            // pip 모드 설정 여부
+                    //onEnded={() => handleVideo()}  // 플레이어 끝났을 때 이벤트
+                    />
+                </div>
+                <div className='col-span-3 grid grid-rows-2'>
+                    {products.length > 0 && (
+                        <div className='border-b-2 content-center'>
+                            <RcmndProductComp product={products[0]} imgSize_w_per="50%" imgSize_h_px="170px" font_size='5px' border='50%' />
+                        </div>
+                    )}
+                    {/* <div className='border' /> */}
+                    {products.length > 1 && (
+                        <div className='content-center'>
+                            <RcmndProductComp product={products[1]} imgSize_w_per="50%" imgSize_h_px="170px" font_size='5px' border='50%' />
+                        </div>
+                    )}
+                </div>
+
             </div>
         </div>
     );

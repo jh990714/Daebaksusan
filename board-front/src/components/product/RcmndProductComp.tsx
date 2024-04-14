@@ -6,11 +6,15 @@ import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 interface RcmndProductCompProps {
-  product: Product;
+    product: Product;
+    imgSize_w_per: string;
+    imgSize_h_px: string;
+    font_size: string;
+    border: string;
 }
 
-export const RcmndProductComp:React.FC<RcmndProductCompProps> = ({product}) => {
-  const addToRecentProducts = (product: Product) => {
+export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, imgSize_w_per, imgSize_h_px, font_size, border }) => {
+    const addToRecentProducts = (product: Product) => {
         const maxRecentProducts = 7; // 최대 저장할 최근 본 상품의 수
         const recentProducts = Cookies.get('recentProducts') ? JSON.parse(Cookies.get('recentProducts')!) : [];
 
@@ -24,19 +28,34 @@ export const RcmndProductComp:React.FC<RcmndProductCompProps> = ({product}) => {
         Cookies.set('recentProducts', JSON.stringify(updatedRecentProducts), { expires: 1 }); // 쿠키에 저장, 유효 기간은 1일
 
     };
-  return (
-    <Link to={`/detail/`} state={{ product: product }} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
-      <div className={styles.container}>
-        <div className={styles.imgContainer}>
-          <img src={process.env.PUBLIC_URL + `/upload/${product.imageUrl}`} alt='추천 상품' className={styles.rcmdImg}/>
-          <img src={tag} alt='추천 상품' className={styles.rcmdTag} />
-        </div>
-        <div className={styles.rcmdInfo}>
-          <p className={styles.title}> {product.name} </p>
-          <p className={styles.beforeprice}> {product.regularPrice.toLocaleString()}원 </p>
-          <p className={styles.afterprice}>  {(product.regularPrice - product.salePrice).toLocaleString()}원 </p>
-        </div>
-      </div>
-    </Link>
-  )
+    return (
+        <Link to={`/detail/`} state={{ product: product }} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
+            <div className={styles.container}>
+                <div className={styles.imgContainer}
+                    style={{
+                        '--w-size': imgSize_w_per,
+                        '--h-size': imgSize_h_px,
+                    } as React.CSSProperties}>
+                    <img 
+                        src={process.env.PUBLIC_URL + `/upload/${product.imageUrl}`}
+                        alt='추천 상품' 
+                        className={styles.rcmdImg}
+                        style={{
+                            '--w-size': imgSize_w_per,
+                            '--h-size': imgSize_h_px,
+                            '--border-radius': border
+                        } as React.CSSProperties}/>
+                    <img src={tag} alt='추천 상품' className={styles.rcmdTag} />
+                </div>
+                <div className={styles.rcmdInfo}
+                style={{
+                    '--font-size': font_size,
+                } as React.CSSProperties}>
+                    <p className={styles.title}> {product.name} </p>
+                    <p className={styles.beforeprice}> {product.regularPrice.toLocaleString()}원 </p>
+                    <p className={styles.afterprice}>  {(product.regularPrice - product.salePrice).toLocaleString()}원 </p>
+                </div>
+            </div>
+        </Link>
+    )
 }
