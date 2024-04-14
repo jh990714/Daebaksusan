@@ -126,7 +126,7 @@ export const NavigationBar = () => {
             <div className={styles.navBar}>
                 <div className={styles.navLeft}>
                     <Link to='' className={styles.logo}>
-                        <img src={logo} alt="로고" width="180" height="180"></img>
+                        <img src={logo} alt="로고" width="130" height="180"></img>
                     </Link>
 
                     <div className={styles.menuIcon} onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -204,7 +204,7 @@ export const NavigationBar = () => {
                                     <li>
                                         {/* 마이페이지 아이콘과 링크를 여기에 구현 */}
                                         <Link to='/myPage' className={styles.icon}>
-                                            <img src={loginIcon} alt='마이페이지' style={{ width: 50, height: 50 }} />
+                                            <img src={loginIcon} alt='마이페이지' style={{ width: 40, height: 'auto' }} />
                                             <span className={styles.iconTitle}> 마이페이지 </span>
                                         </Link>
                                     </li>

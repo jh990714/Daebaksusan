@@ -8,7 +8,10 @@
 }
 .title {
     font-size: 15px;
-    color: black;
+    text-align: center;
+    margin: 10px 0px;
+    color: rgb(29, 78, 216);
+    font-weight: bold;
 }
 
 .recentProductsContainer ul {
@@ -40,8 +43,12 @@
 }
 
 .buttonContainer {
-    margin-top: 1rem;
+    margin: 0.5rem 0rem;
     display: flex;
     justify-content: space-around;
     font-size: 13px;
+}
+
+.scrollButton{
+    
 }

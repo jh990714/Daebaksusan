@@ -27,7 +27,7 @@ const RecentProducts: React.FC = () => {
     
     return (
         <div className={styles.recentProductsContainer}>
-            <p className={styles.title}>최근 본 상품</p>
+            <div className={styles.title}>최근 본 상품</div>
             <div>
                 <ul ref={productListRef}>
                     {recentProducts.map(product => (
