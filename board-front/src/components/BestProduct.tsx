@@ -70,11 +70,17 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
         const timer = setInterval(() => {
             if (scrollRef.current) {
                 const maxScroll = scrollRef.current.scrollWidth - scrollRef.current.clientWidth;
-                const newScrollRight = (scrollRef.current.scrollLeft + scrollAmount) % maxScroll;
+                let newScrollRight = (scrollRef.current.scrollLeft + scrollAmount) % maxScroll;
+                
+                // 만약 맨 오른쪽에서 다음으로 넘어갈 수 없을 때
+                if (newScrollRight >= maxScroll) {
+                    newScrollRight = 0; // 처음으로 이동
+                }
+                
                 scrollRef.current.scrollTo({ left: newScrollRight, behavior: 'smooth' });
             }
         }, 7000);
-
+    
         return () => clearInterval(timer);
     }, [scrollAmount]);
 
