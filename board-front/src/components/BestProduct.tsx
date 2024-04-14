@@ -7,6 +7,7 @@ import { Product } from 'types';
 import { ProductListComp } from 'components/product/ProductListComp';
 import { Link } from 'react-router-dom';
 import { CategoryMenuBar } from 'layouts/CategoryMenuBar';
+import ImageGalleryComp from './ImageGallery/ImageGalleryComp';
 
 interface CategoryProductProp {
     category: string;
@@ -125,7 +126,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
                         더보기
                     </Link>
                 </div>
-                <div className={styles.productList}>
+                {/* <div className={styles.productList}>
                     <button className={styles.moveButton} onClick={() => scrollLeft()}>
                         <img width="35" height="35" src={leftArrow} />
                     </button>
@@ -133,15 +134,19 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
                         <ul>
                             {products.map((product: Product) => (
                                 <li key={product.productId}>
-                                    <ProductListComp product={product} size="255px" fontSize="7px" />
+                                    <ProductListComp product={product} size="275px" fontSize="7px" />
                                 </li>
                             ))}
+                            
                         </ul>
                     </div>
 
                     <button className={styles.moveButton} onClick={() => scrollRight()}>
                         <img width="35" height="35" src={rightArrow} />
                     </button>
+                </div> */}
+                <div className='border-t-2 border-blue-700 p-3'>
+                    <ImageGalleryComp items={products} />
                 </div>
             </div>
         </div>
