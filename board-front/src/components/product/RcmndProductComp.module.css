@@ -33,6 +33,7 @@
 }
 .rcmdInfo {
     padding: 2rem;
+    width: var(--w-size, 40%);
     font-size: var(--font-size, 8px);
     text-align: start;
 }

@@ -47,18 +47,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoUrl }) => {
                 <div className='col-span-3 grid grid-rows-3'>
                     {products.length > 0 && (
                         <div className='border-b-2 content-center'>
-                            <RcmndProductComp product={products[0]} imgSize_w_per="45%" imgSize_h_px="120px" font_size='5px' border='50%' />
+                            <RcmndProductComp product={products[0]} imgSize_w_per={45} imgSize_h_px={120} font_size={5} border={50} />
                         </div>
                     )}
                     {/* <div className='border' /> */}
                     {products.length > 1 && (
                         <div className='border-b-2 content-center'>
-                            <RcmndProductComp product={products[1]} imgSize_w_per="45%"  imgSize_h_px="120px" font_size='5px' border='50%' />
+                            <RcmndProductComp product={products[1]} imgSize_w_per={45} imgSize_h_px={120} font_size={5} border={50} />
                         </div>
                     )}
                     {products.length > 2 && (
                         <div className='content-center'>
-                            <RcmndProductComp product={products[2]} imgSize_w_per="45%"  imgSize_h_px="120px" font_size='5px' border='50%' />
+                            <RcmndProductComp product={products[2]} imgSize_w_per={45} imgSize_h_px={120} font_size={5} border={50} />
                         </div>
                     )}
                     

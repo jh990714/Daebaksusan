@@ -71,7 +71,7 @@ export const NavigationBar = () => {
                 }
                 const data = await response.json();
                 setSelectedItemIndex(null);
-                setSearchResults(data);
+                setSearchResults(data.slice(0, 5));
             } catch (error) {
                 console.error('Error fetching search results:', error);
                 setSearchResults([]);
@@ -131,7 +131,7 @@ export const NavigationBar = () => {
     }
 
     const toggleCategory = () => {
-        setIsOpen(!isOpen); // isOpen 상태를 토글
+        setIsOpen(true); // isOpen 상태를 토글
     };
 
     const closeCategory = () => {
@@ -159,7 +159,9 @@ export const NavigationBar = () => {
                         <ul>
                             <IconComp defaultIcon={bestIcon} hoverIcon={bestBlueIcon} title={'인기 상품'} link={'/best'} />
                             <IconComp defaultIcon={newIcon} hoverIcon={newBlueIcon} title={'최신 상품'} link={'/new'} />
-                            <IconComp defaultIcon={allIcon} hoverIcon={allBlueIcon} title={'모든 상품'} link={'/all'} />
+                            <div onMouseOver={toggleCategory}>
+                                <IconComp defaultIcon={allIcon} hoverIcon={allBlueIcon} title={'모든 상품'} link={'/all'} />
+                            </div>
                         </ul>
                     </div>
 
