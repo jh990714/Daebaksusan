@@ -13,7 +13,7 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`/reviews/${productId}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/reviews/${productId}`);
         setReviews(response.data);
         console.log(response.data);
       } catch (error) {
