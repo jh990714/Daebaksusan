@@ -32,7 +32,7 @@ export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, img
     }
 
     return (
-        <Link to={`/detail/${product.productId}`} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
+        <Link to={`/detail/`}  state={{ product: product }} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
             <div className={styles.container}>
                 <div className={styles.imgContainer}
                     style={{
