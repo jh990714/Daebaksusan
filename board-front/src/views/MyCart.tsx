@@ -13,10 +13,6 @@ export const MyCart = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [selectAll, setSelectAll] = useState(true);
 
-    useEffect(() => {
-        fetchCartItems(setCartItems, setIsLoggedIn);
-    }, [isLoggedIn]);
-
     const handleQuantityChange = (id: number, quantity: number, boxCnt: number) => {
         setCartItems(prevItems =>
             prevItems.map(item => {
