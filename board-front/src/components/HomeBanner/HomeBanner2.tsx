@@ -10,9 +10,9 @@ export const HomeBanner2 = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response: AxiosResponse<Product[]> = await axios.get<Product[]>(`${process.env.REACT_APP_API_URL}/product/new`);
+        const response: AxiosResponse<Product[]> = await axios.get<Product[]>(`${process.env.REACT_APP_API_URL}/product/recommend`);
         console.log(response);
-        setProducts(response.data.slice(6, 10));
+        setProducts(response.data.slice(0, 4));
       } catch (error) {
         console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
       }
@@ -28,24 +28,24 @@ export const HomeBanner2 = () => {
         <div className='section center'>
           {products.length >= 1 && (
             <div className='item'>
-              <RcmndProductComp product={products[0]} imgSize_w_per={"60%"} imgSize_h_px={"250px"}font_size='8px' border='0'/>
+              <RcmndProductComp product={products[0]} imgSize_w_per={60} imgSize_h_px={250} font_size={8} border={0}/>
             </div>
           )}
           {products.length >= 2 && (
             <div className='item'>
-              <RcmndProductComp product={products[0]} imgSize_w_per={"60%"} imgSize_h_px={"250px"} font_size='8px' border='0'/>
+              <RcmndProductComp product={products[1]} imgSize_w_per={60} imgSize_h_px={250} font_size={8} border={0}/>
             </div>
           )}
         </div>
         <div className='section right'>
           {products.length >= 3 && (
             <div className='item'>
-              <RcmndProductComp product={products[0]} imgSize_w_per={"60%"} imgSize_h_px={"250px"} font_size='8px' border='0'/>
+              <RcmndProductComp product={products[2]} imgSize_w_per={60} imgSize_h_px={250} font_size={8} border={0}/>
             </div>
           )}
           {products.length >= 4 && (
             <div className='item'>
-              <RcmndProductComp product={products[0]} imgSize_w_per={"60%"} imgSize_h_px={"250px"} font_size='8px' border='0'/>
+              <RcmndProductComp product={products[3]} imgSize_w_per={60} imgSize_h_px={250} font_size={8} border={0}/>
             </div>
           )}
         </div>

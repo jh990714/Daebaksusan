@@ -45,6 +45,12 @@ public class ProductController {
     
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
+    @GetMapping("/recommend")
+    public ResponseEntity<List<ProductDTO>> getRecommendProduct() {
+        List<ProductDTO> product = productService.findProductRecommend();
+    
+        return new ResponseEntity<>(product, HttpStatus.OK);
+    }
 
     @GetMapping("/{productId}/options")
     public ResponseEntity<List<OptionEntity>> getOption(@PathVariable Integer productId) {

@@ -14,5 +14,7 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Integer>
     List<ProductEntity> findByNameContaining(String query);
     ProductEntity findByProductId(Integer productId);
     List<ProductEntity> findAllByProductIdIn(List<Integer> productIds);
+    List<ProductEntity> findByRecommended(boolean b);
+
 
 }

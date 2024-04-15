@@ -58,6 +58,17 @@ public class ProductServiceImple implements ProductService{
         return productDTOs;
     }
 
+    
+    @Override
+    public List<ProductDTO> findProductRecommend() {
+        List<ProductEntity> products = productRepository.findByRecommended(true);
+        
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
+    }
+    
+
     @Override
     public List<OptionEntity> findOption(Integer productId) {
         List<OptionEntity> options = new ArrayList<>();
@@ -244,6 +255,5 @@ public class ProductServiceImple implements ProductService{
         return productDTOs;
         
     }
-    
  
 }

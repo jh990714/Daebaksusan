@@ -23,4 +23,5 @@ public interface ProductService {
     public ProductDTO convertToProductDTO(ProductEntity product, List<ProductDealsEntity> dealProducts);
     public List<ProductDTO> convertProductEntitiesToDTOs(List<ProductEntity> products);
     public List<ProductDTO> getTimeDealProducts();
+    public List<ProductDTO> findProductRecommend();
 }

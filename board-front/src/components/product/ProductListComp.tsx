@@ -37,7 +37,7 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
                 className={styles.productInfoCard}
             >
                 <div className={styles.productImgWrapper}>
-                    {product.regularPrice !== product.salePrice && (
+                    {product.recommended && (
                         <img src={bestProductIcon} alt="추천 아이콘" className={styles.bestProductIcon} />
                     )}
                     <img src={process.env.PUBLIC_URL + `/upload/${product.imageUrl}`} alt={product.name}

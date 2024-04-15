@@ -1,16 +1,15 @@
-
-import { Product } from 'types'
-import styles from './RcmndProductComp.module.css'
-import tag from 'assets/bestProductIcon.png'
+import { Product } from 'types';
+import styles from './RcmndProductComp.module.css';
+import tag from 'assets/bestProductIcon.png';
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 interface RcmndProductCompProps {
     product: Product;
-    imgSize_w_per: string;
-    imgSize_h_px: string;
-    font_size: string;
-    border: string;
+    imgSize_w_per: number;
+    imgSize_h_px: number;
+    font_size: number;
+    border: number;
 }
 
 export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, imgSize_w_per, imgSize_h_px, font_size, border }) => {
@@ -26,30 +25,35 @@ export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, img
         }
 
         Cookies.set('recentProducts', JSON.stringify(updatedRecentProducts), { expires: 1 }); // 쿠키에 저장, 유효 기간은 1일
-
     };
+
+    if (!product.recommended) {
+        return null; // 추천 상품이 아닌 경우, 렌더링하지 않음
+    }
+
     return (
-        <Link to={'/detail/'} state={{ product: product }} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
+        <Link to={`/detail/${product.productId}`} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
             <div className={styles.container}>
                 <div className={styles.imgContainer}
                     style={{
-                        '--w-size': imgSize_w_per,
-                        '--h-size': imgSize_h_px,
+                        '--w-size': `${imgSize_w_per}%`,
+                        '--h-size': `${imgSize_h_px}px`,
                     } as React.CSSProperties}>
                     <img 
-                        src={process.env.PUBLIC_URL + `/upload/${product.imageUrl}`}
+                        src={`${process.env.PUBLIC_URL}/upload/${product.imageUrl}`}
                         alt='추천 상품' 
                         className={styles.rcmdImg}
                         style={{
-                            '--w-size': imgSize_w_per,
-                            '--h-size': imgSize_h_px,
-                            '--border-radius': border
+                            '--w-size': `${imgSize_w_per}%`,
+                            '--h-size': `${imgSize_h_px}px`,
+                            '--border-radius': `${border}%`
                         } as React.CSSProperties}/>
                     <img src={tag} alt='추천 상품' className={styles.rcmdTag} />
                 </div>
                 <div className={styles.rcmdInfo}
                 style={{
-                    '--font-size': font_size,
+                    '--w-size': `${100-imgSize_w_per}%`,
+                    '--font-size': `${font_size}px`,
                 } as React.CSSProperties}>
                     <p className={styles.title}> {product.name} </p>
                     <p className={styles.beforeprice}> {product.regularPrice.toLocaleString()}원 </p>
@@ -57,5 +61,5 @@ export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, img
                 </div>
             </div>
         </Link>
-    )
-}
+    );
+};
