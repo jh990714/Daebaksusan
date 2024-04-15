@@ -11,7 +11,7 @@ import com.seafood.back.entity.ProductEntity;
 public interface ProductRepository extends JpaRepository<ProductEntity, Integer>{
     List<ProductEntity> findTop10ByOrderByProductIdDesc();
     List<ProductEntity> findByCategory(Long category);
-    List<ProductEntity> findTop5ByNameContaining(String query);
+    List<ProductEntity> findByNameContaining(String query);
     ProductEntity findByProductId(Integer productId);
     List<ProductEntity> findAllByProductIdIn(List<Integer> productIds);
 

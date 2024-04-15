@@ -107,10 +107,28 @@ public class ProductServiceImple implements ProductService{
         return productDTOs;
     }
 
+    @Override
     public List<ProductDTO> searchProducts(String query) {
-        List<ProductEntity> products = productRepository.findTop5ByNameContaining(query);
+        List<ProductEntity> products = productRepository.findByNameContaining(query);
+        
+        // 생선이라는 카테고리검색 -> category.name에서 생선을 찾음 -> 만약 parentId가 null이면 상위 카테고리 -> getProductsByCategoryAndSubcategories() 호출
+        // 만약 parentId가 있다면 하위 카테고리 -> getProductsByCategorySub() 호출
+        // products 뒤에 add시킴
 
         List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        if (productDTOs.isEmpty()) {
+            CategoryEntity category = categoryRepository.findByName(query);
+
+            if (category != null) {
+                if (category.getParentCategory() != null) {
+                    productDTOs.addAll(getProductsByCategorySub(category.getCategoryId()));
+                } else {
+
+                    productDTOs.addAll(getProductsByCategoryAndSubcategories(category.getCategoryId()));
+                }
+            }
+        }
 
         return productDTOs;
     }
