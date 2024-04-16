@@ -131,7 +131,7 @@ export const Detail: React.FC = () => {
 
         for (let i = 0; i < n; i++) {
             arr.push(
-                <div className="border-b-2 border-gray-200 px-4 py-1 grid grid-cols-3 place-items-center">
+                <div className=" border-gray-200 px-4 py-1 grid grid-cols-3 place-items-center">
                     <div>
                         <div>{product.name}</div>
                         <div className='text-sm text-gray-400'>- {option?.name}({option?.addPrice.toLocaleString()})  배송 비({product.shippingCost.toLocaleString()}) - </div>
@@ -311,36 +311,37 @@ export const Detail: React.FC = () => {
             <main className="container mx-auto my-8 p-4">
                 <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
 
-                    <div className="w-full md:w-1/2 p-4">
-                        <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded shadow-lg " />
+                    <div className="w-full md:w-1/2 px-4">
+                        <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded  " />
                     </div>
                     <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
 
                         <div className='text-2xl text-blue-700 font-bold p-3'>{product.name}</div>
-                        <h1 className="text-xl text-gray-500 font-bold border-b-2 border-gray-200 p-2">{product.description}</h1>
+                        <h1 className="text-xl text-gray-500 font-bold border-gray-200 p-2">{product.description}</h1>
 
-                        <div className="text-start border-b-2 border-gray-200 px-4 py-1">
-                            <div className="grid grid-cols-5">
-                                <div className="font-bold">판매가</div>
-                                <div className="col-span-4 text-xl">{(product.regularPrice - product.salePrice).toLocaleString()}원</div>
+                        <div className="">
+                            <div className="text-start border-b-2 border-gray-200 px-4 py-1">
+                                <div className="grid grid-cols-5">
+                                    <div className="font-bold">판매가</div>
+                                    <div className="col-span-4 text-xl">{(product.regularPrice - product.salePrice).toLocaleString()}원</div>
+                                </div>
+                            </div>
+                            <div className="grid grid-rows-3 text-start border-b-2 border-gray-200 px-4 py-1">
+                                <div className="grid grid-cols-5">
+                                    <div className="font-bold">원산지</div>
+                                    <div className="col-span-4">완도군</div>
+                                </div>
+                                <div className="grid grid-cols-5">
+                                    <div className="font-bold">배송</div>
+                                    <div className="col-span-4">택배</div>
+                                </div>
+                                <div className="grid grid-cols-5">
+                                    <div className="font-bold">배송 비</div>
+                                    <div className="col-span-4">{product.shippingCost.toLocaleString()}원</div>
+                                </div>
                             </div>
                         </div>
-                        <div className="grid grid-rows-3 text-start border-b-2 border-gray-200 px-4 py-1">
-                            <div className="grid grid-cols-5">
-                                <div className="font-bold">원산지</div>
-                                <div className="col-span-4">완도군</div>
-                            </div>
-                            <div className="grid grid-cols-5">
-                                <div className="font-bold">배송</div>
-                                <div className="col-span-4">택배</div>
-                            </div>
-                            <div className="grid grid-cols-5">
-                                <div className="font-bold">배송 비</div>
-                                <div className="col-span-4">{product.shippingCost.toLocaleString()}원</div>
-                            </div>
-
-                        </div>
-                        <div className="border-b-2 border-gray-200 px-4 py-2">
+                        <div className="px-4 py-2">
                             <label htmlFor="option-select" className="mb-2"><strong className="text-blue-700">[필수]</strong> 옵션 선택 </label>
                             <select
                                 id="option-select"
@@ -357,12 +358,12 @@ export const Detail: React.FC = () => {
                             </select>
                         </div>
 
-                        <>
+                        <div className='rounded-lg shadow-md border-1 mx-4 my-3'>
                             {showList(quantity, product.maxQuantityPerDelivery)}
-                        </>
+                        </div>
 
                         <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)} disabled={isSoldOut}>-</button>
+                            <button className="bg-blue-700 text-sm text-white font-bold px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)} disabled={isSoldOut}>-</button>
                             <input
                                 type="text"
                                 value={quantity.toLocaleString()}
@@ -370,15 +371,15 @@ export const Detail: React.FC = () => {
                                 className="w-16 text-center text-sm border border-gray-300 rounded"
                                 disabled={isSoldOut}
                             />
-                            <button className="bg-blue-700 text-sm text-white px-4 py-2 rounded" onClick={() => handleQuantityChange(1)} disabled={isSoldOut}>+</button>
+                            <button className="bg-blue-700 text-sm text-white font-bold px-4 py-2 rounded" onClick={() => handleQuantityChange(1)} disabled={isSoldOut}>+</button>
                         </div>
                         <div className="flex justify-between  border-2 border-blue-700 rounded">
                             <div className="text-2xl p-4 font-bold text-white bg-blue-700">최종 금액</div>
                             <div className='text-2xl p-4 font-bold text-blue-700 text-end'>{totalPrice.toLocaleString()} 원</div>
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-white px-4 py-2 rounded" disabled={isSoldOut} onClick={handleGoToOrder}>구매하기</button>
-                            <button className="bg-blue-700 text-white px-4 py-2 rounded" onClick={handleAddToCart}>장바구니 담기</button>
+                            <button className="bg-blue-700 text-white font-bold px-4 py-2 rounded" disabled={isSoldOut} onClick={handleGoToOrder}>구매하기</button>
+                            <button className="bg-blue-700 text-white font-bold px-4 py-2 rounded" onClick={handleAddToCart}>장바구니</button>
 
                         </div>
 

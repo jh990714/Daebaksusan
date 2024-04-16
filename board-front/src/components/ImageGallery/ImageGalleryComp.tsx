@@ -11,6 +11,8 @@ import { ProductListComp } from 'components/product/ProductListComp';
 
 interface ImageGalleryProps {
     items: (Product | string)[]; // 상품과 후기 모두를 포함하는 배열
+    size?: string;
+    fontSize?: string;
 }
 
 function CustomArrow(props: any) {
@@ -24,13 +26,14 @@ function CustomArrow(props: any) {
     );
 }
 
-const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items }) => {
+const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size="275px", fontSize="7px" }) => {
+
     const settings = {
         centerSlides: false,
         accessibility: true,
         dots: true,
         infinite: true,
-        speed: 800,
+        speed: 1000,
         autoplay: true,
         autoplaySpeed: 2000,
         slidesToShow: 4,
@@ -42,7 +45,7 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items }) => {
         prevArrow: <CustomArrow />,
         nextArrow: <CustomArrow />,
     };
-
+    
     return (
         <Slider {...settings}>
             {items.map((item, index) => (
@@ -50,7 +53,7 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items }) => {
                     {typeof item === 'string' ? ( // 후기인 경우
                         <img src={`${process.env.PUBLIC_URL}/review/${item}`} alt={`Review ${index}`} className="w-full h-full object-cover rounded-md" />
                     ) : ( // 상품인 경우
-                            <ProductListComp product={item} size="275px" fontSize="7px" />
+                            <ProductListComp product={item} size={size} fontSize={fontSize} />
                     )}
                 </div>
             ))}
