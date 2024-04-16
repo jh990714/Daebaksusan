@@ -1,5 +1,6 @@
 import JoinTimeLineComp from 'components/JoinTimeLineComp';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 
 export const JoinStep1: React.FC = () => {
@@ -7,6 +8,7 @@ export const JoinStep1: React.FC = () => {
     const [warning, setWarning] = useState<boolean>(false);
     // 사업자 번호 입력란 상태 추가
     const [showBusinessNumber, setShowBusinessNumber] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     const handleMemberTypeChange = (type: string) => {
         setMemberType(type);
@@ -28,7 +30,7 @@ export const JoinStep1: React.FC = () => {
                 behavior: 'smooth',
             });
         } else {
-            window.location.href = "/joinStep2";
+            navigate('/joinStep2');
             console.log("회원가입 로직 처리", memberType);
         }
     };

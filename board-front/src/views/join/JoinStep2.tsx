@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import TermsOfServiceComp from 'components/TermsOfServiceComp';
 import JoinTimeLineComp from 'components/JoinTimeLineComp';
+import { useNavigate } from 'react-router-dom';
 
 export const JoinStep2: React.FC = () => {
     const [agreement1, setAgreement1] = useState<boolean | null>(null);
     const [agreement2, setAgreement2] = useState<boolean | null>(null);
     const [agreement3, setAgreement3] = useState<boolean | null>(null);
+    const navigate = useNavigate();
 
     const handleTermsSubmit = () => {
         if (agreement1 !== null && agreement2 !== null && agreement3 !== null) {
 
-          window.location.href = "/joinStep3";
+            navigate('/joinStep3');
         } else {
           alert('약관에 동의하거나 동의하지 않음을 선택해주세요.');
         }
