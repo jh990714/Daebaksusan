@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import java.util.Date;
 
 @Entity
 @Table(name = "payment_details")
@@ -33,4 +34,7 @@ public class PaymentDetailsEntity {
 
     @Column(name = "password")
     private String password;
+    
+    @Column(name = "order_date")
+    private Date orderDate;
 }

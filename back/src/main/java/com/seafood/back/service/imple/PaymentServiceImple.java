@@ -2,8 +2,11 @@ package com.seafood.back.service.imple;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,7 +90,6 @@ public class PaymentServiceImple implements PaymentService {
                     throw new IllegalArgumentException("주문 수량이 재고보다 많습니다. 상품명: " + productDTO.getName());
                 }
 
-                
                 BigDecimal productPrice = productDTO.getRegularPrice().subtract(productDTO.getSalePrice());
                 BigDecimal shippingCost = productDTO.getShippingCost();
                 int maxQuantityPerDelivery = productDTO.getMaxQuantityPerDelivery();
@@ -110,15 +112,29 @@ public class PaymentServiceImple implements PaymentService {
     public String savePaymentDetails(String id, String impUid, String password) {
         PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        String currentTime = now.format(formatter);
+        // 현재 날짜를 가져옴
+        Date today = new Date();
 
-        // auto_increment의 id 값 가져오기
-        Long autoIncrementId = paymentDetailsRepository.getAutoIncrementId();
+        // 날짜 포맷 지정
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
-        // 현재 시간과 auto_increment id를 조합하여 16자리의 사용자 ID 생성
-        String orderNumber = currentTime + '_' + String.format("%08d", autoIncrementId);
+        // 현재 날짜를 문자열로 변환
+        String currentDate = dateFormat.format(today);
+
+        // 해당 날짜에 해당하는 주문번호들의 개수를 가져옴
+        // 시간을 무시하기 위해 현재 날짜의 시간을 00:00:00으로 설정
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(today);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date todayWithoutTime = calendar.getTime();
+
+        int orderCountForToday = paymentDetailsRepository.getOrderCountForDate(todayWithoutTime);
+
+        // 주문번호를 생성 (날짜 + 해당 날짜의 주문번호 개수)
+        String orderNumber = currentDate + "_" + String.format("%08d", orderCountForToday + 1);
 
         if (id != null) {
             paymentDetails.setMemberId(id);
@@ -128,6 +144,7 @@ public class PaymentServiceImple implements PaymentService {
         paymentDetails.setImpUid(impUid);
         paymentDetails.setIsCancel(true);
         paymentDetails.setPassword(passwordEncoder.encode(password));
+        paymentDetails.setOrderDate(todayWithoutTime); // 주문날짜 설정
         paymentDetailsRepository.save(paymentDetails);
 
         return orderNumber;
@@ -200,14 +217,14 @@ public class PaymentServiceImple implements PaymentService {
     @Override
     public ResponseEntity<?> refundIamport(String memberId, String orderNumber) {
         try {
-            PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByMemberIdAndOrderNumber(memberId, orderNumber);
-            
+            PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByMemberIdAndOrderNumber(memberId,
+                    orderNumber);
+
             if (paymentDetail.getIsCancel() == false) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("취소가 불가능합니다.");
+                        .body("취소가 불가능합니다.");
             }
             ResponseEntity<?> cancelResponse = cancelPayment(paymentDetail.getImpUid());
-
 
             return ResponseEntity.ok(cancelResponse.getBody());
         } catch (Exception e) {
@@ -221,7 +238,7 @@ public class PaymentServiceImple implements PaymentService {
         try {
             PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByOrderNumber(orderNumber);
             IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
-    
+
             PaymentAndOrderInfo paymentAndOrderInfo = new PaymentAndOrderInfo();
             paymentAndOrderInfo.setOrderNumber(orderNumber);
             paymentAndOrderInfo.setOrderAt(iamportResponse.getResponse().getStartedAt());
@@ -230,13 +247,13 @@ public class PaymentServiceImple implements PaymentService {
             paymentAndOrderInfo.setPostCode(iamportResponse.getResponse().getBuyerPostcode());
             paymentAndOrderInfo.setAddress(iamportResponse.getResponse().getBuyerAddr());
             paymentAndOrderInfo.setPhone(iamportResponse.getResponse().getBuyerTel());
-    
+
             paymentAndOrderInfo.setPaymentAt(iamportResponse.getResponse().getPaidAt());
             paymentAndOrderInfo.setPaymentStatus(iamportResponse.getResponse().getStatus());
             paymentAndOrderInfo.setPgProvider(iamportResponse.getResponse().getPgProvider());
             paymentAndOrderInfo.setPaymentMethod(iamportResponse.getResponse().getPayMethod());
             paymentAndOrderInfo.setAmount(iamportResponse.getResponse().getAmount());
-    
+
             // 결제 종류에 따라 추가 정보 설정
             switch (iamportResponse.getResponse().getPayMethod()) {
                 case "card":
@@ -252,7 +269,7 @@ public class PaymentServiceImple implements PaymentService {
                     paymentAndOrderInfo.setVbankName(iamportResponse.getResponse().getVbankName());
                     paymentAndOrderInfo.setVbankNum(iamportResponse.getResponse().getVbankNum());
                     paymentAndOrderInfo.setVbankHolder(iamportResponse.getResponse().getVbankHolder());
-            
+
                     break;
                 case "trans":
                     // 계좌이체인 경우 추가 정보 설정
@@ -260,7 +277,7 @@ public class PaymentServiceImple implements PaymentService {
                     paymentAndOrderInfo.setBankName(iamportResponse.getResponse().getBankName());
                     break;
                 case "point":
-                // 계좌이체인 경우 추가 정보 설정
+                    // 계좌이체인 경우 추가 정보 설정
                     paymentAndOrderInfo.setPaymentMethod("간편결제");
 
                     break;
@@ -280,12 +297,11 @@ public class PaymentServiceImple implements PaymentService {
                 paymentAndOrderInfo.setPaymentMethod("카카오페이");
             }
 
-    
             return ResponseEntity.ok(paymentAndOrderInfo);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("결제 정보 확인 중 오류 발생");
+                    .body("결제 정보 확인 중 오류 발생");
         }
     }
-    
+
 }
