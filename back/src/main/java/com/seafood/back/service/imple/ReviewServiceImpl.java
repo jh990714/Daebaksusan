@@ -4,6 +4,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.seafood.back.dto.ReviewDTO;
@@ -37,14 +41,13 @@ public class ReviewServiceImpl implements ReviewService{
     private final ReviewResponseRepository reviewResponseRepository;
 
     @Override
-    public List<ReviewDTO> findReviews(Integer productId) {
+    public Page<ReviewDTO> findReviews(Integer productId, int page, int size ) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<ReviewEntity> reviewEntities = reviewRepository.findByProductId(productId, pageable);
+
         List<ReviewDTO> reviewDTOs = new ArrayList<>();
         
-        List<ReviewEntity> reviewEntities = new ArrayList<ReviewEntity>();
-
-        reviewEntities = reviewRepository.findByProductId(productId);
-        
-        for(ReviewEntity reviewEntity : reviewEntities ) {
+        for(ReviewEntity reviewEntity : reviewEntities.getContent() ) {
             ReviewDTO reviewDTO = new ReviewDTO();
 
             reviewDTO.setContents(reviewEntity.getContents());
@@ -53,7 +56,6 @@ public class ReviewServiceImpl implements ReviewService{
             reviewDTO.setIsBest(reviewEntity.getIsBest());
 
             int memberId = reviewEntity.getMemberId();
-            log.info("memberId" + memberId);
             MemberEntity memberEntity = memberRepository.findByMemberId(memberId);
             reviewDTO.setName(memberEntity.getName());
 
@@ -61,13 +63,11 @@ public class ReviewServiceImpl implements ReviewService{
             reviewDTO.setProductName(productEntity.getName());
 
             int optionId = reviewEntity.getOptionId();
-            log.info("optionId" + optionId);
 
             OptionEntity optionEntity = optionRepository.findByOptionId(optionId);
             reviewDTO.setOptionName(optionEntity.getName());
 
             int reviewId = reviewEntity.getReviewId();
-            log.info("reviewId" + reviewId);
 
             List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewId);
             List<String> imageUrls = new ArrayList<String>();
@@ -91,14 +91,11 @@ public class ReviewServiceImpl implements ReviewService{
             }
             reviewDTO.setResponses(reviewResponseDTOs);
 
-            
-
             reviewDTOs.add(reviewDTO);
         }
 
-        
-
-        return reviewDTOs;
+        return new PageImpl<>(reviewDTOs, pageable, reviewEntities.getTotalElements());
+    
     }
     
 }
