@@ -56,7 +56,9 @@ export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, img
                     '--font-size': `${font_size}px`,
                 } as React.CSSProperties}>
                     <p className={styles.title}> {product.name} </p>
-                    <p className={styles.beforeprice}> {product.regularPrice.toLocaleString()}원 </p>
+                    {product.salePrice !== 0 && (
+                        <p className={styles.beforeprice}> {product.regularPrice.toLocaleString()}원 </p>
+                    )}
                     <p className={styles.afterprice}>  {(product.regularPrice - product.salePrice).toLocaleString()}원 </p>
                 </div>
             </div>
