@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation  } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import styles from './QuickCart.module.css';
 import topArrow from '../assets/topArrow.png';
 import bottomArrow from '../assets/bottomArrow.png';
@@ -13,12 +13,12 @@ import { useCart } from 'hook/CartProvider';
 import { useAuthContext } from 'hook/AuthProvider';
 
 export const QuickCart = () => {
-    const {cartItems,  setCartItems} = useCart();
+    const { cartItems, setCartItems } = useCart();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [isVisible, setIsVisible] = useState(false);
     const [buttonImage, setButtonImage] = useState(topArrow);
     const [startIndex, setStartIndex] = useState(0);
-    const location  = useLocation();
+    const location = useLocation();
     // const [cartItems, setCartItems] = useState<Cart[]>([]);
 
     const filteredCartItems = cartItems.filter(item => item.isSelected === true);
@@ -29,7 +29,7 @@ export const QuickCart = () => {
         setButtonImage(topArrow);
     }, [location]);
 
-    
+
     useEffect(() => {
         fetchCartItems(setCartItems, setIsLoggedIn);
     }, [isLoggedIn]);
@@ -108,7 +108,7 @@ export const QuickCart = () => {
         fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn)
         setStartIndex(0);
     };
-    
+
 
     const renderListItems = () => {
         return cartItems.slice(startIndex, startIndex + 5).map((item, index) => (
@@ -168,9 +168,15 @@ export const QuickCart = () => {
                         <div className={styles.totalPriceTitle}>장바구니 총 주문 금액</div>
                         <div className={styles.totalPrice}>{calculateTotal()}원 </div>
                         <div className={styles.quickCartBtns}>
-                            <Link to='/order' state={{ cartItems: filteredCartItems }} style={{ textDecoration: 'none' }}>
-                                <div className={styles.quickOrderbutton}> 구매하러 가기</div>
-                            </Link>
+                            {filteredCartItems.length > 0 ? (
+                                <Link to='/order' state={{ cartItems: filteredCartItems }} style={{ textDecoration: 'none' }}>
+                                    <div className={styles.quickOrderbutton}> 구매하러 가기</div>
+                                </Link>
+                            ) : (
+                                <div className={styles.quickOrderbutton}>
+                                    구매하러 가기
+                                </div>
+                            )}
                             <div>
                                 <div className={styles.quickCartbutton} onClick={selectAll}> 모두 선택 / 해제 </div>
                             </div>

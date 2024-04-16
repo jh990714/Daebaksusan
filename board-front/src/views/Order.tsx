@@ -26,7 +26,8 @@ export const Order: React.FC = () => {
     const [guestPassword, setGuestPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [isPaymentInProgress, setIsPaymentInProgress] = useState(false); // 결제 진행 중인지 여부를 관리하는 상태 추가
-    const orderItems = useLocation().state.cartItems;
+    const orderItems = useLocation().state?.cartItems || [];
+
     const { cartItems, setCartItems } = useCart();
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
@@ -50,6 +51,7 @@ export const Order: React.FC = () => {
     const firstItemProductName = orderItems.length > 0 ? orderItems[0].cartItem.product.name : '';
     const remainingItemNames = orderItems.slice(1).map((item: { cartItem: { product: { name: any; }; }; }) => item.cartItem.product.name).join(', ');
 
+    
     useEffect(() => {
         // orderItems가 비어 있는지 확인
         if (!orderItems || orderItems.length === 0) {
@@ -305,8 +307,6 @@ export const Order: React.FC = () => {
         setPaymentMethod(method);
     };
 
-    const postcodeScriptUrl = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
-
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
@@ -418,7 +418,7 @@ export const Order: React.FC = () => {
                 </div>
 
                 <div className='addressContainer'>
-                    <DaumPost addressObj={addressObj} setAddressObj={setAddressObj} postcodeScriptUrl={postcodeScriptUrl} inputErrors={inputErrors} setInputErrors={setInputErrors} />
+                    <DaumPost addressObj={addressObj} setAddressObj={setAddressObj} inputErrors={inputErrors} setInputErrors={setInputErrors} />
                 </div>
                 <div className='orderTitle'> 결제 수단 </div>
                 <div className='mt-4'>

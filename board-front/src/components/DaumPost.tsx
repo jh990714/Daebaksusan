@@ -1,22 +1,20 @@
-import React, { useState } from 'react'; // useState 추가
-import { useDaumPostcodePopup } from 'react-daum-postcode'; // 가정한 import 문입니다.
+// DaumPost.tsx
+
+import React from 'react';
 import './DaumPost.css';
 import { AddressData, AddressObj, InputErrors } from 'types';
+import { AddressFinderButton } from './Button/AddressFinderButton';
 
 interface DaumPostProps {
   addressObj: AddressObj;
   setAddressObj: (obj: AddressObj) => void;
-  postcodeScriptUrl: string;
   inputErrors: InputErrors;
   setInputErrors: (obj: InputErrors) => void;
 }
 
-export const DaumPost: React.FC<DaumPostProps> = ({ addressObj, setAddressObj, postcodeScriptUrl, inputErrors, setInputErrors}) => {
-  const openPostcodePopup = useDaumPostcodePopup(postcodeScriptUrl);
-
+export const DaumPost: React.FC<DaumPostProps> = ({ addressObj, setAddressObj, inputErrors, setInputErrors}) => {
   const onCompletePostcode = (data: AddressData) => {
     const { address, addressType, bname, buildingName, sido, sigungu, zonecode } = data;
-    console.log(data);
     let extraAddress = '';
     let localAddress = `${sido} ${sigungu}`;
 
@@ -49,11 +47,6 @@ export const DaumPost: React.FC<DaumPostProps> = ({ addressObj, setAddressObj, p
     setAddressObj(updatedAddressObj); // 필요한 경우 부모 컴포넌트에도 업데이트 반영
   };
 
-  const handleOpenPostcodePopup = () => {
-    openPostcodePopup({ onComplete: onCompletePostcode });
-    
-  };
-
   return (
     <>
       <div className="addresContainer">
@@ -66,9 +59,7 @@ export const DaumPost: React.FC<DaumPostProps> = ({ addressObj, setAddressObj, p
           value={addressObj.zip}
           readOnly
         />
-        <div className="findAddress" onClick={handleOpenPostcodePopup}>
-          주소 찾기
-        </div>
+        <AddressFinderButton onCompletePostcode={onCompletePostcode} /> {/* 새로운 컴포넌트를 사용합니다. */}
       </div>
       <input
         type='text'
