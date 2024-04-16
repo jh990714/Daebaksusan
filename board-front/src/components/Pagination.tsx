@@ -1,21 +1,21 @@
 import React from 'react';
 
 interface PaginationProps {
+    pageSize: number
     totalPages: number;
     currentPage: number;
     onPageChange: (page: number) => void;
 }
 
-export const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, onPageChange }) => {
-    const pagesToShow = 5; // 보여줄 페이지 수
+export const Pagination: React.FC<PaginationProps> = ({ pageSize, totalPages, currentPage, onPageChange }) => {
     const pages: number[] = [];
 
      // 시작 페이지와 끝 페이지 계산
-     let startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
-     let endPage = Math.min(totalPages, startPage + pagesToShow - 1);
+     let startPage = Math.max(1, currentPage - Math.floor(pageSize / 2));
+     let endPage = Math.min(totalPages, startPage + pageSize - 1);
  
      // 시작 페이지를 다시 계산하여 보여줄 페이지 수를 유지
-     startPage = Math.max(1, endPage - pagesToShow + 1);
+     startPage = Math.max(1, endPage - pageSize + 1);
  
      // 페이지 번호 계산
      for (let i = startPage; i <= endPage; i++) {
