@@ -12,7 +12,7 @@ export const PaymentDetails: React.FC = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const [paymentDetails, setPaymentDetails] = useState<PaymentDetail[] | null>(null);
     const [page, setPage] = useState<number>(1); // 페이지 번호
-    const [pageSize, setPageSize] = useState<number>(5); // 페이지 크기
+    const pageSize = 5; // 페이지 크기
     const [totalPages, setTotalPages] = useState<number>(1); // 전체 페이지 수
 
     useEffect(() => {
@@ -35,7 +35,7 @@ export const PaymentDetails: React.FC = () => {
         };
 
         fetchData();
-    }, [page, pageSize]);
+    }, [page]);
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
@@ -63,7 +63,7 @@ export const PaymentDetails: React.FC = () => {
                             {paymentDetails ? (
                                 <>
                                     <PaymentShowList paymentDetails={paymentDetails} />
-                                    <Pagination totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
+                                    <Pagination pageSize={pageSize} totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
                                 </>
                             ) : (
                                 <p>Loading...</p>
