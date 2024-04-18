@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './QuickCart.module.css';
+
 import topArrow from '../assets/topArrow.png';
 import bottomArrow from '../assets/bottomArrow.png';
 import leftArrow from '../assets/leftArrow.png';
 import rightArrow from '../assets/rightArrow.png';
+import cartBlueIcon from '../assets/cartBlue.png'
+
 import { ProductListComp } from 'components/product/ProductListComp';
 import { Cart, CartItem } from 'types';
 import { Link } from 'react-router-dom';
@@ -142,7 +145,8 @@ export const QuickCart = () => {
             <img className={styles.btnQuickCart} onClick={handelClick} src={buttonImage} alt="버튼 이미지" />
             <div className={`${styles.quickCartContainer} ${isVisible ? styles.show : ''}`}>
                 <div className={`${styles.quickCartOff} ${!isVisible ? styles.show : styles.hidden}`}>
-                    간편 장바구니
+                    <img className="scale-125" src={cartBlueIcon} alt='' style={{ width: 35, height: 'auto'}}/>
+                    <div className='ml-2'>간편 장바구니</div>
                 </div>
                 <div className={styles.quickCartOn}>
                     {cartItems.length > 0 ? (

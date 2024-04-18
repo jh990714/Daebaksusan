@@ -18,7 +18,7 @@ export const OrderFlow: React.FC<OrderFlowProps> = ({ currentStep }) => {
       <div className={styles.path}>
           <ul>
               <li>홈</li>
-              <li>마이페이지</li>
+              {/* <li>마이페이지</li> */}
               <li>장바구니</li>
           </ul>
         </div>

@@ -44,19 +44,20 @@ public class InfoServiceImple implements InfoService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public String getUserInfo(String id) {
+    public MemberEntity getUserInfo(String id) {
         MemberEntity member = memberRepository.findById(id);
 
-        if (member != null) {
-            try {
-                return objectMapper.writeValueAsString(member);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return "Failed to retrieve user info"; // JSON 변환 실패 시 예외 처리
-            }
-        } else {
-            return "User not found"; // 사용자가 없을 경우 예외 처리
-        }
+        // if (member != null) {
+        //     try {
+        //         return objectMapper.writeValueAsString(member);
+        //     } catch (JsonProcessingException e) {
+        //         e.printStackTrace();
+        //         return "Failed to retrieve user info"; // JSON 변환 실패 시 예외 처리
+        //     }
+        // } else {
+        //     return "User not found"; // 사용자가 없을 경우 예외 처리
+        // }
+        return member;
     }
 
     @Override
