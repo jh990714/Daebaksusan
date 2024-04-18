@@ -1,7 +1,8 @@
 package com.seafood.back.service.imple;
 
 import java.io.IOException;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,22 +13,37 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.CartDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
+import com.seafood.back.dto.ReviewDTO;
+import com.seafood.back.dto.ReviewRequestDTO;
+import com.seafood.back.dto.ReviewResponseDTO;
 import com.seafood.back.entity.MemberEntity;
+import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.PaymentDetailsEntity;
+import com.seafood.back.entity.ProductEntity;
+import com.seafood.back.entity.ReviewEntity;
+import com.seafood.back.entity.ReviewImageEntity;
+import com.seafood.back.entity.ReviewResponseEntity;
 import com.seafood.back.respository.MemberRepository;
+import com.seafood.back.respository.OptionRepository;
 import com.seafood.back.respository.PaymentDetailsRepository;
+import com.seafood.back.respository.ProductRepository;
+import com.seafood.back.respository.ReviewImageRepository;
+import com.seafood.back.respository.ReviewRepository;
+import com.seafood.back.respository.ReviewResponseRepository;
 import com.seafood.back.service.InfoService;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +54,12 @@ public class InfoServiceImple implements InfoService {
 
     private final MemberRepository memberRepository;
     private final PaymentDetailsRepository paymentDetailsRepository;
+    private final ReviewRepository reviewRepository;
+    private final ProductRepository productRepository;
+    private final OptionRepository optionRepository;
+    private final ReviewImageRepository reviewImageRepository;
+    private final ReviewResponseRepository reviewResponseRepository;
+
     private final ObjectMapper objectMapper; // JSON 변환을 위한 ObjectMapper
     private final IamportClient iamportClient;
 
@@ -85,7 +107,7 @@ public class InfoServiceImple implements InfoService {
                 if (iamportResponse.getResponse().getStatus().equals("cancelled")) {
                     paymentDetailDTO.setCancel(true);
                 }
-                
+
                 paymentDetailDTOs.add(paymentDetailDTO);
             } catch (IamportResponseException | IOException e) {
                 // 예외 발생 시 처리
@@ -99,8 +121,9 @@ public class InfoServiceImple implements InfoService {
     @Override
     public List<PaymentDetailDTO> getPaymentByOrderNumberAndPassword(String orderNumber, String password) {
         PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByOrderNumber(orderNumber);
-        
-        if (paymentDetail == null || paymentDetail.getMemberId() != null || !passwordEncoder.matches(password, paymentDetail.getPassword())) {
+
+        if (paymentDetail == null || paymentDetail.getMemberId() != null
+                || !passwordEncoder.matches(password, paymentDetail.getPassword())) {
             throw new RuntimeException("주문 정보를 찾을 수 없습니다.");
         }
 
@@ -128,12 +151,11 @@ public class InfoServiceImple implements InfoService {
         }
         return null;
 
-        
     }
 
-    
-    private List<CartDTO> extractOrderItems(IamportResponse<Payment> iamportResponse) throws IamportResponseException, IOException {
-            
+    private List<CartDTO> extractOrderItems(IamportResponse<Payment> iamportResponse)
+            throws IamportResponseException, IOException {
+
         // JSON 문자열 파싱하여 Map 객체로 변환
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
@@ -147,4 +169,100 @@ public class InfoServiceImple implements InfoService {
         return orderItems;
     }
 
+    @Override
+    public Page<ReviewDTO> getReviews(String id, int page, int pageSize) {
+        log.info(id);
+        // 페이지 번호를 0부터 시작하도록 수정
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+
+        // 해당 사용자가 작성한 리뷰 목록을 조회
+        Page<ReviewEntity> reviewEntities = reviewRepository.findByMemberIdOrderByReviewDateDesc(1, pageable);
+
+        // ReviewDTO 리스트를 담을 리스트 생성
+        List<ReviewDTO> reviewDTOs = new ArrayList<>();
+        for(ReviewEntity reviewEntity : reviewEntities.getContent() ) {
+            ReviewDTO reviewDTO = new ReviewDTO();
+            
+            log.info(reviewEntity.getReviewId().toString());
+            reviewDTO.setContents(reviewEntity.getContents());
+            reviewDTO.setScore(reviewEntity.getScore());
+            reviewDTO.setReviewDate(reviewEntity.getReviewDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+            reviewDTO.setIsBest(reviewEntity.getIsBest());
+
+            int memberId = reviewEntity.getMemberId();
+            MemberEntity memberEntity = memberRepository.findByMemberId(memberId);
+            reviewDTO.setName(memberEntity.getName());
+
+            ProductEntity productEntity = productRepository.findByProductId(reviewEntity.getProductId());
+            reviewDTO.setProductName(productEntity.getName());
+
+            int optionId = reviewEntity.getOptionId();
+
+            OptionEntity optionEntity = optionRepository.findByOptionId(optionId);
+            reviewDTO.setOptionName(optionEntity.getName());
+
+            int reviewId = reviewEntity.getReviewId();
+
+            List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewId);
+            List<String> imageUrls = new ArrayList<String>();
+            for(ReviewImageEntity reviewImageEntity: reviewImageEntities){
+                imageUrls.add(reviewImageEntity.getImageUrl());
+            }
+            reviewDTO.setImageUrls(imageUrls);
+
+            
+            List<ReviewResponseDTO> reviewResponseDTOs = new ArrayList<ReviewResponseDTO>();
+            List<ReviewResponseEntity> reviewResponseEntities = reviewResponseRepository.findByReviewId(reviewId);
+            for(ReviewResponseEntity reviewResponseEntity: reviewResponseEntities){
+                ReviewResponseDTO reviewResponseDTO = new ReviewResponseDTO();
+
+                int adminId = reviewResponseEntity.getAdminId();
+                reviewResponseDTO.setName(memberRepository.findByMemberId(adminId).getName());
+                reviewResponseDTO.setResponseText(reviewResponseEntity.getResponseText());
+                reviewResponseDTO.setResponseDate(reviewResponseEntity.getResponseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+
+                reviewResponseDTOs.add(reviewResponseDTO);
+            }
+            reviewDTO.setResponses(reviewResponseDTOs);
+
+            reviewDTOs.add(reviewDTO);
+        }
+
+        return new PageImpl<>(reviewDTOs, pageable, reviewEntities.getTotalElements());
+    
+    }
+
+    
+    @Transactional
+    public void saveReview(String id, Integer productId, Integer optionId, String contents, Integer score,
+            MultipartFile[] imageFiles) {
+        ReviewEntity reviewEntity = new ReviewEntity();
+        reviewEntity.setMemberId(1);
+        reviewEntity.setProductId(productId);
+        reviewEntity.setOptionId(optionId);
+        reviewEntity.setContents(contents);
+        reviewEntity.setScore(score);
+        reviewEntity.setReviewDate(LocalDateTime.now());
+        reviewEntity.setIsBest(false); // 기본값으로 false 설정
+    
+        ReviewEntity savedReviewEntity = reviewRepository.save(reviewEntity);
+    
+    
+        if (imageFiles != null) { // null 체크 추가
+            for (MultipartFile imageFile : imageFiles) {
+                if (imageFile != null && !imageFile.isEmpty()) { // null 및 비어있는지 체크
+                    ReviewImageEntity reviewImageEntity = new ReviewImageEntity();
+                    reviewImageEntity.setReviewId(savedReviewEntity.getReviewId());
+                    // 이미지 파일 저장 코드 추가
+                    String imageUrl = saveImage(imageFile); // 이미지 파일 저장 메소드 호출
+                    reviewImageEntity.setImageUrl(imageUrl);
+                    reviewImageRepository.save(reviewImageEntity);
+                }
+            }
+        }
+    }
+    
+    private String saveImage(MultipartFile imageFile) {
+        return imageFile.getOriginalFilename();
+    }
 }
