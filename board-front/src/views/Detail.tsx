@@ -133,7 +133,7 @@ export const Detail: React.FC = () => {
             arr.push(
                 <div className=" border-gray-200 px-4 py-1 grid grid-cols-3 place-items-center">
                     <div>
-                        <div>{product.name}</div>
+                        <div className="text-sm lg:text-base">{product.name}</div>
                         <div className='text-sm text-gray-400'>- {option?.name}({option?.addPrice.toLocaleString()})  배송 비({product.shippingCost.toLocaleString()}) - </div>
                     </div>
                     <div className="">{count = Math.min(maxQuantityPerDelivery, quantity - (i * maxQuantityPerDelivery))}개</div>
@@ -311,10 +311,10 @@ export const Detail: React.FC = () => {
             <main className="container mx-auto my-8 p-4">
                 <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
 
-                    <div className="w-full md:w-1/2 px-4">
+                    <div className="w-full lg:w-1/2 px-4">
                         <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded  " />
                     </div>
-                    <div className="w-full md:w-1/2 border-t-2 border-b-2 border-blue-700">
+                    <div className="w-full lg:w-1/2 border-t-2 border-b-2 border-blue-700">
 
                         <div className='text-2xl text-blue-700 font-bold p-3'>{product.name}</div>
                         <h1 className="text-xl text-gray-500 font-bold border-gray-200 p-2">{product.description}</h1>

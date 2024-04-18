@@ -92,8 +92,8 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
                 <div className="content-center text-sm text-gray-400">{review.reviewDate}</div>
             </div>
             {review.imageUrls.length > 0 && (
-                <div className="w-[1000px] h-[220px]">
-                    {review.imageUrls.length > 4 ? (
+                <div className="w-[200px] sm:w-[350px] md:w-[500px] lg:w-[700px] xl:w-[1000px] h-[230px]">
+                    {review.imageUrls.length > 0 ? (
                         <ImageGalleryComp items={review.imageUrls} />
                     ) : (
                         <div className="flex">
