@@ -14,6 +14,7 @@ import CartItem from "./interface/cart.interface";
 import Product from "./interface/product-item.interface";
 import CartInput from "./interface/cartInput.interface";
 import PaymentDetail from "./interface/paymentDetail.interface";
+import { ReviewState } from "./interface/review.interface";
 
 export type{
     ResponseCode,
@@ -32,4 +33,5 @@ export type{
     CartItem,
     CartInput,
     PaymentDetail,
+    ReviewState,
 }

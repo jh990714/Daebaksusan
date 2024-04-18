@@ -14,6 +14,7 @@ import { PaymentDetails } from './PaymentDetails'
 import OAuth from './Authentication/OAuth'
 import { SuccessOrder } from './SuccessOrder'
 import GuestOrderSearch from './GuestOrderSearch'
+import { Reviews } from './Reviews'
 
 
 export const Router:React.FC = () => {
@@ -38,6 +39,7 @@ export const Router:React.FC = () => {
       <Route path='/auth/oauth-response/:token' element={<OAuth/>} />
       <Route path='/successOrder' element={<SuccessOrder/>} />
       <Route path='/guestOrderSearch' element={<GuestOrderSearch/>} />
+      <Route path='/reviews' element={<Reviews/>} />
     </Routes>
   )
 }
