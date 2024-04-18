@@ -36,7 +36,7 @@ export const Mypage: React.FC = () => {
     }, []);
 
     return (
-        <div className="container mx-auto mt-10 p-5 rounded-lg">
+        <div className="lg:mx-16 xl:mx-56 2xl:mx-80 mt-10 p-2 md:p-5 rounded-lg">
             <div className="flex justify-between items-center border-b pb-4">
                 <h1 className="text-2xl text-blue-600 font-semibold">마이페이지</h1>
                 <div>

@@ -17,20 +17,20 @@ export const MyPageMenu = () => {
     return (
         <div className="space-y-12 mx-4">
             <div className='space-y-6'>
-                <div className="py-1 text-xl text-start border-b">쇼핑 정보</div>
-                <div><Link to='/paymentDetails' className="text-gray-700 no-underline">주문 내역 {'>'}</Link></div>
+                <div className="py-1 text-base lg:text-xl text-start border-b whitespace-nowrap">쇼핑 정보</div>
+                <div><Link to='/paymentDetails' className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base ">주문 내역 {'>'}</Link></div>
             </div>
 
             <div className='space-y-6'>
-                <div className="py-1 text-xl text-start border-b">활동 관리</div>
-                <div><Link to="#" className="text-gray-700 no-underline">1:1 문의 {'>'}</Link></div>
+                <div className="py-1 text-base lg:text-xl text-start border-b whitespace-nowrap">활동 관리</div>
+                <div><Link to="#" className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base ">1:1 문의 {'>'}</Link></div>
             </div>
 
             <div className='space-y-6'>
-                <div className="py-1 text-xl text-start border-b">회원정보</div>
-                <div><Link to="#" className="text-gray-700 no-underline">정보 수정 {'>'}</Link></div>
-                <div><Link to="#" className="text-gray-700 no-underline">회원 탈퇴 {'>'}</Link></div>
-                <div onClick={handleLogOut}><Link to="#" className="text-gray-700 no-underline">로그아웃 {'>'}</Link></div>
+                <div className="py-1 text-base lg:text-xl text-start border-b whitespace-nowrap">회원정보</div>
+                <div><Link to="#" className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base ">정보 수정 {'>'}</Link></div>
+                <div><Link to="#" className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base ">회원 탈퇴 {'>'}</Link></div>
+                <div onClick={handleLogOut}><Link to="#" className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base ">로그아웃 {'>'}</Link></div>
             </div>
         </div>
     )
