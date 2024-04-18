@@ -15,11 +15,14 @@
 
 .navBar {
     width: 100%;
+    height: 120px;
     display: flex;
     border-bottom: 3px solid #d9d9d9;
     padding: 0 10rem;
     background-color: white;
     opacity: 0.9;
+
+    align-items: center;
     
 }
 .menuIcon {
@@ -178,8 +181,9 @@
 
 .categoryTitle {
     color: #333;
-    margin-bottom: 15px;
+    margin-bottom: 0px;
     font-size: 23px;
+    align-content: center;
 }
 
 .subcategoryList {
@@ -189,9 +193,7 @@
     padding: 0;
 }
 
-.categoryTitle{
-    border-bottom: 3px solid #4f51c9;
-}
+
 .subcategoryItem {
     font-size: 15px;
     border-radius: 5px;
@@ -206,7 +208,11 @@
 }
 
 
-.categoryLink,
+.categoryLink {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+}
 .subcategoryLink {
     text-decoration: none; /* 링크의 밑줄 제거 */
     color: inherit; /* 링크의 색상을 상위 요소의 색상으로 상속 */

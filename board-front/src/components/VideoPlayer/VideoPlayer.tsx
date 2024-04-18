@@ -28,6 +28,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoUrl }) => {
     return (
         <div className=''>
             <div className="m-10 font-bold text-2xl">👀 대박수산 TV </div>
+            <div className="text-sm">(추후 밀키트 영상으로 대체가능) </div>
             <div className="rounded-lg grid grid-cols-10 gap-3 border-2 ">
                 <div className='col-span-7'>
                     <ReactPlayer
