@@ -27,10 +27,10 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                 <tbody>
                     {paymentDetails.map((paymentDetail, index) => (
                         <React.Fragment key={index}>
-                            {paymentDetail.orderItems.map((paymentItem, innerIndex) => (
+                            {paymentDetail.orderItems.map((orderItem, innerIndex) => (
                                 <PaymentItemComp
                                     key={innerIndex}
-                                    paymentItem={paymentItem}
+                                    orderItem={orderItem}
                                     orderNumber={innerIndex === 0 ? paymentDetail.orderNumber : ''}
                                     isCancelled={paymentDetail.cancel}
                                     rowspan={paymentDetail.orderItems.length}
