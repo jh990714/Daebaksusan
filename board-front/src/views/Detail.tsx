@@ -288,7 +288,7 @@ export const Detail: React.FC = () => {
         };
 
         const newCart: Cart = {
-            id: 1,
+            id: -1,
             cartItem: newItem,
             isSelected: true
         }
