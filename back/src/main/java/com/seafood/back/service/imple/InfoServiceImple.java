@@ -1,6 +1,9 @@
 package com.seafood.back.service.imple;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -13,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -254,15 +258,37 @@ public class InfoServiceImple implements InfoService {
                     ReviewImageEntity reviewImageEntity = new ReviewImageEntity();
                     reviewImageEntity.setReviewId(savedReviewEntity.getReviewId());
                     // 이미지 파일 저장 코드 추가
-                    String imageUrl = saveImage(imageFile); // 이미지 파일 저장 메소드 호출
-                    reviewImageEntity.setImageUrl(imageUrl);
-                    reviewImageRepository.save(reviewImageEntity);
+                    String imageUrl;
+                    try {
+                        imageUrl = saveImage(imageFile);
+                        reviewImageEntity.setImageUrl(imageUrl);
+                        reviewImageRepository.save(reviewImageEntity);
+                    } catch (IOException e) {
+                       
+                        e.printStackTrace();
+                    }
+                    
                 }
             }
         }
     }
     
-    private String saveImage(MultipartFile imageFile) {
-        return imageFile.getOriginalFilename();
+    private String saveImage(MultipartFile imageFile) throws IOException {
+        String fileName = StringUtils.cleanPath(imageFile.getOriginalFilename());
+        Path uploadDir = Paths.get("C:\\Users\\jang\\Desktop\\Seafood_WebSite\\Jang\\board-front\\public\\review");
+    
+        // 업로드 디렉토리가 존재하지 않으면 생성합니다.
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
+        }
+    
+        // 파일을 업로드 디렉토리에 저장합니다.
+        try {
+            Path filePath = uploadDir.resolve(fileName);
+            Files.copy(imageFile.getInputStream(), filePath);
+            return fileName;
+        } catch (IOException ex) {
+            throw new IOException("이미지를 저장하는 중에 오류가 발생했습니다.", ex);
+        }
     }
 }
