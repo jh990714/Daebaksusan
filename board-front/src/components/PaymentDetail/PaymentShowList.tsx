@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
-import { PaymentDetail, PaymentItem, Product } from 'types';
+import { PaymentDetail } from 'types';
 
 import styles from './PaymentShowList.module.css';
 import { PaymentItemComp } from './PaymentItemComp';
@@ -27,11 +27,12 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                 <tbody>
                     {paymentDetails.map((paymentDetail, index) => (
                         <React.Fragment key={index}>
-                            {paymentDetail.orderItems.map((paymentItem, innerIndex) => (
+                            {paymentDetail.orderItems.map((orderItem, innerIndex) => (
                                 <PaymentItemComp
                                     key={innerIndex}
-                                    paymentItem={paymentItem}
-                                    orderNumber={innerIndex === 0 ? paymentDetail.orderNumber : ''}
+                                    orderItem={orderItem}
+                                    index={innerIndex}
+                                    orderNumber={paymentDetail.orderNumber}
                                     isCancelled={paymentDetail.cancel}
                                     rowspan={paymentDetail.orderItems.length}
                                 />

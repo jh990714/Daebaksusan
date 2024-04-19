@@ -15,3 +15,12 @@ export interface ReviewResponseDTO {
     responseText: string;
     responseDate: String;
 }
+
+export interface ReviewState {
+    orderNumber: string;
+    productId: number;
+    optionId: number | null;
+    score: number;
+    contents: string;
+    imageFiles: File[];
+}

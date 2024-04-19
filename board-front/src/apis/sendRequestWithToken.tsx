@@ -31,15 +31,17 @@ export async function refreshAccessToken() {
 }
 
 export async function sendRequestWithToken(url: string, method: string, data: any, setIsLoggedIn: any) {
+    const contentType = data instanceof FormData ? 'multipart/form-data' : 'application/json';
+    
     try {
         const token = localStorage.getItem('accessToken');
-
+        
         const config: AxiosRequestConfig = {
             method,
             url,
             data,
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': contentType,
                 Authorization: `Bearer ${token}`
             }
         };
@@ -62,7 +64,7 @@ export async function sendRequestWithToken(url: string, method: string, data: an
                     url,
                     data,
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': contentType,
                         Authorization: `Bearer ${newAccessToken}`
                     }
                 };

@@ -1,7 +1,8 @@
-import { CartItem } from "types";
+import {PaymentItem } from "types";
+
 
 export default interface PaymentDetail {
     orderNumber: string,
-    orderItems: CartItem[],
+    orderItems: PaymentItem[],
     cancel: boolean
 }

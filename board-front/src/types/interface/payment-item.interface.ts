@@ -1,10 +1,5 @@
-import { Product } from "types";
+import CartItem from "./cart.interface";
 
-export default interface PaymentItem {
-    paymentDate: string;
-    paymentNumber: string;
-    paymentStatus: string;
-    deliveryStatus: string;
-    quantity: number;
-    paymentList: Product;
+export default interface PaymentItem extends CartItem {
+    isReview: boolean
 }

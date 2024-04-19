@@ -34,7 +34,7 @@ public class ReviewEntity {
     private Integer optionId;
 
     @Column(name = "member_id")
-    private Integer memberId; 
+    private String memberId; 
 
     @Column(name = "contents")
     private String contents;
@@ -47,4 +47,7 @@ public class ReviewEntity {
 
     @Column(name = "is_best")
     private Boolean isBest;
+
+    @Column(name = "order_number")
+    private String orderNumber;
 }    

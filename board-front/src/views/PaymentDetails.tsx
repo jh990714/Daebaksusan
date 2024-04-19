@@ -3,9 +3,9 @@ import { PaymentShowList } from 'components/PaymentDetail/PaymentShowList';
 import { Link, useNavigate } from 'react-router-dom';
 import {sendRequestWithToken} from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
-import { PaymentDetail } from 'types';
 import { MyPageMenu } from 'components/MyPage/MyPageMenu';
 import { Pagination } from 'components/Pagination';
+import { PaymentDetail } from 'types';
 
 export const PaymentDetails: React.FC = () => {
     const navigate = useNavigate();

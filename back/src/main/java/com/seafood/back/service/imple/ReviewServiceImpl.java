@@ -55,9 +55,26 @@ public class ReviewServiceImpl implements ReviewService{
             reviewDTO.setReviewDate(reviewEntity.getReviewDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
             reviewDTO.setIsBest(reviewEntity.getIsBest());
 
-            int memberId = reviewEntity.getMemberId();
-            MemberEntity memberEntity = memberRepository.findByMemberId(memberId);
-            reviewDTO.setName(memberEntity.getName());
+            String memberId = reviewEntity.getMemberId();
+            MemberEntity memberEntity = memberRepository.findById(memberId);
+            String name = memberEntity.getName();
+            
+            // 이름이 2글자 이상인 경우에만 가운데를 별표로 대체
+            if (name.length() >= 3) {
+                StringBuilder maskedNameBuilder = new StringBuilder(name);
+                for (int i = 1; i < name.length() - 1; i++) {
+                    maskedNameBuilder.setCharAt(i, '*');
+                }
+                reviewDTO.setName(maskedNameBuilder.toString());
+            } else if (name.length() == 2) {
+                StringBuilder maskedNameBuilder = new StringBuilder(name);
+                maskedNameBuilder.setCharAt(name.length() - 1, '*');
+                reviewDTO.setName(maskedNameBuilder.toString());
+            } else {
+                reviewDTO.setName(name);
+            }
+            
+            
 
             ProductEntity productEntity = productRepository.findByProductId(productId);
             reviewDTO.setProductName(productEntity.getName());
