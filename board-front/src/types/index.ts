@@ -4,7 +4,6 @@ import SeafoodList from "./interface/seafood-item.interface";
 import AddressData from "./interface/address-item.interface";
 import AddressObj from "./interface/addressObject-item.interface";
 import InputErrors from "./interface/OrderInputError.interface";
-import PaymentItem from "./interface/payment-item.interface";
 import OrdererInfo from "./interface/orderInfo.interface";
 import Option from "./interface/option-item.interface";
 import Category from "./interface/category.interface";
@@ -13,8 +12,9 @@ import Cart from "./interface/cart-item.interface";
 import CartItem from "./interface/cart.interface";
 import Product from "./interface/product-item.interface";
 import CartInput from "./interface/cartInput.interface";
-import PaymentDetail from "./interface/paymentDetail.interface";
 import { ReviewState } from "./interface/review.interface";
+import PaymentDetail from "./interface/paymentDetail.interface";
+import PaymentItem from "./interface/payment-item.interface";
 
 export type{
     ResponseCode,
@@ -24,7 +24,6 @@ export type{
     AddressObj,
     AddressData,
     InputErrors,
-    PaymentItem,
     OrdererInfo,
     Option,
     Category,
@@ -34,4 +33,5 @@ export type{
     CartInput,
     PaymentDetail,
     ReviewState,
+    PaymentItem,
 }
