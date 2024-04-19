@@ -21,44 +21,45 @@ export const Home: React.FC = () => {
   const ref7 = useAnimateOnScroll();
   const ref8 = useAnimateOnScroll();
 
-  
+
   return (
-    <div className='homeContainer'>
+    <>
       <div className='carouselContainer'>
         <CarouselComp img={img} />
       </div>
+      <div className='homeContainer'>
+        <div ref={ref1} className='HomeBanner'>
+          <TimeLimitedDeals />
+        </div>
 
-      <div ref={ref1} className='HomeBanner'>
-        <TimeLimitedDeals />
-      </div>
+        <div ref={ref2} className='HomeBanner'>
+          <HomeBanner2 />
+        </div>
 
-      <div ref={ref2} className='HomeBanner'>
-        <HomeBanner2 />
-      </div>
+        <div ref={ref3}>
+          <BestProduct category='best' />
+        </div>
 
-      <div ref={ref3}>
-        <BestProduct category='best'/>
-      </div>
+        <div ref={ref4} className="HomeBanner">
+          <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/kakao_plus.jpg`} title="대박수산 카카오톡 친구 추가" />
+        </div>
 
-      <div ref={ref4} className="HomeBanner">
-        <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/kakao_plus.jpg`} title="대박수산 카카오톡 친구 추가"/>
-      </div>
+        <div ref={ref5}>
+          <BestProduct category='new' />
+        </div>
 
-      <div ref={ref5}>
-        <BestProduct category='new'/>
-      </div>
+        <div ref={ref6} className="HomeBanner">
+          <VideoPlayer videoUrl={process.env.PUBLIC_URL + `/video/1.mp4`} />
+        </div>
 
-      <div ref={ref6} className="HomeBanner">
-        <VideoPlayer videoUrl={process.env.PUBLIC_URL + `/video/1.mp4`}/>
-      </div>
+        <div ref={ref7}>
+          <BestProduct category='all' />
+        </div>
 
-      <div ref={ref7}>
-        <BestProduct category='all'/>
+        <div ref={ref8} className="HomeBanner">
+          <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/review_event3.jpg`} title="리뷰 이벤트" />
+        </div>
       </div>
-
-      <div ref={ref8} className="HomeBanner">
-        <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/review_event3.jpg`} title="리뷰 이벤트"/>
-      </div>
-    </div>
+    </>
   );
 };

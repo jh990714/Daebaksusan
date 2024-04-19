@@ -10,18 +10,34 @@ interface PaymentShowListProps {
 }
 
 export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails }) => {
+    const [isMobileView, setIsMobileView] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobileView(window.innerWidth <= 1280);
+        };
+
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+
     return (
         <div className={styles.paymentItemList}>
             <table>
                 <thead>
                     <tr>
                         <th>주문번호</th>
-                        <th>이미지</th>
-                        <th>상품이름</th>
-                        <th>결제 가격</th>
-                        <th>수량</th>
-                        <th>주문상태</th>
-                        <th>배송상태</th>
+                        {!isMobileView && <th>이미지</th>}
+                        {!isMobileView && <th>상품이름</th>}
+                        {!isMobileView && <th>결제 가격</th>}
+                        {!isMobileView && <th>수량</th>}
+                        {!isMobileView && <th>주문상태</th>}
+                        {!isMobileView && <th>배송상태</th>}
+                        {isMobileView && <th>상품 정보</th>}
+                        {isMobileView && <th>주문 정보</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -31,10 +47,11 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                                 <PaymentItemComp
                                     key={innerIndex}
                                     orderItem={orderItem}
-                                    index={innerIndex}
                                     orderNumber={paymentDetail.orderNumber}
                                     isCancelled={paymentDetail.cancel}
+                                    isFirstItem={innerIndex === 0}
                                     rowspan={paymentDetail.orderItems.length}
+                                    isMobileView={isMobileView}
                                 />
                             ))}
                             

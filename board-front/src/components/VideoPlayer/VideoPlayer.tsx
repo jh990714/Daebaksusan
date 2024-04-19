@@ -30,7 +30,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoUrl }) => {
             <div className="m-10 font-bold text-2xl">👀 대박수산 TV </div>
             <div className="text-sm">(추후 밀키트 영상으로 대체가능) </div>
             <div className="rounded-lg grid grid-cols-10 gap-3 border-2 ">
-                <div className='col-span-7'>
+                <div className='col-span-10 xl:col-span-7'>
                     <ReactPlayer
                         style={{ borderRadius: '10px 0 0 10px', overflow: 'hidden' }}
                         loop={true}
@@ -45,23 +45,18 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoUrl }) => {
                     //onEnded={() => handleVideo()}  // 플레이어 끝났을 때 이벤트
                     />
                 </div>
-                <div className='col-span-3 grid grid-rows-3'>
-                    {products.length > 0 && (
-                        <div className='border-b-2 content-center'>
-                            <RcmndProductComp product={products[0]} imgSize_w_per={45} imgSize_h_px={120} font_size={5} border={50} />
+                <div className='hidden xl:grid col-span-3 grid grid-rows-3'>
+                    {products.slice(0, 3).map((product, index, array) => (
+                        <div key={index} className={index === array.length - 1 ? "content-center" : "border-b-2 content-center"}>
+                            <RcmndProductComp
+                                product={product}
+                                imgSize_w_per={45}
+                                imgSize_h_px={120}
+                                font_size={5}
+                                border={50}
+                            />
                         </div>
-                    )}
-                    {/* <div className='border' /> */}
-                    {products.length > 1 && (
-                        <div className='border-b-2 content-center'>
-                            <RcmndProductComp product={products[1]} imgSize_w_per={45} imgSize_h_px={120} font_size={5} border={50} />
-                        </div>
-                    )}
-                    {products.length > 2 && (
-                        <div className='content-center'>
-                            <RcmndProductComp product={products[2]} imgSize_w_per={45} imgSize_h_px={120} font_size={5} border={50} />
-                        </div>
-                    )}
+                    ))}
                     
                 </div>
 

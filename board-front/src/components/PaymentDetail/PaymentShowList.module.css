@@ -13,8 +13,8 @@
 
 /* 테이블 바디 셀 스타일 */
 .paymentItemList table td {
-    padding: 8px; /* 셀 내부 패딩 설정 */
     border-bottom: 1px solid #ddd;
     padding: 20px;
     text-align: center;
 }
+

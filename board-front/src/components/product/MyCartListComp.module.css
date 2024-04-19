@@ -95,7 +95,7 @@ table {
 
 
 @media (max-width: 780px) {
-    table {
+    .myCartListComp table {
         display: none;
     }
 }
