@@ -49,7 +49,7 @@ export const Pagination: React.FC<PaginationProps> = ({ pageSize, totalPages, cu
 
                     {/* Previous button */}
                     <li className={`flex justify-center border-1 w-6 h-full  ${currentPage === 1 ? 'border-gray-400 bg-gray-400' : 'text-blue-700 hover:cursor-pointer'}`}>
-                        <img className="" src={paginationLeftArrow} onClick={() => goToPage(1)} />
+                        <img className="" src={paginationLeftArrow} onClick={() => goToPage(currentPage-1)} />
                     </li>
 
                     {/* Page numbers */}
@@ -63,12 +63,12 @@ export const Pagination: React.FC<PaginationProps> = ({ pageSize, totalPages, cu
 
                     {/* Next button */}
                     <li className={`flex justify-center border-1 w-6 h-full ${currentPage === totalPages ? 'border-gray-400 bg-gray-400' : 'text-blue-700 hover:cursor-pointer'}`}>
-                        <img className="" src={paginationRightArrow} onClick={() => goToPage(1)} />
+                        <img className="" src={paginationRightArrow} onClick={() => goToPage(currentPage+1)} />
                     </li>
 
                     {/* Last button */}
                     <li className={`flex justify-center border-1 w-6 h-full rounded-r ${currentPage === totalPages ? 'border-gray-400 bg-gray-400' : 'text-blue-700 hover:cursor-pointer'}`}>
-                        <img className="" src={paginationDoubleRightArrow} onClick={() => goToPage(1)} />
+                        <img className="" src={paginationDoubleRightArrow} onClick={() => goToPage(totalPages)} />
                     </li>
                 </ul>
             </nav>
