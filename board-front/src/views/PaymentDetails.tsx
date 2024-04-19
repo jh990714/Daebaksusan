@@ -45,7 +45,7 @@ export const PaymentDetails: React.FC = () => {
         <div className="lg:mx-16 xl:mx-56 2xl:mx-80 mt-10 p-2 md:p-5 rounded-lg">
             <div className="sm:flex justify-between items-center sm:border-b sm:pb-4">
                 <h1 className="hidden sm:block text-xl text-blue-600 font-semibold">마이페이지</h1>
-               
+
             </div>
             <div className="sm:py-5">
                 <div className="sm:flex sm:justify-between">
@@ -53,9 +53,9 @@ export const PaymentDetails: React.FC = () => {
                         <MyPageMenu />
                     </div>
 
-                    <div className="sm:w-4/5">
-                        <div className='text-left ml-10 text-2xl border-b font-semibold'> 주문 내역 </div>
-                        <div className='ml-10 font-medium'>
+                    <div className="sm:w-full sm:mt-5 md:ml-10">
+                        <div className='text-left text-2xl border-b font-semibold'> 주문 내역 </div>
+                        <div className='font-medium'>
                             {paymentDetails ? (
                                 <>
                                     <PaymentShowList paymentDetails={paymentDetails} />
@@ -65,7 +65,6 @@ export const PaymentDetails: React.FC = () => {
                                 <p>Loading...</p>
                             )}
                         </div>
-
                     </div>
                 </div>
             </div>

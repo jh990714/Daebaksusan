@@ -84,9 +84,8 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
 
 
     return (
-
-        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-8 rounded-lg max-w-xl w-full overflow-y-auto max-h-[60%]">
+        <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50 text-sm">
+            <div className="bg-white p-8 rounded-lg max-w-xl w-full overflow-y-auto max-h-[60%] ">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="m-0 text-lg font-bold">주문 정보</h2>
                     <button className="text-gray-500 hover:text-gray-700" onClick={onClose}>
