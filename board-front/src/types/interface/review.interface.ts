@@ -17,6 +17,7 @@ export interface ReviewResponseDTO {
 }
 
 export interface ReviewState {
+    orderNumber: string;
     productId: number;
     optionId: number | null;
     score: number;

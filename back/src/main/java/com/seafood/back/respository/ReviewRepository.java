@@ -14,7 +14,11 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
 
     Page<ReviewEntity> findByProductId(Integer productId, Pageable pageable);
 
-    Page<ReviewEntity> findByMemberId(int i, Pageable pageable);
-
     Page<ReviewEntity> findByMemberIdOrderByReviewDateDesc(int i, Pageable pageable);
+
+    boolean existsByProductIdAndOptionIdAndMemberIdAndOrderNumber(Integer productId, Integer optionId, String memberId,
+            String orderNumber);
+
+    ReviewEntity findByProductIdAndOptionIdAndMemberIdAndOrderNumber(Integer productId, Integer optionId, String memberId,
+            String orderNumber);
 }

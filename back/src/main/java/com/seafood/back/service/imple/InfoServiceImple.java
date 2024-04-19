@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,10 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.seafood.back.dto.CartDTO;
+
 import com.seafood.back.dto.PaymentDetailDTO;
+import com.seafood.back.dto.PaymentItemDTO;
+import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
-import com.seafood.back.dto.ReviewRequestDTO;
+
 import com.seafood.back.dto.ReviewResponseDTO;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.OptionEntity;
@@ -104,7 +108,19 @@ public class InfoServiceImple implements InfoService {
 
                 IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
 
-                List<CartDTO> orderItems = extractOrderItems(iamportResponse);
+                List<PaymentItemDTO> orderItems = extractOrderItems(iamportResponse);
+
+                // for (PaymentItemDTO item : orderItems) {
+                // item.setIsReview(true);
+                // }
+
+                for (PaymentItemDTO item : orderItems) {
+                    boolean isReview = reviewRepository.existsByProductIdAndOptionIdAndMemberIdAndOrderNumber(
+                            item.getProduct().getProductId(), item.getOption().getOptionId(), id,
+                            paymentDetail.getOrderNumber());
+
+                    item.setIsReview(isReview);
+                }
 
                 paymentDetailDTO.setOrderNumber(paymentDetail.getOrderNumber());
                 paymentDetailDTO.setOrderItems(orderItems);
@@ -138,7 +154,7 @@ public class InfoServiceImple implements InfoService {
 
             IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
 
-            List<CartDTO> orderItems = extractOrderItems(iamportResponse);
+            List<PaymentItemDTO> orderItems = extractOrderItems(iamportResponse);
 
             paymentDetailDTO.setOrderNumber(paymentDetail.getOrderNumber());
             paymentDetailDTO.setOrderItems(orderItems);
@@ -157,7 +173,7 @@ public class InfoServiceImple implements InfoService {
 
     }
 
-    private List<CartDTO> extractOrderItems(IamportResponse<Payment> iamportResponse)
+    private List<PaymentItemDTO> extractOrderItems(IamportResponse<Payment> iamportResponse)
             throws IamportResponseException, IOException {
 
         // JSON 문자열 파싱하여 Map 객체로 변환
@@ -166,92 +182,30 @@ public class InfoServiceImple implements InfoService {
                 new TypeReference<Map<String, Object>>() {
                 });
 
-        List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
-                new TypeReference<List<CartDTO>>() {
+        List<PaymentItemDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
+                new TypeReference<List<PaymentItemDTO>>() {
                 });
 
         return orderItems;
     }
 
-    @Override
-    public Page<ReviewDTO> getReviews(String id, int page, int pageSize) {
-        log.info(id);
-        // 페이지 번호를 0부터 시작하도록 수정
-        Pageable pageable = PageRequest.of(page - 1, pageSize);
 
-        // 해당 사용자가 작성한 리뷰 목록을 조회
-        Page<ReviewEntity> reviewEntities = reviewRepository.findByMemberIdOrderByReviewDateDesc(1, pageable);
 
-        // ReviewDTO 리스트를 담을 리스트 생성
-        List<ReviewDTO> reviewDTOs = new ArrayList<>();
-        for(ReviewEntity reviewEntity : reviewEntities.getContent() ) {
-            ReviewDTO reviewDTO = new ReviewDTO();
-            
-            log.info(reviewEntity.getReviewId().toString());
-            reviewDTO.setContents(reviewEntity.getContents());
-            reviewDTO.setScore(reviewEntity.getScore());
-            reviewDTO.setReviewDate(reviewEntity.getReviewDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-            reviewDTO.setIsBest(reviewEntity.getIsBest());
-
-            int memberId = reviewEntity.getMemberId();
-            MemberEntity memberEntity = memberRepository.findByMemberId(memberId);
-            reviewDTO.setName(memberEntity.getName());
-
-            ProductEntity productEntity = productRepository.findByProductId(reviewEntity.getProductId());
-            reviewDTO.setProductName(productEntity.getName());
-
-            int optionId = reviewEntity.getOptionId();
-
-            OptionEntity optionEntity = optionRepository.findByOptionId(optionId);
-            reviewDTO.setOptionName(optionEntity.getName());
-
-            int reviewId = reviewEntity.getReviewId();
-
-            List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewId);
-            List<String> imageUrls = new ArrayList<String>();
-            for(ReviewImageEntity reviewImageEntity: reviewImageEntities){
-                imageUrls.add(reviewImageEntity.getImageUrl());
-            }
-            reviewDTO.setImageUrls(imageUrls);
-
-            
-            List<ReviewResponseDTO> reviewResponseDTOs = new ArrayList<ReviewResponseDTO>();
-            List<ReviewResponseEntity> reviewResponseEntities = reviewResponseRepository.findByReviewId(reviewId);
-            for(ReviewResponseEntity reviewResponseEntity: reviewResponseEntities){
-                ReviewResponseDTO reviewResponseDTO = new ReviewResponseDTO();
-
-                int adminId = reviewResponseEntity.getAdminId();
-                reviewResponseDTO.setName(memberRepository.findByMemberId(adminId).getName());
-                reviewResponseDTO.setResponseText(reviewResponseEntity.getResponseText());
-                reviewResponseDTO.setResponseDate(reviewResponseEntity.getResponseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-
-                reviewResponseDTOs.add(reviewResponseDTO);
-            }
-            reviewDTO.setResponses(reviewResponseDTOs);
-
-            reviewDTOs.add(reviewDTO);
-        }
-
-        return new PageImpl<>(reviewDTOs, pageable, reviewEntities.getTotalElements());
-    
-    }
-
-    
     @Transactional
-    public void saveReview(String id, Integer productId, Integer optionId, String contents, Integer score,
+    public void saveReview(String id, String orderNumber, Integer productId, Integer optionId, String contents, Integer score,
             MultipartFile[] imageFiles) {
         ReviewEntity reviewEntity = new ReviewEntity();
-        reviewEntity.setMemberId(1);
+        reviewEntity.setMemberId(id);
+        reviewEntity.setOrderNumber(orderNumber);
         reviewEntity.setProductId(productId);
         reviewEntity.setOptionId(optionId);
         reviewEntity.setContents(contents);
         reviewEntity.setScore(score);
         reviewEntity.setReviewDate(LocalDateTime.now());
         reviewEntity.setIsBest(false); // 기본값으로 false 설정
-    
+
         ReviewEntity savedReviewEntity = reviewRepository.save(reviewEntity);
-    
-    
+
         if (imageFiles != null) { // null 체크 추가
             for (MultipartFile imageFile : imageFiles) {
                 if (imageFile != null && !imageFile.isEmpty()) { // null 및 비어있는지 체크
@@ -264,24 +218,27 @@ public class InfoServiceImple implements InfoService {
                         reviewImageEntity.setImageUrl(imageUrl);
                         reviewImageRepository.save(reviewImageEntity);
                     } catch (IOException e) {
-                       
+
                         e.printStackTrace();
                     }
-                    
+
                 }
             }
         }
     }
-    
+
     private String saveImage(MultipartFile imageFile) throws IOException {
-        String fileName = StringUtils.cleanPath(imageFile.getOriginalFilename());
+        String oriFileName = StringUtils.cleanPath(imageFile.getOriginalFilename());
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileName = oriFileName + "_" + timeStamp + ".jpg"; // 예시로 "image_20220419_123456.jpg" 형식으로 생성합니다.
         Path uploadDir = Paths.get("C:\\Users\\jang\\Desktop\\Seafood_WebSite\\Jang\\board-front\\public\\review");
-    
+
         // 업로드 디렉토리가 존재하지 않으면 생성합니다.
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);
         }
-    
+
         // 파일을 업로드 디렉토리에 저장합니다.
         try {
             Path filePath = uploadDir.resolve(fileName);
@@ -290,5 +247,57 @@ public class InfoServiceImple implements InfoService {
         } catch (IOException ex) {
             throw new IOException("이미지를 저장하는 중에 오류가 발생했습니다.", ex);
         }
+    }
+
+    @Override
+    public ReviewDTO getReviews(String id, ReviewCriteriaDTO reviewCriteriaDTO) {
+        ReviewEntity reviewEntity = reviewRepository.findByProductIdAndOptionIdAndMemberIdAndOrderNumber(
+            reviewCriteriaDTO.getProductId(), reviewCriteriaDTO.getOptionId(), id, reviewCriteriaDTO.getOrderNumber());
+
+        ReviewDTO reviewDTO = new ReviewDTO();
+
+        log.info(reviewEntity.getReviewId().toString());
+        reviewDTO.setContents(reviewEntity.getContents());
+        reviewDTO.setScore(reviewEntity.getScore());
+        reviewDTO.setReviewDate(reviewEntity.getReviewDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+        reviewDTO.setIsBest(reviewEntity.getIsBest());
+
+        String memberId = reviewEntity.getMemberId();
+        MemberEntity memberEntity = memberRepository.findById(memberId);
+        reviewDTO.setName(memberEntity.getName());
+
+        ProductEntity productEntity = productRepository.findByProductId(reviewEntity.getProductId());
+        reviewDTO.setProductName(productEntity.getName());
+
+        int optionId = reviewEntity.getOptionId();
+
+        OptionEntity optionEntity = optionRepository.findByOptionId(optionId);
+        reviewDTO.setOptionName(optionEntity.getName());
+
+        int reviewId = reviewEntity.getReviewId();
+
+        List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewId);
+        List<String> imageUrls = new ArrayList<String>();
+        for (ReviewImageEntity reviewImageEntity : reviewImageEntities) {
+            imageUrls.add(reviewImageEntity.getImageUrl());
+        }
+        reviewDTO.setImageUrls(imageUrls);
+
+        List<ReviewResponseDTO> reviewResponseDTOs = new ArrayList<ReviewResponseDTO>();
+        List<ReviewResponseEntity> reviewResponseEntities = reviewResponseRepository.findByReviewId(reviewId);
+        for (ReviewResponseEntity reviewResponseEntity : reviewResponseEntities) {
+            ReviewResponseDTO reviewResponseDTO = new ReviewResponseDTO();
+
+            int adminId = reviewResponseEntity.getAdminId();
+            reviewResponseDTO.setName(memberRepository.findByMemberId(adminId).getName());
+            reviewResponseDTO.setResponseText(reviewResponseEntity.getResponseText());
+            reviewResponseDTO.setResponseDate(
+                    reviewResponseEntity.getResponseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+
+            reviewResponseDTOs.add(reviewResponseDTO);
+        }
+        reviewDTO.setResponses(reviewResponseDTOs);
+
+        return reviewDTO;
     }
 }
