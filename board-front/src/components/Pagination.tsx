@@ -1,4 +1,10 @@
 import React from 'react';
+import paginationLeftArrow from '../assets/paginationLeftArrow.png'
+import paginationRightArrow from '../assets/paginationRightArrow.png'
+import paginationDoubleLeftArrow from '../assets/paginationDoubleLeftArrow.png'
+import paginationDoubleRightArrow from '../assets/paginationDoubleRightArrow.png'
+
+
 
 interface PaginationProps {
     pageSize: number
@@ -26,48 +32,43 @@ export const Pagination: React.FC<PaginationProps> = ({ pageSize, totalPages, cu
     const goToPage = (page: number) => {
         if (page >= 1 && page <= totalPages) {
             onPageChange(page);
+            // const screenWidth = window.innerWidth;
+            // const scrollPosition = screenWidth > 1024 ? 1035 : 1590;
+            // window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
         }
     };
 
     return (
         <div className="flex justify-center mt-4">
             <nav>
-                <ul className="pagination">
+                <ul className="flex">
                     {/* First button */}
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button className="page-link" onClick={() => goToPage(1)} aria-label="First">
-                            <span aria-hidden="true">&laquo;</span>
-                        </button>
+                    <li className={`flex justify-center border-1 w-6 h-full rounded-l ${currentPage === 1 ? 'border-gray-400 bg-gray-400' : 'text-blue-700 hover:cursor-pointer'}`}>
+                        <img className="" src={paginationDoubleLeftArrow} onClick={() => goToPage(1)} />
                     </li>
 
                     {/* Previous button */}
-                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                        <button className="page-link" onClick={() => goToPage(currentPage - 1)} aria-label="Previous">
-                            <span aria-hidden="true">&lt;</span>
-                        </button>
+                    <li className={`flex justify-center border-1 w-6 h-full  ${currentPage === 1 ? 'border-gray-400 bg-gray-400' : 'text-blue-700 hover:cursor-pointer'}`}>
+                        <img className="" src={paginationLeftArrow} onClick={() => goToPage(1)} />
                     </li>
 
                     {/* Page numbers */}
                     {pages.map((page) => (
-                        <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
-                            <button className="page-link" onClick={() => goToPage(page)}>
+                        <li key={page} className={`border-1 w-6 h-full ${page === currentPage ? "border-blue-700 bg-blue-700 text-white" : 'text-blue-700'}`}>
+                            <button className=" " onClick={() => goToPage(page)}>
                                 {page}
                             </button>
                         </li>
                     ))}
 
                     {/* Next button */}
-                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button className="page-link" onClick={() => goToPage(currentPage + 1)} aria-label="Next">
-                            <span aria-hidden="true">&gt;</span>
-                        </button>
+                    <li className={`flex justify-center border-1 w-6 h-full ${currentPage === totalPages ? 'border-gray-400 bg-gray-400' : 'text-blue-700 hover:cursor-pointer'}`}>
+                        <img className="" src={paginationRightArrow} onClick={() => goToPage(1)} />
                     </li>
 
                     {/* Last button */}
-                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                        <button className="page-link" onClick={() => goToPage(totalPages)} aria-label="Last">
-                            <span aria-hidden="true">&raquo;</span>
-                        </button>
+                    <li className={`flex justify-center border-1 w-6 h-full rounded-r ${currentPage === totalPages ? 'border-gray-400 bg-gray-400' : 'text-blue-700 hover:cursor-pointer'}`}>
+                        <img className="" src={paginationDoubleRightArrow} onClick={() => goToPage(1)} />
                     </li>
                 </ul>
             </nav>
