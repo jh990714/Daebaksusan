@@ -26,7 +26,7 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
     }, []); // 빈 의존성 배열을 전달하여 컴포넌트 마운트 시에만 실행되도록 함
 
     // showButtons 상태에 따라 클래스를 조건부로 적용
-    const containerClasses = `fixed grid grid-rows-5 gap-2 bottom-[300px] left-[50px] ${showButtons ? '' : 'hidden'}`;
+    const containerClasses = `fixed grid grid-rows-5 gap-2 bottom-[300px] left-[50px] ${showButtons ? 'hidden xl:inline-grid' : 'hidden'}`;
 
 
     // 각 탭의 내용을 반환하는 함수입니다.
@@ -36,8 +36,6 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
                 return <img src="../detail/1.jpg" alt="상품정보" />;
             case '구매안내':
                 return <div>구매안내 내용입니다.</div>;
-            case '관련상품':
-                return <div>관련상품 내용입니다.</div>;
             case '후기':
                 return <ReviewTabComp productId={productId}/>;
             case 'QnA':
@@ -60,14 +58,12 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
             <div className="flex justify-center space-x-2 mb-4">
                 <button className={buttonStyle('상품정보')} onClick={() => setActiveTab('상품정보')}>상품정보</button>
                 <button className={buttonStyle('구매안내')} onClick={() => setActiveTab('구매안내')}>구매안내</button>
-                <button className={buttonStyle('관련상품')} onClick={() => setActiveTab('관련상품')}>관련상품</button>
                 <button className={buttonStyle('후기')} onClick={() => setActiveTab('후기')}>후기</button>
                 <button className={buttonStyle('QnA')} onClick={() => setActiveTab('QnA')}>QnA</button>
             </div>
             <div className={containerClasses}>
                 <button className={fixedbuttonStyle('상품정보')} onClick={() => setActiveTab('상품정보')}>상품정보</button>
                 <button className={fixedbuttonStyle('구매안내')} onClick={() => setActiveTab('구매안내')}>구매안내</button>
-                <button className={fixedbuttonStyle('관련상품')} onClick={() => setActiveTab('관련상품')}>관련상품</button>
                 <button className={fixedbuttonStyle('후기')} onClick={() => setActiveTab('후기')}>후기</button>
                 <button className={fixedbuttonStyle('QnA')} onClick={() => setActiveTab('QnA')}>QnA</button>
             </div>

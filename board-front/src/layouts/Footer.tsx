@@ -1,8 +1,20 @@
-
 import styles from './Footer.module.css'
-import logo from '../assets/logo.jpg';
+import logo from '../assets/logo_sample_bin.png';
+import { useState } from 'react';
+import Agreement from 'components/Terms/agreement';
 
 export const Footer = () => {
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
+
   return (
     <footer className="bg-[#393B3E]">
       <div className="text-white border-b border-black">
@@ -10,14 +22,51 @@ export const Footer = () => {
           <div className="text-xl font-bold">고객센터 1234-5678</div>
           <div className="pl-2 content-center">평일 10:00 - 17:00 (점심 12:00 - 13:00 / 주말 및 공휴일 휴무)</div>
           <div className='flex justify-center'>
-            <a className="pr-2 text-white no-underline" href="#">이용약관</a>
+            <button className="pr-2 text-white no-underline" onClick={openModal}>이용약관</button>
             <span>|</span>
-            <a className="px-2 text-white no-underline" href="#">개인정보처리방침</a>
+            <button className="pr-2 text-white no-underline" onClick={openModal}>개인정보처리방침</button>
             <span>|</span>
-            <a className="px-2 text-white no-underline" href="#">회사소개</a>
+            <a className="px-2 text-white no-underline" href="/">회사소개</a>
           </div>
         </div>
       </div>
+
+      {/* 모달 창 */}
+      {isModalOpen && (
+        <div className="fixed z-10 inset-0 overflow-y-auto flex items-center justify-center">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            {/* 모달 콘텐츠 */}
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div className="inline-block bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg font-medium leading-6 text-gray-900" id="modal-title">
+                      이용약관
+                    </h3>
+                    {/* 이용약관 내용 */}
+                    <div className="mt-2 overflow-y-auto max-h-96">
+                      <p className="text-sm text-gray-500">
+                        <Agreement/>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-700 text-base font-medium text-white hover:bg-blue-600  sm:ml-3 sm:w-auto sm:text-sm" onClick={closeModal}>
+                  확인
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="py-4 w-4/5 m-auto text-[#888] text-start text-sm leading-8">
         <div className="flex justify-center gap-5 text-lg text-white font-bold">
@@ -27,7 +76,7 @@ export const Footer = () => {
         </div>
 
         <div className="flex justify-center gap-10 py-4">
-          <img src={logo} width='180' alt='대박수산 로고' />
+          <img src={logo} width="130" height="auto" />
 
           <div>
             <div>대표번호 : 1234-5678</div>
@@ -56,4 +105,3 @@ export const Footer = () => {
 };
 
 export default Footer;
-

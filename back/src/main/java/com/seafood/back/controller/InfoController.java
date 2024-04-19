@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
+import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.service.InfoService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,10 @@ public class InfoController {
     private final InfoService infoService;
 
     @GetMapping
-    public ResponseEntity<String> myPage(Authentication authentication) {
+    public ResponseEntity<MemberEntity> myPage(Authentication authentication) {
         String id = authentication.getName();
-        String userInfo = infoService.getUserInfo(id);
+        MemberEntity userInfo = infoService.getUserInfo(id);
 
-        log.info(userInfo);
         return ResponseEntity.ok().body(userInfo);
     }
 

@@ -1,5 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
-import logo from '../assets/logo.jpg'
+import logo from '../assets/logo_sample.png'
 import styles from './NavigationBar.module.css'
 import cartIcon from '../assets/cart.png'
 import loginIcon from '../assets/login.png'
@@ -211,6 +211,8 @@ export const NavigationBar = () => {
                 {categories.map((category) => (
                     <div key={category.name} className={styles.categoryItem}>
                             <Link to={`/categoryProducts/${category.name}`} state={{ category: category }} className={styles.categoryLink}>
+                                <img src={process.env.PUBLIC_URL + `/category/${category.id}.png` }alt={category.name} width="40"/>
+                                {/* <img src={process.env.PUBLIC_URL + `/category/`+category.name + `.png`} alt={category.name} /> */}
                                 <p className={styles.categoryTitle}>{category.name}</p>
                             </Link>
 

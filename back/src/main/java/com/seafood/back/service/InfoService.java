@@ -8,9 +8,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
+import com.seafood.back.entity.MemberEntity;
 
 public interface InfoService {
-    String getUserInfo(String id);
+    MemberEntity getUserInfo(String id);
 
     Page<PaymentDetailDTO> getOrdertDetails(String id, int page, int size);
     List<PaymentDetailDTO> getPaymentByOrderNumberAndPassword(String orderNumber, String password);

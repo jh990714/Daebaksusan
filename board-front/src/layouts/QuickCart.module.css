@@ -3,7 +3,7 @@
     bottom: 0;
     background-color: whitesmoke;
     position: fixed;
-    border-top: 3px solid blue;
+    border-top: 3px solid #1d4ed8;
     z-index: 999;
 }
 
