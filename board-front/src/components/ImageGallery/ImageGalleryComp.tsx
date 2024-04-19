@@ -83,7 +83,7 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", 
 
         <Slider {...settings}>
             {items.map((item, index) => (
-                <div key={index} className={`w-1/4 p-1 ${type === 'review' ? 'h-[200px]' : 'h-auto'}`}>
+                <div key={index} className={`p-1 ${type === 'review' ? 'h-[200px]' : 'h-auto'}`}>
                     {type === 'review' && typeof item === 'string' ? ( // 후기인 경우
                         <img src={`${process.env.PUBLIC_URL}/review/${item}`} alt={`Review ${index}`} className="w-full h-full object-cover rounded-md" />
                     ) : type === 'product' && typeof item !== 'string' ? ( // 상품인 경우

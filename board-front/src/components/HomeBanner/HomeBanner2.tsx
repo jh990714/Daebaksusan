@@ -22,7 +22,7 @@ export const HomeBanner2 = () => {
   }, []);
 
   return (
-    <div className='w-full'>
+    <div className='w-full my-20 p-3'>
       <p className='text-2xl font-bold md:text-4xl'>✨ 이달의 추천 상품 ✨</p>
       <ImageGalleryComp items={products} type="rcmn" />
     </div>

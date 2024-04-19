@@ -25,7 +25,7 @@ const TimeLimitedDeals: React.FC = () => {
     }, []);
 
     return (
-        <div className="w-full md:w-auto md:mt-8">
+        <div className="w-full my-20 p-3">
             <p className='text-2xl font-bold md:text-4xl'>💣 타임특가 </p>
             <ImageGalleryComp items={products} type="timeDeal"/>
         </div>
