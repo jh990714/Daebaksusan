@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PaymentShowList } from 'components/PaymentDetail/PaymentShowList';
 import { Link, useNavigate } from 'react-router-dom';
-import {sendRequestWithToken} from 'apis/sendRequestWithToken';
+import { sendRequestWithToken } from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
 import { MyPageMenu } from 'components/MyPage/MyPageMenu';
 import { Pagination } from 'components/Pagination';
@@ -42,22 +42,18 @@ export const PaymentDetails: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto mt-10 p-5 rounded-lg">
-            <div className="flex justify-between items-center border-b pb-4">
-                <h1 className="text-2xl text-blue-600 font-semibold">마이페이지</h1>
-                <div>
-                    <span className="text-gray-600 font-semibold">이광득 </span>
-                    <span className="text-gray-600">고객님</span>
-                    <a href="#" className="text-blue-600 ml-2">회원 정보 수정 {'>'}</a>
-                </div>
+        <div className="lg:mx-16 xl:mx-56 2xl:mx-80 mt-10 p-2 md:p-5 rounded-lg">
+            <div className="sm:flex justify-between items-center sm:border-b sm:pb-4">
+                <h1 className="hidden sm:block text-xl text-blue-600 font-semibold">마이페이지</h1>
+               
             </div>
-            <div className="py-5">
-                <div className="flex">
-                    <div className="w-1/6 border-r text-l font-semibold">
+            <div className="sm:py-5">
+                <div className="sm:flex sm:justify-between">
+                    <div className="hidden sm:block w-1/6 border-r text-l font-semibold" >
                         <MyPageMenu />
                     </div>
 
-                    <div>
+                    <div className="sm:w-4/5">
                         <div className='text-left ml-10 text-2xl border-b font-semibold'> 주문 내역 </div>
                         <div className='ml-10 font-medium'>
                             {paymentDetails ? (
