@@ -13,8 +13,11 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 	const category = useLocation().state.category;
 
 
-	const [visibleCount, setVisibleCount] = useState<number>(16);
-	const [products, setProducts] = useState<Product[]>([])
+	
+	const [products, setProducts] = useState<Product[]>([]);
+	const [colums, setColums] = useState<number>(4);
+	const [rows, setRows] = useState<number>(4);
+	const [visibleCount, setVisibleCount] = useState<number>(colums*rows);
 
 	let pageTitle;
 
@@ -73,13 +76,40 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 		fetchData();
 	}, [path, category]);
 
+	useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 480) {
+
+				setVisibleCount(2*rows)
+                setColums(2);
+				
+            } else if (window.innerWidth < 768) {
+				setVisibleCount(3*rows)
+				setColums(3);
+				
+			} else if (window.innerWidth < 1024) {
+				setVisibleCount(3*rows)
+                setColums(3);
+            }
+			else {
+				setColums(4);
+			}
+        };
+
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+
 	// 현재 페이지에 보여줄 상품 데이터 계산
 	const getCurrentPageData = () => {
 		return products.slice(0, visibleCount);
 	};
 
 	const handleMoreClick = () => {
-		setVisibleCount(prevCount => Math.min(prevCount + 16, products.length));
+		setVisibleCount(prevCount => Math.min(prevCount + (rows*colums), products.length));
 	}
 	return (
 		<div className={styles.homeContainer}>
@@ -90,7 +120,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 				<div>
 					<ul className={styles.productList}>
 						{getCurrentPageData().map((product: Product, index: number) => (
-							<li key={product.productId} className={index >= visibleCount - 4 && visibleCount < products.length ? `${styles.blurEffect}` : ''}>
+							<li key={product.productId} className={index >= visibleCount - colums && visibleCount < products.length ? `${styles.blurEffect}` : ''}>
 								<ProductListComp product={product} size='255px' fontSize='7px' />
 							</li>
 						))}
