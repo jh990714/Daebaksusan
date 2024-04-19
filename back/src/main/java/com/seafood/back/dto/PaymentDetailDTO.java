@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter @Setter
 public class PaymentDetailDTO {
     private String orderNumber;
-    private List<CartDTO> orderItems;
+    private List<PaymentItemDTO> orderItems;
     private boolean isCancel = false;
 }
