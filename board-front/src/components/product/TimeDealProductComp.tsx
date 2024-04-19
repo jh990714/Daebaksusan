@@ -40,8 +40,8 @@ export const TimeDealProductComp: React.FC<TimeDealProductCompProps> = ({ produc
         <div className="bg-white rounded-lg shadow-md p-4">
             <ProductListComp product={product} size='255px' fontSize='7px' />
             <div className='flex justify-center items-center gap-2'> {/* item-center -> items-center 수정 */}
-                <img src={time} alt="Time" className="w-8 h-8" />
-                <p className="m-0 text-lg font-bold text-red-600">{remainingTime}</p> {/* index 삭제 */}
+                <img src={time} alt="Time" className="w-5 h-5 md:w-8 md:h-8" />
+                <p className="m-0 text-sm font-bold text-red-600 md:text-lg">{remainingTime}</p>
             </div>
         </div>
     );

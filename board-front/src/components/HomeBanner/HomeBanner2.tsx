@@ -22,8 +22,8 @@ export const HomeBanner2 = () => {
   }, []);
 
   return (
-    <div className='HomeBanner2Container'>
-      <p className='text-4xl font-bold'>✨ 이달의 추천 상품 ✨</p>
+    <div className='w-full'>
+      <p className='text-2xl font-bold md:text-4xl'>✨ 이달의 추천 상품 ✨</p>
       <ImageGalleryComp items={products} type="rcmn" />
     </div>
   );

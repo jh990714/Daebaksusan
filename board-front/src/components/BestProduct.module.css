@@ -11,7 +11,6 @@
 }
 
 .productListContainer {
-  width: 70%;
   margin: 2rem auto 0 auto;
 }
 
@@ -68,15 +67,6 @@
   margin-top: 2rem;
 }
 
-/* 반응형 미디어 쿼리 */
-@media screen and (max-width: 768px) {
-  .productListContainer, .wrapScorll {
-    width: 100%; /* 화면이 768px 이하일 때 너비를 100%로 조정 */
-  }
-  .titleContainer {
-    padding: 1rem;
-  }
-}
 
 @media screen and (max-width: 480px) {
   .productListTitle {
