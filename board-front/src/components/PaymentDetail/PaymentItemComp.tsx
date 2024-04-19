@@ -1,20 +1,23 @@
 import { sendRequestWithToken } from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
 import React, { useState } from 'react';
-import { CartItem } from "types";
+import { CartItem, PaymentItem } from "types";
 import { PaymentInfoPopup } from './PaymentInfoPopup';
 import { ReviewPopup } from 'components/Review/ReviewPopup';
+import { ReviewShowPopup } from 'components/Review/ReviewShowPopup';
 
 interface PaymentItemCompProps {
+    index: number
     orderNumber: string;
-    orderItem: CartItem;
+    orderItem: PaymentItem;
     isCancelled: boolean;
     rowspan: number;
 }
 
-export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, orderItem, isCancelled, rowspan }) => {
+export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ index, orderNumber, orderItem, isCancelled, rowspan }) => {
     const [showPaymentInfo, setShowPaymentInfo] = useState(false);
-    const [showReviewPopup, setShowReviewPopup] = useState(false); // 리뷰 작성 팝업 상태 추가
+    const [writeReviewPopup, setWriteReviewPopup] = useState(false); // 리뷰 작성 팝업 상태 추가
+    const [showReviewPopup, setShowReviewPopup] = useState(false);
 
     const totalPrice = (orderItem.product.regularPrice - orderItem.product.salePrice) * orderItem.quantity;
     const shippingCost = orderItem.product.shippingCost * orderItem.boxCnt;
@@ -24,13 +27,17 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
         setShowPaymentInfo(true);
     }
 
-    const handleShowReviewPopup = () => {
+    const handleWriteReview = () => {
+        setWriteReviewPopup(true); // 리뷰 작성 팝업 열기
+    }
+
+    const handleShowReview = () => {
         setShowReviewPopup(true); // 리뷰 작성 팝업 열기
     }
 
     return (
         <tr style={{ backgroundColor: isCancelled ? '#F3F4F6' : 'transparent', borderBottom: '1px solid #E5E7EB' }}>
-            {orderNumber && (
+            {index===0 && (
                 <td className="py-4 px-6 border-r" rowSpan={rowspan}>
                     <p className={`text-gray-500 text-sm mb-0 ${isCancelled ? 'line-through' : ''}`}>{orderNumber}</p>
                 </td>
@@ -42,8 +49,14 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                 </div>
                 
                 {!isCancelled && (
-                    <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-2" onClick={handleShowReviewPopup}>리뷰 작성</button>
+                    <button
+                        className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-2"
+                        onClick={orderItem.isReview ? handleShowReview : handleWriteReview}
+                    >
+                        {orderItem.isReview ? '후기 보기' : '후기 작성'}
+                    </button>
                 )}
+
             </td>
             <td className="py-4 px-6 max-w-[150px] ">
                 <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-lg font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.product.name}</p>
@@ -58,7 +71,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                 {orderItem.quantity}
             </td>
 
-            {orderNumber && (
+            {index===0 && (
                 <>
                     <td className="py-4 px-6 border-l" rowSpan={rowspan}>
                         <div className="flex flex-col h-full">
@@ -77,7 +90,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
 
                     <td className="py-4 px-6 border-l" rowSpan={rowspan}>
                         {!isCancelled && (
-                            <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onClick={handleShowReviewPopup}>배송 정보</button>
+                            <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">배송 정보</button>
                         )}
                     </td>
                 </>
@@ -86,7 +99,8 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
             {/* 결제 정보 팝업 컴포넌트 */}
             {showPaymentInfo && <PaymentInfoPopup onClose={() => setShowPaymentInfo(false)} orderNumber={orderNumber} />}
             {/* 리뷰 작성 팝업 */}
-            {showReviewPopup && <ReviewPopup onClose={() => setShowReviewPopup(false)} product={orderItem.product} option={orderItem.option} />}
+            {writeReviewPopup && <ReviewPopup onClose={() => setWriteReviewPopup(false)} orderNumber={orderNumber} product={orderItem.product} option={orderItem.option} />}
+            {showReviewPopup && <ReviewShowPopup onClose={() => setShowReviewPopup(false)} orderNumber={orderNumber} product={orderItem.product} option={orderItem.option} />}
         </tr>
     );
 };

@@ -9,12 +9,14 @@ interface ReviewPopupProps {
     onClose: () => void; // 팝업 닫기 함수
     product: Product;
     option?: Option | null;
+    orderNumber: string;
 }
 
-export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, product, option }) => {
+export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, orderNumber, product, option }) => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     
     const initialState: ReviewState = {
+        orderNumber: orderNumber,
         productId: product.productId,
         optionId: option?.optionId ?? null,
         score: 5,
@@ -71,13 +73,14 @@ export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, product, opti
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+        // event.preventDefault();
         try {
             const url = '/info/reviewSave';
             const method = 'POST';
             const formData = new FormData();
     
             // ReviewState의 필드를 FormData에 추가
+            formData.append('orderNumber', reviewState.orderNumber);
             formData.append('productId', reviewState.productId.toString());
             if (reviewState.optionId !== null) {
                 formData.append('optionId', reviewState.optionId.toString());
