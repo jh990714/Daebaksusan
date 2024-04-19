@@ -56,10 +56,10 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, p
                          {isCancelled ? (
                             <p className="py-2 px-4 text-sm font-medium text-red-500">취소 완료</p>
                          ) : (
-                            <p className="py-2 px-4 text-sm font-medium text-blue-500">결제 완료</p>
+                            <p className="py-2 px-4 text-sm font-medium text-blue-700">결제 완료</p>
                          )}
                          
-                            <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onClick={handleShowInfo}>결제 정보</button>
+                            <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700" onClick={handleShowInfo}>결제 정보</button>
                             
                            
                         </div>
@@ -67,7 +67,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, p
                     
                     <td className="py-4 px-6 border-l" rowSpan={rowspan}>
                         {!isCancelled && (
-                            <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">배송 정보</button>
+                            <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">배송 정보</button>
                         )}
                     </td>
                 </>
