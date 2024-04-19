@@ -28,11 +28,11 @@ export const Home: React.FC = () => {
         <CarouselComp img={img} />
       </div>
       <div className='homeContainer'>
-        <div ref={ref1} className='HomeBanner'>
+        <div ref={ref1}>
           <TimeLimitedDeals />
         </div>
 
-        <div ref={ref2} className='HomeBanner'>
+        <div ref={ref2}>
           <HomeBanner2 />
         </div>
 
