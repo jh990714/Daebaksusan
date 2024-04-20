@@ -19,9 +19,9 @@ export const Footer = () => {
     <footer className="bg-[#393B3E]">
       <div className="text-white border-b border-black">
         <div className="grid grid-cols-1 xl:grid-cols-3 w-4/5 m-auto py-3 "> {/* 변경: 폰트 크기 변경 및 모바일 화면에서 1열로, md 화면부터 3열로 나열 */}
-          <div className="text-xl xl:font-bold xl:pl-0 xl:pr-2 xl:pb-0">고객센터 1234-5678</div> {/* 변경: 폰트 크기 및 위치 조정 */}
+          <div className="text-lg xl:text-xl xl:font-bold xl:pl-0 xl:pr-2 xl:pb-0">고객센터 1234-5678</div> {/* 변경: 폰트 크기 및 위치 조정 */}
           <div className="text-sm xl:text-base xl:pl-2 xl:text-center">평일 10:00 - 17:00 (점심 12:00 - 13:00 / 주말 및 공휴일 휴무)</div> {/* 변경: 폰트 크기 조정 */}
-          <ul className='flex justify-center'> {/* 변경: 폰트 크기 및 위치 조정 */}
+          <ul className='flex justify-center text-sm xl:text-base'> {/* 변경: 폰트 크기 및 위치 조정 */}
             <li><button className="pr-2 text-white no-underline" onClick={openModal}>이용약관</button></li>
             <li>|</li>
             <li><button className="pr-2 text-white no-underline" onClick={openModal}>개인정보처리방침</button></li>
@@ -71,7 +71,7 @@ export const Footer = () => {
         </div>
       )}
 
-      <div className="py-4 w-4/5 m-auto text-[#888] text-start text-sm leading-8"> {/* 변경: 폰트 크기 및 위치 조정 */}
+      <div className="py-4 w-4/5 m-auto text-[#888] text-start leading-8">
         <div className="flex flex-col md:flex-row text-start sm:text-center text-sm md:text-lg text-white font-bold justify-center gap-3">
           <div className="md:pr-2 lg:pr-4">법인 : 어업회사법인 유한회사 대박수산</div>
           <div className="md:px-2 lg:px-4">사업자 등록 번호 : 592-81-02388</div>
