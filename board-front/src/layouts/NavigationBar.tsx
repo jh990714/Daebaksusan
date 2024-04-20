@@ -17,7 +17,7 @@ import loginBlueIcon from '../assets/loginBlue.png'
 
 
 import searchIcon from '../assets/search.png'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Category } from 'types';
 import useDebounce from 'hook/useDebounce'
 import { useAuthContext } from 'hook/AuthProvider'
@@ -35,15 +35,14 @@ export const NavigationBar = () => {
     const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
     const debouncedQuery = useDebounce<string>(query, 300);
     const navigate = useNavigate();
+    const location = useLocation();
+    // const [cartItems, setCartItems] = useState<Cart[]>([]);
 
-    // 마우스 오버 시 아이콘 색 변경
-    const [isHovered, setIsHovered] = useState(false);
-    const handleMouseOver = () => {
-        setIsHovered(true);
-    };
-    const handleMouseOut = () => {
-        setIsHovered(false);
-    };
+
+    useEffect(() => {
+        setIsMenuOpen(false);
+    }, [location]);
+
     
     useEffect(() => {
         // API 호출

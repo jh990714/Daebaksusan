@@ -172,7 +172,7 @@
 .categories {
     overflow: hidden; /* 내부 요소들이 넘치는 부분은 숨김 */
     max-height: 0; /* 기본적으로 숨겨진 상태 */
-    transition: max-height 0.3s ease-out; /* 트랜지션 효과 설정 */
+    transition: max-height 0.5s ease-out; /* 트랜지션 효과 설정 */
     text-align: start;
     display: flex;
     justify-content: space-around;
@@ -227,8 +227,6 @@
 .open {
     max-height: 500px;
     border-bottom: 3px solid #d9d9d9;
-    
-    
 }
 
 @media only screen and (max-width: 1650px) {
@@ -301,5 +299,25 @@
     .show {
         display: flex;
         max-height: 500px;
+    }
+
+    .categories {  
+        flex-wrap: wrap; /* 요소들을 여러 줄에 걸쳐 표시 */
+        flex-direction: row; /* 요소들을 가로로 배열 */
+        overflow-y: auto;
+    }
+
+    .categoryItem {
+        width: 50%;
+    }
+
+    .subcategoryList {
+        margin-left: 30px;
+        margin-top: 10px; /* 서브카테고리 간격 조정 */
+    }
+
+    .categoryTitle {
+        font-size: 18px; /* 카테고리 제목 폰트 크기 조정 */
+        margin-bottom: 5px; /* 카테고리 제목과 서브카테고리 간격 조정 */
     }
 }
