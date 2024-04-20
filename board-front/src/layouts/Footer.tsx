@@ -18,18 +18,21 @@ export const Footer = () => {
   return (
     <footer className="bg-[#393B3E]">
       <div className="text-white border-b border-black">
-        <div className="grid grid-cols-3 w-4/5 m-auto py-3 ">
-          <div className="text-xl font-bold">고객센터 1234-5678</div>
-          <div className="pl-2 content-center">평일 10:00 - 17:00 (점심 12:00 - 13:00 / 주말 및 공휴일 휴무)</div>
-          <div className='flex justify-center'>
-            <button className="pr-2 text-white no-underline" onClick={openModal}>이용약관</button>
-            <span>|</span>
-            <button className="pr-2 text-white no-underline" onClick={openModal}>개인정보처리방침</button>
-            <span>|</span>
-            <a className="px-2 text-white no-underline" href="/">회사소개</a>
-          </div>
+        <div className="grid grid-cols-1 xl:grid-cols-3 w-4/5 m-auto py-3 "> {/* 변경: 폰트 크기 변경 및 모바일 화면에서 1열로, md 화면부터 3열로 나열 */}
+          <div className="text-xl xl:font-bold xl:pl-0 xl:pr-2 xl:pb-0">고객센터 1234-5678</div> {/* 변경: 폰트 크기 및 위치 조정 */}
+          <div className="text-sm xl:text-base xl:pl-2 xl:text-center">평일 10:00 - 17:00 (점심 12:00 - 13:00 / 주말 및 공휴일 휴무)</div> {/* 변경: 폰트 크기 조정 */}
+          <ul className='flex justify-center'> {/* 변경: 폰트 크기 및 위치 조정 */}
+            <li><button className="pr-2 text-white no-underline" onClick={openModal}>이용약관</button></li>
+            <li>|</li>
+            <li><button className="pr-2 text-white no-underline" onClick={openModal}>개인정보처리방침</button></li>
+            <li>|</li>
+            <li><a className="px-2 text-white no-underline" href="/">회사소개</a></li>
+          </ul>
+
         </div>
       </div>
+
+
 
       {/* 모달 창 */}
       {isModalOpen && (
@@ -52,7 +55,7 @@ export const Footer = () => {
                     {/* 이용약관 내용 */}
                     <div className="mt-2 overflow-y-auto max-h-96">
                       <p className="text-sm text-gray-500">
-                        <Agreement/>
+                        <Agreement />
                       </p>
                     </div>
                   </div>
@@ -68,14 +71,16 @@ export const Footer = () => {
         </div>
       )}
 
-      <div className="py-4 w-4/5 m-auto text-[#888] text-start text-sm leading-8">
-        <div className="flex justify-center gap-5 text-lg text-white font-bold">
-          <div className="pr-2">법인 : 어업회사법인 유한회사 대박수산 </div>
-          <div className="px-2">사업자 등록 번호 : 592-81-02388</div>
-          <div className="pl-2">대표 : 강우복</div>
+      <div className="py-4 w-4/5 m-auto text-[#888] text-start text-sm leading-8"> {/* 변경: 폰트 크기 및 위치 조정 */}
+        <div className="flex flex-col md:flex-row text-start sm:text-center text-sm md:text-lg text-white font-bold justify-center gap-3">
+          <div className="md:pr-2 lg:pr-4">법인 : 어업회사법인 유한회사 대박수산</div>
+          <div className="md:px-2 lg:px-4">사업자 등록 번호 : 592-81-02388</div>
+          <div className="md:pl-2 lg:pl-4">대표 : 강우복</div>
         </div>
 
-        <div className="flex justify-center gap-10 py-4">
+
+
+        <div className="flex flex-col md:flex-row justify-center gap-10 py-4">
           <img src={logo} width="130" height="auto" />
 
           <div>
