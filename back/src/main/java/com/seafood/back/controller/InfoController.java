@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.seafood.back.dto.MemberDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
@@ -29,9 +30,9 @@ public class InfoController {
     private final InfoService infoService;
 
     @GetMapping
-    public ResponseEntity<MemberEntity> myPage(Authentication authentication) {
+    public ResponseEntity<MemberDTO> myPage(Authentication authentication) {
         String id = authentication.getName();
-        MemberEntity userInfo = infoService.getUserInfo(id);
+        MemberDTO userInfo = infoService.getUserInfo(id);
 
         return ResponseEntity.ok().body(userInfo);
     }

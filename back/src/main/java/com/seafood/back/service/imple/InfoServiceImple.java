@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.seafood.back.dto.MemberDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.PaymentItemDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
@@ -68,26 +68,25 @@ public class InfoServiceImple implements InfoService {
     private final ReviewImageRepository reviewImageRepository;
     private final ReviewResponseRepository reviewResponseRepository;
 
-    private final ObjectMapper objectMapper; // JSON 변환을 위한 ObjectMapper
     private final IamportClient iamportClient;
 
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public MemberEntity getUserInfo(String id) {
+    public MemberDTO getUserInfo(String id) {
         MemberEntity member = memberRepository.findById(id);
+        MemberDTO memberDto = new MemberDTO();
 
-        // if (member != null) {
-        //     try {
-        //         return objectMapper.writeValueAsString(member);
-        //     } catch (JsonProcessingException e) {
-        //         e.printStackTrace();
-        //         return "Failed to retrieve user info"; // JSON 변환 실패 시 예외 처리
-        //     }
-        // } else {
-        //     return "User not found"; // 사용자가 없을 경우 예외 처리
-        // }
-        return member;
+        memberDto.setMemberId(member.getMemberId());
+        memberDto.setId(member.getId());
+        memberDto.setName(member.getName());
+        memberDto.setPhone(member.getPhone());
+        memberDto.setEmail(member.getEmail());
+        memberDto.setPostalCode(member.getPostalCode());
+        memberDto.setAddress(member.getAddress());
+        memberDto.setDetailAddress(member.getDetailAddress());
+
+        return memberDto;
     }
 
     @Override
