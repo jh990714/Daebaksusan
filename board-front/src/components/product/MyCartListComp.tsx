@@ -131,7 +131,7 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
                     </div>
 
                     <div className={styles_m.orderOption}>
-                        옵션
+                        {cartItem.cartItem.option?.name} + {cartItem.cartItem.option?.addPrice}
                     </div>
                     <div className={styles_m.quantityContainer}>
                         <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(cartItem.id, -1)}>-</button>

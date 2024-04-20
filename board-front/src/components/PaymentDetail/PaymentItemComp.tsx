@@ -41,7 +41,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
         <tr style={{ backgroundColor: isCancelled ? '#F3F4F6' : 'transparent', borderBottom: '1px solid #E5E7EB' }}>
             {isFirstItem && (
                 <td className="py-2 px-6 lg:py-4 lg:px-6 border-r" rowSpan={rowspan}>
-                    <p className={`text-gray-500 text-sm mb-0 ${isCancelled ? 'line-through' : ''}`}>
+                    <p className={`text-gray-500 text-xs mb-0 ${isCancelled ? 'line-through' : ''}`}>
                         <span className="block">{orderNumber.substring(0, 8)}</span>
                         <span className="block">{orderNumber.substring(9)}</span>
                     </p>
@@ -57,7 +57,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
 
                         {!isCancelled && (
                             <button
-                                className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-2"
+                                className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-2 whitespace-nowrap"
                                 onClick={orderItem.isReview ? handleShowReview : handleWriteReview}
                             >
                                 {orderItem.isReview ? '후기 보기' : '후기 작성'}
@@ -65,15 +65,15 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                         )}
                     </td>
                     <td className="py-4 px-6 max-w-[150px]">
-                        <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-lg font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.product.name}</p>
+                        <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-base font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.product.name}</p>
                         {orderItem.option && (
-                            <p className={`text-sm text-gray-500 ${isCancelled ? 'line-through' : ''}`}>{orderItem.option.name} +{orderItem.option.addPrice.toLocaleString()}원</p>
+                            <p className={`text-sm text-gray-500 ${isCancelled ? 'line-through' : ''} whitespace-nowrap`}>{orderItem.option.name} +{orderItem.option.addPrice.toLocaleString()}원</p>
                         )}
                     </td>
-                    <td className={`py-4 px-6 text-lg font-bold ${isCancelled ? 'line-through' : ''}`}>
+                    <td className={`py-4 px-6 text-base font-bold ${isCancelled ? 'line-through' : ''} whitespace-nowrap`}>
                         {(totalPrice + shippingCost + optionCost).toLocaleString()}원
                     </td>
-                    <td className={`py-4 px-6 text-lg font-bold ${isCancelled ? 'line-through' : ''}`}>
+                    <td className={`py-4 px-6 text-base font-bold ${isCancelled ? 'line-through' : ''}`}>
                         {orderItem.quantity}
                     </td>
 
@@ -84,12 +84,12 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                                 <div className="flex flex-col h-full">
 
                                     {isCancelled ? (
-                                        <p className="text-sm font-medium text-red-500">취소 완료</p>
+                                        <p className="text-xs font-medium text-red-500">취소 완료</p>
                                     ) : (
-                                        <p className="text-sm font-medium text-blue-700">결제 완료</p>
+                                        <p className="text-xs font-medium text-blue-700">결제 완료</p>
                                     )}
 
-                                    <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700" onClick={handleShowInfo}>결제 정보</button>
+                                    <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 whitespace-nowrap " onClick={handleShowInfo}>결제 정보</button>
 
 
                                 </div>
@@ -97,7 +97,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
 
                             <td className="py-4 px-6 lg:py-2 lg:px-6 border-l" rowSpan={rowspan}>
                                 {!isCancelled && (
-                                    <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700">배송 정보</button>
+                                    <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 whitespace-nowrap ">배송 정보</button>
                                 )}
                             </td>
                         </>
@@ -115,7 +115,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                         </div>
                         {!isCancelled && (
                             <button
-                                className="block p-1 mt-2 mx-auto border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                className="block p-1 mt-2 mx-auto border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap"
                                 onClick={orderItem.isReview ? handleShowReview : handleWriteReview}
                             >
                                 {orderItem.isReview ? '후기 보기' : '후기 작성'}
@@ -145,9 +145,9 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                                         <p className="text-sm font-medium text-blue-700">결제 완료</p>
                                     )}
 
-                                    <button className="block p-1 mt-2 mx-auto border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onClick={handleShowInfo}>결제 정보</button>
+                                    <button className="block p-1 mt-2 mx-auto border-2 border-gray-300 rounded-md shadow-sm bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onClick={handleShowInfo}>결제 정보</button>
                                     {!isCancelled && (
-                                        <button className="block p-1 mt-2 mx-auto border-2 border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">배송 정보</button>
+                                        <button className="block p-1 mt-2 mx-auto border-2 border-gray-300 rounded-md shadow-sm bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">배송 정보</button>
                                     )}
 
                                 </div>
