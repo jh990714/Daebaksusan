@@ -112,14 +112,13 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
                 </tbody>
             </table>
             <div className={styles_m.mobileContainer}>
-                <div className="checkBox">
+                <div className={styles_m.checkBox}>
                     <input
                         type="checkbox"
                         checked={cartItem.isSelected}
                         onChange={handleCheckboxChange}
-                        className={styles_m.custom_checkbox} // CSS 클래스 추가
                     />
-                    <label htmlFor={cartItem.cartItem.product.productId.toString()} className={styles_m.checkbox_icon}></label> {/* label에 클래스 추가 */}
+
                 </div>
 
                 <div className={styles_m.orderImg}>
