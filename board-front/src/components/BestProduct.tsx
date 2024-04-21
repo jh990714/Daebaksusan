@@ -142,7 +142,7 @@ export const BestProduct: React.FC<CategoryProductProp> = ({ category }) => {
                     </button>
                 </div> */}
                 <div className='border-t-2 border-blue-700 p-3'>
-                    <ImageGalleryComp items={products} size="275px" fontSize="7px" type="product"/>
+                    <ImageGalleryComp items={products} size="275px" fontSize="7px" component={ProductListComp}/>
                 </div>
             </div>
         </div>

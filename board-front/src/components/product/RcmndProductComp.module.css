@@ -12,6 +12,7 @@
 .container {
     display: flex;
     align-items: center;
+    border-radius: var(--border-radius, 0);
 }
 
 .imgContainer {
