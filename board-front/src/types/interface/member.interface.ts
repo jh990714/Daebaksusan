@@ -1,3 +1,4 @@
+import { Coupon } from "types";
 
 export default interface Member {
     memberId: number,
@@ -10,5 +11,7 @@ export default interface Member {
     address: String,
     detailAddress: String,
     type: String,
-    role: String
+    role: String,
+    coupons: Coupon[],
+    points: number,
 };

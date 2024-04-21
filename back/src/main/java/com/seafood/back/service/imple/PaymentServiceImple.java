@@ -21,16 +21,22 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.CartDTO;
+import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.dto.PaymentAndOrderInfo;
 import com.seafood.back.dto.ProductDTO;
+import com.seafood.back.entity.CouponEntity;
+import com.seafood.back.entity.MemberCouponEntity;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.PaymentDetailsEntity;
 import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
+import com.seafood.back.respository.MemberCouponRepository;
 import com.seafood.back.respository.OptionRepository;
 import com.seafood.back.respository.PaymentDetailsRepository;
 import com.seafood.back.respository.ProductRepository;
 import com.seafood.back.service.CartService;
+import com.seafood.back.service.CouponService;
+import com.seafood.back.service.MemberService;
 import com.seafood.back.service.PaymentService;
 import com.seafood.back.service.ProductService;
 import com.siot.IamportRestClient.IamportClient;
@@ -43,13 +49,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImple implements PaymentService {
 
     private final ProductService productService;
     private final CartService cartService;
+    private final CouponService couponService;
+    private final MemberService memberService;
 
     private final IamportClient iamportClient;
 
@@ -149,26 +156,38 @@ public class PaymentServiceImple implements PaymentService {
 
         return orderNumber;
     }
-
     @Transactional
     @Override
-    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password) {
-        // 결제가 성공하면 상품 수량 변경
-        productService.updateProductQuantities(orderItems);
-
-        // 결제가 성공하면 카트 아이템 삭제
-        if (id != null) {
-            List<Long> cartItemIdsToDelete = orderItems.stream()
-                    .map(CartDTO::getCartId)
-                    .collect(Collectors.toList());
-
-            cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
+    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password, CouponDTO coupon, BigDecimal points) {
+        try {
+            // 결제가 성공하면 상품 수량 변경
+            productService.updateProductQuantities(orderItems);
+    
+            // 결제가 성공하면 카트 아이템 삭제
+            if (id != null) {
+                List<Long> cartItemIdsToDelete = orderItems.stream()
+                        .map(CartDTO::getCartId)
+                        .collect(Collectors.toList());
+    
+                cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
+            }
+            // 결제 정보 저장
+            String orderNumber = savePaymentDetails(id, impUid, password);
+    
+            // 쿠폰 제거
+            if (coupon != null) {
+                couponService.removeCoupon(id, coupon.getCouponId());
+            }
+            
+            memberService.deductPoints(id, points);
+            return orderNumber;
+        } catch (Exception e) {
+            cancelPayment(impUid);
+            throw new RuntimeException("Error processing successful payment", e);
         }
-        // 결제 정보 저장
-        String orderNumber = savePaymentDetails(id, impUid, password);
-
-        return orderNumber;
     }
+    
+    
 
     @Override
     public Map<String, Object> verifyAndProcessPayment(String imp_uid, String password) throws Exception {
@@ -181,12 +200,34 @@ public class PaymentServiceImple implements PaymentService {
         List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
                 new TypeReference<List<CartDTO>>() {
                 });
+        CouponDTO coupon = objectMapper.convertValue(jsonMap.get("coupon"),
+                new TypeReference<CouponDTO>() {
+                });
+
+        BigDecimal points = objectMapper.convertValue(jsonMap.get("points"),
+            new TypeReference<BigDecimal>() {
+        });
 
         BigDecimal paidAmount = iamportResponse.getResponse().getAmount();
         BigDecimal orderAmount = orderAmount(imp_uid, orderItems);
 
-        if (orderAmount.compareTo(paidAmount) == 0) {
-            String orderNumber = processSuccessfulPayment(id, orderItems, imp_uid, password);
+        BigDecimal couponAmount = couponService.couponAmount(id, coupon);
+
+        BigDecimal pointsUsed = BigDecimal.ZERO;
+        if (points != null) {
+            pointsUsed = points;
+            BigDecimal pointsAvailable = memberService.getAvailablePoints(id);
+            if (pointsUsed.compareTo(pointsAvailable) > 0) {
+                cancelPayment(imp_uid);
+                throw new IllegalArgumentException("사용 가능한 포인트보다 더 많은 포인트를 사용하려고 합니다.");
+            }
+        }
+
+
+        BigDecimal expectedAmount = orderAmount.subtract(couponAmount).subtract(pointsUsed);
+
+        if (expectedAmount.compareTo(paidAmount) == 0) {
+            String orderNumber = processSuccessfulPayment(id, orderItems, imp_uid, password, coupon, pointsUsed);
             Map<String, Object> response = new HashMap<>();
             response.put("orderNumber", orderNumber);
             response.put("iamportResponse", iamportResponse);
@@ -197,6 +238,7 @@ public class PaymentServiceImple implements PaymentService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> cancelPayment(String imp_uid) {
         try {
@@ -296,6 +338,21 @@ public class PaymentServiceImple implements PaymentService {
             if (iamportResponse.getResponse().getPgProvider().equalsIgnoreCase("kakaopay")) {
                 paymentAndOrderInfo.setPaymentMethod("카카오페이");
             }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
+                    new TypeReference<Map<String, Object>>() {
+                    });
+    
+            CouponDTO coupon = objectMapper.convertValue(jsonMap.get("coupon"),
+                    new TypeReference<CouponDTO>() {
+                    });
+            BigDecimal points = objectMapper.convertValue(jsonMap.get("points"),
+                new TypeReference<BigDecimal>() {
+            });
+
+            paymentAndOrderInfo.setCoupon(coupon);
+            paymentAndOrderInfo.setPoints(points);
 
             return ResponseEntity.ok(paymentAndOrderInfo);
         } catch (Exception e) {

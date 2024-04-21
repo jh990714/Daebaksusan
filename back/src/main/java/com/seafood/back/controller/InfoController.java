@@ -15,7 +15,6 @@ import com.seafood.back.dto.MemberDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
-import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.service.InfoService;
 
 import lombok.RequiredArgsConstructor;

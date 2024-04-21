@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.entity.CustomOAuth2User;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.respository.MemberRepository;
