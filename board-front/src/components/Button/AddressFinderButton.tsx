@@ -17,7 +17,7 @@ export const AddressFinderButton: React.FC<AddressFinderButtonProps> = ({ onComp
   };
 
 
-  const buttonClassName = className ? className : "w-32 h-10 ml-4 bg-blue-700 text-white font-bold rounded-md cursor-pointer flex justify-center items-center transition duration-300 hover:bg-blue-600 focus:ring-2 focus:ring-blue-500";
+  const buttonClassName = className ? className : "w-32 h-10 ml-4 bg-blue-700 text-white font-bold rounded-md cursor-pointer flex justify-center items-center transition duration-300 hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 whitespace-nowrap";
 
   return (
     <button className={buttonClassName} onClick={handleOpenPostcodePopup}>
