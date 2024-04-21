@@ -7,12 +7,13 @@ import Cookies from 'js-cookie';
 interface RcmndProductCompProps {
     product: Product;
     imgSize_w_per: number;
-    imgSize_h_px: number;
-    font_size: number;
-    border: number;
+    imgSize_h_px: string;
+    fontSize: string;
+    radius?: number;
+    shadow?: boolean;
 }
 
-export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, imgSize_w_per, imgSize_h_px, font_size, border }) => {
+export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, imgSize_w_per, imgSize_h_px, fontSize, radius = 3, shadow = false }) => {
     const addToRecentProducts = (product: Product) => {
         const maxRecentProducts = 7; // 최대 저장할 최근 본 상품의 수
         const recentProducts = Cookies.get('recentProducts') ? JSON.parse(Cookies.get('recentProducts')!) : [];
@@ -31,30 +32,35 @@ export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, img
         return null; // 추천 상품이 아닌 경우, 렌더링하지 않음
     }
 
+
     return (
-        <Link to={`/detail/`}  state={{ product: product }} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
-            <div className={styles.container}>
+        <Link to={`/detail/`} state={{ product: product }} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
+            <div className={`${styles.container} ${shadow ? 'shadow-md' : ''}`}
+                style={{
+                    '--border-radius': `${radius}%`
+                } as React.CSSProperties}>
                 <div className={styles.imgContainer}
                     style={{
                         '--w-size': `${imgSize_w_per}%`,
-                        '--h-size': `${imgSize_h_px}px`,
+                        '--h-size': `${imgSize_h_px}`,
+
                     } as React.CSSProperties}>
-                    <img 
+                    <img
                         src={`${process.env.PUBLIC_URL}/upload/${product.imageUrl}`}
-                        alt='추천 상품' 
+                        alt='추천 상품'
                         className={styles.rcmdImg}
                         style={{
                             '--w-size': `${imgSize_w_per}%`,
-                            '--h-size': `${imgSize_h_px}px`,
-                            '--border-radius': `${border}%`
-                        } as React.CSSProperties}/>
+                            '--h-size': `${imgSize_h_px}`,
+                            '--border-radius': `${radius}%`
+                        } as React.CSSProperties} />
                     <img src={tag} alt='추천 상품' className={styles.rcmdTag} />
                 </div>
                 <div className={styles.rcmdInfo}
-                style={{
-                    '--w-size': `${100-imgSize_w_per}%`,
-                    '--font-size': `${font_size}px`,
-                } as React.CSSProperties}>
+                    style={{
+                        '--w-size': `${100 - imgSize_w_per}%`,
+                        '--font-size': `${fontSize}`,
+                    } as React.CSSProperties}>
                     <p className={styles.title}> {product.name} </p>
                     {product.salePrice !== 0 && (
                         <p className={styles.beforeprice}> {product.regularPrice.toLocaleString()}원 </p>

@@ -51,9 +51,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ videoUrl }) => {
                             <RcmndProductComp
                                 product={product}
                                 imgSize_w_per={45}
-                                imgSize_h_px={120}
-                                font_size={5}
-                                border={50}
+                                imgSize_h_px={'120px'}
+                                fontSize={'5px'}
+                                radius={50}
                             />
                         </div>
                     ))}

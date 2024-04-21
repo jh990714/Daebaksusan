@@ -5,9 +5,11 @@ import { ProductListComp } from './ProductListComp';
 
 interface TimeDealProductCompProps {
     product: Product;
+    size?: string;
+    fontSize?: string;
 }
 
-export const TimeDealProductComp: React.FC<TimeDealProductCompProps> = ({ product }) => {
+export const TimeDealProductComp: React.FC<TimeDealProductCompProps> = ({ product, size="275px", fontSize="7px" }) => {
     const [remainingTime, setRemainingTime] = useState<string>('');
 
     useEffect(() => {
