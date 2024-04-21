@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEventHandler, useEffect, useState } from 'react';
 import DaumPost from 'components/DaumPost';
 import { OrderFlow } from 'components/OrderFlow';
 import './Order.css';
@@ -19,6 +19,11 @@ import { GuestPaymentModal } from 'components/GuestPaymentModal';
 declare const window: typeof globalThis & {
     IMP: any;
 };
+
+interface Coupon {
+    name: string;
+    discount: number;
+}
 
 // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
@@ -50,8 +55,17 @@ export const Order: React.FC = () => {
 
     const firstItemProductName = orderItems.length > 0 ? orderItems[0].cartItem.product.name : '';
     const remainingItemNames = orderItems.slice(1).map((item: { cartItem: { product: { name: any; }; }; }) => item.cartItem.product.name).join(', ');
+    const [selectedPoint, setSelectedPoint] = useState<number>(0);
+    const [selectedCoupon, setSelectedCoupon] = useState<string>();
+    const availablePoint = 3000;
 
-    
+    const coupons: Coupon[] = [
+        { name: "쿠폰1", discount: 1000 },
+        { name: "쿠폰2", discount: 2000 },
+        { name: "쿠폰3", discount: 3000 },
+    ];
+
+
     useEffect(() => {
         // orderItems가 비어 있는지 확인
         if (!orderItems || orderItems.length === 0) {
@@ -110,18 +124,19 @@ export const Order: React.FC = () => {
     });
 
 
-    const totalPrice: number = orderItems.reduce((total: number, orderItem: Cart) => {
+    const totalItemPrice: number = orderItems.reduce((total: number, orderItem: Cart) => {
         const itemPrice = (orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice) * orderItem.cartItem.quantity;
-        const optionCost = orderItem.cartItem.boxCnt * orderItem.cartItem.option!.addPrice;
 
-
-        return total + itemPrice + optionCost;
+        return total + itemPrice;
     }, 0);
 
     const totalShippingCost: number = orderItems.reduce((total: number, orderItem: Cart) => {
         const shippingCost = orderItem.cartItem.boxCnt * orderItem.cartItem.product.shippingCost;
-        return total + shippingCost;
+        const optionCost = orderItem.cartItem.boxCnt * orderItem.cartItem.option!.addPrice;
+        return total + shippingCost + optionCost;
     }, 0);
+
+
 
 
     const handlePayment = async () => {
@@ -199,7 +214,7 @@ export const Order: React.FC = () => {
         console.log(updatedCartItems)
         return updatedCartItems
     };
-    
+
     const startPayment = (id: string | null) => {
         setIsPaymentInProgress(true);
         // 주문 상품 정보를 requestData 객체에 담음
@@ -220,7 +235,7 @@ export const Order: React.FC = () => {
             pay_method: paymentMethod,
             merchant_uid: new Date().getTime(),// 상점에서 관리하는 주문 번호
             name: firstItemProductName + (remainingItemNames ? ` 외 ${orderItems.length - 1}개` : ''),
-            amount: totalPrice + totalShippingCost,
+            amount: totalItemPrice + totalShippingCost,
             buyer_email: ordererInfo?.email,
             buyer_name: ordererName,
             buyer_tel: '010-' + ordererPhoneMid + '-' + ordererPhoneLast,
@@ -310,6 +325,37 @@ export const Order: React.FC = () => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
+
+    const handleSelectedPointChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+        const inputValue = event.target.value.trim(); // 입력값의 양 끝 공백 제거
+        const value = Number(inputValue); // 입력된 값을 숫자로 변환
+
+        if (isNaN(value) || value < 0) {
+            return;
+        }
+
+        if (value > availablePoint) {
+            setSelectedPoint(availablePoint);
+        } else {
+            if (totalItemPrice + totalShippingCost - value >= 0) {
+                setSelectedPoint(value);
+            } else {
+                setSelectedPoint(0);
+            }
+        }
+    };
+
+    const handleUseAllPoints = () => {
+        setSelectedPoint(availablePoint); // 사용 가능한 적립금을 모두 선택함
+    };
+
+    // 선택된 쿠폰의 할인 금액
+    const couponDiscount = () => {
+        const selectedCouponObj = coupons.find(coupon => coupon.name === selectedCoupon);
+        return selectedCouponObj ? selectedCouponObj.discount : 0;
+    }
+
+    const totalPrice = totalItemPrice + totalShippingCost - selectedPoint - couponDiscount()
 
     return (
         <div className='orderContainer'>
@@ -417,9 +463,43 @@ export const Order: React.FC = () => {
                     />
                 </div>
 
-                <div className='addressContainer'>
+                <div className='orderInfoContainer'>
                     <DaumPost addressObj={addressObj} setAddressObj={setAddressObj} inputErrors={inputErrors} setInputErrors={setInputErrors} />
                 </div>
+
+                <div className='orderTitle'> 쿠폰 / 적립금 </div>
+                <div className='mt-4'>
+
+                    <div className='font-bold mb-2'> 쿠폰 </div>
+                    <select
+                        value={selectedCoupon}
+                        onChange={(e) => setSelectedCoupon(e.target.value)}
+                        className="coupon"
+                    >
+                        <option value="">쿠폰을 선택하세요</option>
+                        {coupons.map((coupon, index) => (
+                            <option key={index} value={coupon.name}>
+                                {coupon.name} ({coupon.discount}원 할인)
+                            </option>
+                        ))}
+
+                    </select>
+
+                    <div className='font-bold mb-2 mt-4'> 적립금 </div>
+                    <div className="flex items-center">
+                        <input
+                            type="text"
+                            value={selectedPoint}
+                            onChange={handleSelectedPointChange}
+                            className="point"
+                        />
+                        <span className="text-gray-500 text-sm">원 (<strong>사용가능 적립금</strong> : {availablePoint.toLocaleString()}원)</span>
+
+                    </div>
+                </div>
+
+
+
                 <div className='orderTitle'> 결제 수단 </div>
                 <div className='mt-4'>
                     <div className='font-bold mb-2'> 간편결제 </div>
@@ -481,7 +561,7 @@ export const Order: React.FC = () => {
                     <ul>
                         <li>
                             <div className='priceTitle'>총 상품 합계 금액</div>
-                            <div className='price'>{totalPrice.toLocaleString()}원</div>
+                            <div className='price'>{totalItemPrice.toLocaleString()}원</div>
                         </li>
 
                         <li>
@@ -489,7 +569,7 @@ export const Order: React.FC = () => {
                         </li>
 
                         <li>
-                            <div className='priceTitle'>배송비 합계 금액</div>
+                            <div className='priceTitle'>배송비/옵션 합계 금액</div>
                             <div className='price'>{totalShippingCost.toLocaleString()}원</div>
                         </li>
 
@@ -499,7 +579,7 @@ export const Order: React.FC = () => {
 
                         <li>
                             <div className='priceTitle'>총 주문 합계 금액</div>
-                            <div className='price'>{(totalPrice + totalShippingCost).toLocaleString()}원</div>
+                            <div className='price'>{totalPrice.toLocaleString()}원</div>
                         </li>
                     </ul>
                     <div className='paymentContainer'>

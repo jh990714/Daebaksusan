@@ -9,6 +9,9 @@
     box-shadow: 0px 3px 9px rgba(0,0,0,.05);
 }
 
+.checkBox {
+    margin-right: 5px;
+}
   /* 체크박스 디자인 */
 .custom_checkbox {
     display: none; /* 실제 체크박스는 화면에서 숨김 */
@@ -71,7 +74,7 @@
 }
 
 .priceInfo {
-    font-size: 12px; /* 원하는 글자 크기로 변경하세요 */
+    font-size: 12px; 
     color: #333; /* 원하는 색상으로 변경하세요 */
     margin-bottom: 8px; /* 아래 여백 조절 */
 }
@@ -81,7 +84,7 @@
 }
 
 .total {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: bold;
 }
 
