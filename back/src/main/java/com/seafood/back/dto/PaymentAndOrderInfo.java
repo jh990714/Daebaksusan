@@ -40,4 +40,7 @@ public class PaymentAndOrderInfo {
     private String bankNum;
     private String bankHolder;
 
+    private CouponDTO coupon;
+    private BigDecimal points;
+
 }

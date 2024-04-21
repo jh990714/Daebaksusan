@@ -1,8 +1,10 @@
-import {PaymentItem } from "types";
+import {Coupon, PaymentItem } from "types";
 
 
 export default interface PaymentDetail {
     orderNumber: string,
     orderItems: PaymentItem[],
+    coupon: Coupon,
+    points: number,
     cancel: boolean
 }

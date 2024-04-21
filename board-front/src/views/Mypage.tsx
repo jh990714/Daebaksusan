@@ -62,14 +62,14 @@ export const Mypage: React.FC = () => {
                         <div className="my-4 sm:hidden grid grid-cols-2">
                             <div className="p-4 text-center border-t-4 border-l-4 border-b-4 border-blue-700">
                                 <div className="text-lg font-semibold">적립금</div>
-                                <div className="text-blue-600 text-2xl font-semibold mt-2">3,000점</div>
+                                <div className="text-blue-600 text-2xl font-semibold mt-2">{userInfo?.points.toLocaleString()}점</div>
                                 <div className="mt-2 inline-block">
                                     <a href="#" className={styles.myPageCategory}>적립금 조회 {'>'}</a>
                                 </div>
                             </div>
                             <div className="p-4 text-center border-4 border-blue-700">
                                 <div className="text-lg font-semibold">쿠폰함</div>
-                                <div className="text-blue-600 text-2xl font-semibold mt-2">0개</div>
+                                <div className="text-blue-600 text-2xl font-semibold mt-2">{userInfo?.coupons.length.toLocaleString()}개</div>
                                 <div className="mt-2 inline-block">
                                     <a href="#" className={styles.myPageCategory}>쿠폰함 {'>'}</a>
                                 </div>

@@ -1,5 +1,8 @@
 package com.seafood.back.dto;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,4 +16,6 @@ public class MemberDTO {
     private String postalCode;
     private String address;
     private String detailAddress;
+    private List<CouponDTO> coupons;
+    private BigDecimal points;
 }

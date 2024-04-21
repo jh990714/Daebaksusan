@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -21,9 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.dto.MemberDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.PaymentItemDTO;
@@ -31,6 +32,7 @@ import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
 
 import com.seafood.back.dto.ReviewResponseDTO;
+
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.PaymentDetailsEntity;
@@ -38,6 +40,7 @@ import com.seafood.back.entity.ProductEntity;
 import com.seafood.back.entity.ReviewEntity;
 import com.seafood.back.entity.ReviewImageEntity;
 import com.seafood.back.entity.ReviewResponseEntity;
+
 import com.seafood.back.respository.MemberRepository;
 import com.seafood.back.respository.OptionRepository;
 import com.seafood.back.respository.PaymentDetailsRepository;
@@ -45,7 +48,9 @@ import com.seafood.back.respository.ProductRepository;
 import com.seafood.back.respository.ReviewImageRepository;
 import com.seafood.back.respository.ReviewRepository;
 import com.seafood.back.respository.ReviewResponseRepository;
+import com.seafood.back.service.CouponService;
 import com.seafood.back.service.InfoService;
+import com.seafood.back.service.MemberService;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -59,6 +64,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class InfoServiceImple implements InfoService {
+    
+    private final MemberService memberService;
 
     private final MemberRepository memberRepository;
     private final PaymentDetailsRepository paymentDetailsRepository;
@@ -74,17 +81,7 @@ public class InfoServiceImple implements InfoService {
 
     @Override
     public MemberDTO getUserInfo(String id) {
-        MemberEntity member = memberRepository.findById(id);
-        MemberDTO memberDto = new MemberDTO();
-
-        memberDto.setMemberId(member.getMemberId());
-        memberDto.setId(member.getId());
-        memberDto.setName(member.getName());
-        memberDto.setPhone(member.getPhone());
-        memberDto.setEmail(member.getEmail());
-        memberDto.setPostalCode(member.getPostalCode());
-        memberDto.setAddress(member.getAddress());
-        memberDto.setDetailAddress(member.getDetailAddress());
+        MemberDTO memberDto = memberService.getMemberInfo(id);
 
         return memberDto;
     }
@@ -185,6 +182,7 @@ public class InfoServiceImple implements InfoService {
         List<PaymentItemDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
                 new TypeReference<List<PaymentItemDTO>>() {
                 });
+                
 
         return orderItems;
     }

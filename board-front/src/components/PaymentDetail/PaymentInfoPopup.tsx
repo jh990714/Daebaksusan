@@ -2,36 +2,11 @@ import { sendRequestWithToken } from 'apis/sendRequestWithToken';
 import axios from 'axios';
 import { useAuthContext } from 'hook/AuthProvider';
 import React, { useEffect, useState } from 'react';
+import { PaymentAndOrderInfo } from 'types';
 
 interface PaymentInfoPopupProps {
     onClose: () => void;
     orderNumber: string;
-}
-
-interface PaymentAndOrderInfo {
-    orderNumber: string;
-    orderAt: number; // UNIX timestamp로 변경
-    productName: string;
-    name: string;
-    postCode: string;
-    address: string;
-    phone: string;
-    paymentAt: string; // ISO 8601 형식의 문자열로 변경
-    paymentStatus: string;
-    paymentMethod: string;
-    amount: number;
-    pgProvider: string;
-    payerName: string;
-    cardName: string;
-    installmentMonths: number | null;
-    bankName: string;
-    cardNumber: string;
-    vbankName: string;
-    vbankNum: string;
-    vbankHolder: string;
-    vbanIssuedAt: number;
-    bankNum: string;
-    bankHolder: string;
 }
 
 
@@ -181,11 +156,28 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
                                 </tr>
                             </>
                         )}
+                        
+                         <tr>
+                            <td className="font-bold pr-4 py-2 whitespace-nowrap">사용한 쿠폰:</td>
+                            {paymentInfo?.coupon && (
+                                <td className="py-2">{paymentInfo?.coupon?.couponName} - {paymentInfo?.coupon?.discount.toLocaleString()} 원</td>
+                            )}
+                        </tr>
+
+                        <tr>
+                            <td className="font-bold pr-4 py-2 whitespace-nowrap">사용한 적립금:</td>
+                            {paymentInfo?.points && (
+                                <td className="py-2">{paymentInfo?.points?.toLocaleString()} 원</td>
+                            )}
+                        </tr>
+
 
                         <tr>
                             <td className="font-bold pr-4 py-2 whitespace-nowrap">결제 금액:</td>
                             <td className="py-2">{paymentInfo?.amount.toLocaleString()} 원</td>
                         </tr>
+
+                       
 
                         <tr>
                             <td className="font-bold pr-4 py-2 whitespace-nowrap">결제 상태:</td>

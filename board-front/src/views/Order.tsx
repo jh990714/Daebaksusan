@@ -15,15 +15,11 @@ import cardIcon from '../assets/payment/card.png'
 import { useCart } from 'hook/CartProvider';
 import { fetchCartItemsDelete } from 'utils/cartUtils';
 import { GuestPaymentModal } from 'components/GuestPaymentModal';
+import Member from 'types/interface/member.interface';
 
 declare const window: typeof globalThis & {
     IMP: any;
 };
-
-interface Coupon {
-    name: string;
-    discount: number;
-}
 
 // 입력 필드의 유효성 상태를 관리할 상태의 타입을 정의합니다.
 export const Order: React.FC = () => {
@@ -51,19 +47,13 @@ export const Order: React.FC = () => {
     });
     const [pg, setPg] = useState<string>('nice'); // pg 상태 추가
     const [paymentMethod, setPaymentMethod] = useState<string>('card'); // 결제 수단 상태 추가
-    const [ordererInfo, setOrdererInfo] = useState<OrdererInfo>();
+    const [ordererInfo, setOrdererInfo] = useState<Member>();
 
     const firstItemProductName = orderItems.length > 0 ? orderItems[0].cartItem.product.name : '';
     const remainingItemNames = orderItems.slice(1).map((item: { cartItem: { product: { name: any; }; }; }) => item.cartItem.product.name).join(', ');
     const [selectedPoint, setSelectedPoint] = useState<number>(0);
-    const [selectedCoupon, setSelectedCoupon] = useState<string>();
-    const availablePoint = 3000;
-
-    const coupons: Coupon[] = [
-        { name: "쿠폰1", discount: 1000 },
-        { name: "쿠폰2", discount: 2000 },
-        { name: "쿠폰3", discount: 3000 },
-    ];
+    const [selectedCoupon, setSelectedCoupon] = useState<number>(-1);
+   
 
 
     useEffect(() => {
@@ -83,6 +73,7 @@ export const Order: React.FC = () => {
                 const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
 
                 setOrdererInfo(response);
+                console.log(response)
                 if (response) {
                     const { name, phone, postalCode, address, detailAddress } = response;
 
@@ -235,7 +226,7 @@ export const Order: React.FC = () => {
             pay_method: paymentMethod,
             merchant_uid: new Date().getTime(),// 상점에서 관리하는 주문 번호
             name: firstItemProductName + (remainingItemNames ? ` 외 ${orderItems.length - 1}개` : ''),
-            amount: totalItemPrice + totalShippingCost,
+            amount: totalPrice,
             buyer_email: ordererInfo?.email,
             buyer_name: ordererName,
             buyer_tel: '010-' + ordererPhoneMid + '-' + ordererPhoneLast,
@@ -243,7 +234,9 @@ export const Order: React.FC = () => {
             buyer_postcode: addressObj.zip,
             custom_data: {
                 orderItems: requestData,
-                id: id
+                id: id,
+                coupon: ordererInfo?.coupons[selectedCoupon],
+                points: selectedPoint
             }
         };
 
@@ -254,6 +247,7 @@ export const Order: React.FC = () => {
             if (rsp.success) {
                 try {
                     // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
+                    console.log(rsp);
                     const response = await axios.post(`${process.env.REACT_APP_API_URL}/payment/verifyIamport/` + rsp.imp_uid, {
                         password: guestPassword // 비밀번호 추가
                     });
@@ -278,7 +272,7 @@ export const Order: React.FC = () => {
                     console.error('결제 확인 중 오류 발생:', error);
                     // 여기서는 네트워크 오류 등의 클라이언트 측 에러를 처리할 수 있습니다p
                     if (error.response && error.response.data) {
-                        alert(error.response.data); // 서버에서 전달한 에러 메시지를 사용자에게 알립니다
+                        alert(error.response.data.message);
                     } else {
 
                         alert('결제 실패');
@@ -334,24 +328,30 @@ export const Order: React.FC = () => {
             return;
         }
 
-        if (value > availablePoint) {
-            setSelectedPoint(availablePoint);
-        } else {
-            if (totalItemPrice + totalShippingCost - value >= 0) {
-                setSelectedPoint(value);
+        if (typeof ordererInfo !== 'undefined' && typeof ordererInfo.points !== 'undefined') {
+            if (value > ordererInfo.points) {
+                setSelectedPoint(ordererInfo.points);
             } else {
-                setSelectedPoint(0);
+                if (totalItemPrice + totalShippingCost - value >= 0) {
+                    setSelectedPoint(value);
+                } else {
+                    setSelectedPoint(0);
+                }
             }
+   
+        } else {
+            setSelectedPoint(0);
         }
+        
     };
 
-    const handleUseAllPoints = () => {
-        setSelectedPoint(availablePoint); // 사용 가능한 적립금을 모두 선택함
-    };
+    // const handleUseAllPoints = () => {
+    //     setSelectedPoint(availablePoint);
+    // };
 
-    // 선택된 쿠폰의 할인 금액
+    // 할인 금액
     const couponDiscount = () => {
-        const selectedCouponObj = coupons.find(coupon => coupon.name === selectedCoupon);
+        const selectedCouponObj = ordererInfo?.coupons[selectedCoupon];
         return selectedCouponObj ? selectedCouponObj.discount : 0;
     }
 
@@ -473,13 +473,13 @@ export const Order: React.FC = () => {
                     <div className='font-bold mb-2'> 쿠폰 </div>
                     <select
                         value={selectedCoupon}
-                        onChange={(e) => setSelectedCoupon(e.target.value)}
+                        onChange={(e) => setSelectedCoupon(parseInt(e.target.value))}
                         className="coupon"
                     >
-                        <option value="">쿠폰을 선택하세요</option>
-                        {coupons.map((coupon, index) => (
-                            <option key={index} value={coupon.name}>
-                                {coupon.name} ({coupon.discount}원 할인)
+                        <option value={-1}>쿠폰을 선택하세요</option>
+                        {ordererInfo?.coupons.map((coupon, index) => (
+                            <option key={index} value={index}>
+                                {coupon.couponName} (-{coupon.discount.toLocaleString()}원)
                             </option>
                         ))}
 
@@ -493,7 +493,7 @@ export const Order: React.FC = () => {
                             onChange={handleSelectedPointChange}
                             className="point"
                         />
-                        <span className="text-gray-500 text-sm">원 (<strong>사용가능 적립금</strong> : {availablePoint.toLocaleString()}원)</span>
+                        <span className="text-gray-500 text-sm">원 (<strong>사용가능 적립금</strong> : {ordererInfo?.points.toLocaleString()}원)</span>
 
                     </div>
                 </div>
@@ -571,6 +571,15 @@ export const Order: React.FC = () => {
                         <li>
                             <div className='priceTitle'>배송비/옵션 합계 금액</div>
                             <div className='price'>{totalShippingCost.toLocaleString()}원</div>
+                        </li>
+                        
+                        <li>
+                            <div className='op'>-</div>
+                        </li>
+
+                        <li>
+                            <div className='priceTitle'>쿠폰/적립금 할인 금액</div>
+                            <div className='price'>{(selectedPoint+couponDiscount()).toLocaleString()}원</div>
                         </li>
 
                         <li>

@@ -15,6 +15,8 @@ import CartInput from "./interface/cartInput.interface";
 import { ReviewState } from "./interface/review.interface";
 import PaymentDetail from "./interface/paymentDetail.interface";
 import PaymentItem from "./interface/payment-item.interface";
+import Coupon from "./interface/coupon.interface";
+import PaymentAndOrderInfo from "./interface/pymentAndOrderInfo.interface";
 
 export type{
     ResponseCode,
@@ -34,4 +36,6 @@ export type{
     PaymentDetail,
     ReviewState,
     PaymentItem,
+    Coupon,
+    PaymentAndOrderInfo
 }
