@@ -80,13 +80,15 @@ public class CouponServiceImple implements CouponService{
     @Override
     public void returnCoupon(String memberId, CouponDTO coupon) {
         // 사용된 쿠폰을 회원의 보유 쿠폰 목록에 추가하는 기능을 구현합니다.
-        MemberCouponEntity memberCoupon = new MemberCouponEntity();
-        memberCoupon.setMemberId(memberId);
-        memberCoupon.setCouponId(coupon.getCouponId()); // 쿠폰 ID 설정
-        memberCoupon.setIssueDate(coupon.getIssueDate());
-        memberCoupon.setValidUntil(coupon.getValidUntil());
+        if (coupon != null) {
+            MemberCouponEntity memberCoupon = new MemberCouponEntity();
+            memberCoupon.setMemberId(memberId);
+            memberCoupon.setCouponId(coupon.getCouponId()); // 쿠폰 ID 설정
+            memberCoupon.setIssueDate(coupon.getIssueDate());
+            memberCoupon.setValidUntil(coupon.getValidUntil());
 
-        memberCouponRepository.save(memberCoupon);
+            memberCouponRepository.save(memberCoupon);
+        }
     }
     
    

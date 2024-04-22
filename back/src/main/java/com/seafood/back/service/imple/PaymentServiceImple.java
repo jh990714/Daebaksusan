@@ -276,13 +276,13 @@ public class PaymentServiceImple implements PaymentService {
             IamportResponse<Payment> cancelResponse = cancelPayment(paymentDetail.getImpUid());
             PaymentDetailDTO paymentDetailDTO = mapToPaymentDetailDTO(cancelResponse);
           
+            
+                productService.addProductQuantities(paymentDetailDTO.getOrderItems());
+                // 사용된 포인트를 돌려주기
+                BigDecimal pointsUsed = paymentDetailDTO.getPoints();
+                memberService.deductPoints(memberId, pointsUsed.negate());
 
-            productService.addProductQuantities(paymentDetailDTO.getOrderItems());
-            // 사용된 포인트를 돌려주기
-            BigDecimal pointsUsed = paymentDetailDTO.getPoints();
-            memberService.deductPoints(memberId, pointsUsed.negate());
-
-            couponService.returnCoupon(memberId, paymentDetailDTO.getCoupon());
+                couponService.returnCoupon(memberId, paymentDetailDTO.getCoupon());
 
             
 
