@@ -11,6 +11,7 @@ interface PaymentShowListProps {
 
 export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails }) => {
     const [isMobileView, setIsMobileView] = useState(false);
+    const [cancelStatus, setCancelStatus] = useState<boolean[]>([]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -23,6 +24,17 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    useEffect(() => {
+        const initialCancelStatus = paymentDetails.map(payment => payment.cancel);
+        setCancelStatus(initialCancelStatus);
+        console.log(initialCancelStatus)
+    }, [paymentDetails]);
+
+    const handleCancelStatusChange = (index: number, newValue: boolean) => {
+        const newCancelStatus = [...cancelStatus];
+        newCancelStatus[index] = newValue;
+        setCancelStatus(newCancelStatus);
+    };
 
     return (
         <div className={styles.paymentItemList}>
@@ -48,10 +60,11 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                                     key={innerIndex}
                                     orderItem={orderItem}
                                     orderNumber={paymentDetail.orderNumber}
-                                    isCancelled={paymentDetail.cancel}
+                                    isCancelled={cancelStatus[index]}
                                     isFirstItem={innerIndex === 0}
                                     rowspan={paymentDetail.orderItems.length}
                                     isMobileView={isMobileView}
+                                    onCancelStatusChange={(newValue: boolean) => handleCancelStatusChange(index, newValue)}
                                 />
                             ))}
                             

@@ -1,6 +1,6 @@
 import { sendRequestWithToken } from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CartItem, PaymentItem } from "types";
 import { PaymentInfoPopup } from './PaymentInfoPopup';
 import { ReviewPopup } from 'components/Review/ReviewPopup';
@@ -10,13 +10,14 @@ interface PaymentItemCompProps {
     orderNumber: string;
     orderItem: PaymentItem;
     isCancelled: boolean;
+    onCancelStatusChange: (newValue: boolean) => void;
     isFirstItem: boolean;
     isMobileView: boolean;
     rowspan: number;
 }
 
 
-export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, orderItem, isCancelled, isFirstItem, isMobileView, rowspan }) => {
+export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, orderItem, isCancelled, onCancelStatusChange, isFirstItem, isMobileView, rowspan }) => {
     const [showPaymentInfo, setShowPaymentInfo] = useState(false);
     const [writeReviewPopup, setWriteReviewPopup] = useState(false); // 리뷰 작성 팝업 상태 추가
     const [showReviewPopup, setShowReviewPopup] = useState(false);
@@ -36,6 +37,10 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
     const handleShowReview = () => {
         setShowReviewPopup(true); // 리뷰 작성 팝업 열기
     }
+
+    useEffect(() => {
+        console.log(isCancelled)
+    }, [isCancelled])
 
     return (
         <tr style={{ backgroundColor: isCancelled ? '#F3F4F6' : 'transparent', borderBottom: '1px solid #E5E7EB' }}>
@@ -162,7 +167,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
 
 
             {/* 결제 정보 팝업 컴포넌트 */}
-            {showPaymentInfo && <PaymentInfoPopup onClose={() => setShowPaymentInfo(false)} orderNumber={orderNumber} />}
+            {showPaymentInfo && <PaymentInfoPopup onClose={() => setShowPaymentInfo(false)} orderNumber={orderNumber} onCancelStatusChange={onCancelStatusChange}/>}
             {/* 리뷰 작성 팝업 */}
             {writeReviewPopup && <ReviewPopup onClose={() => setWriteReviewPopup(false)} orderNumber={orderNumber} product={orderItem.product} option={orderItem.option} />}
             {showReviewPopup && <ReviewShowPopup onClose={() => setShowReviewPopup(false)} orderNumber={orderNumber} product={orderItem.product} option={orderItem.option} />}

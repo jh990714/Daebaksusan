@@ -6,11 +6,12 @@ import { PaymentAndOrderInfo } from 'types';
 
 interface PaymentInfoPopupProps {
     onClose: () => void;
+    onCancelStatusChange: (newValue: boolean) => void;
     orderNumber: string;
 }
 
 
-export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, orderNumber }) => {
+export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, onCancelStatusChange, orderNumber }) => {
     const [paymentInfo, setPaymentInfo] = useState<PaymentAndOrderInfo | null>(null);
     const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
@@ -36,7 +37,7 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
     };
 
     const confirmCancel = async () => {
-        setShowCancelConfirmation(false); // 모달 닫기
+        setShowCancelConfirmation(false);
         const url = `/payment/refundIamport/${orderNumber}`;
         const method = 'POST';
         const data = null;
@@ -46,6 +47,8 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
             console.log(response);
             if (response.statusCodeValue == 200) {
                 alert('결제가 취소되었습니다.');
+                onClose();
+                onCancelStatusChange(true);
             } else {
                 alert('취소실패: ' + response.body);
             }
