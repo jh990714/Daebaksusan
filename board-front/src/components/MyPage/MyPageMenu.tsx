@@ -2,7 +2,11 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from 'hook/AuthProvider';
 
-export const MyPageMenu = () => {
+interface MyPageMenuProps {
+    handlePageChange: (page: string) => void;
+}
+
+export const MyPageMenu: React.FC<MyPageMenuProps> = ({ handlePageChange }) => {
     const { setIsLoggedIn } = useAuthContext();
     const navigate = useNavigate();
 
@@ -17,7 +21,7 @@ export const MyPageMenu = () => {
         <div className="flex sm:flex-col justify-between gap-4 mx-4">
             <div className="space-y-6">
                 <div className="py-1 text-base lg:text-xl text-start border-b whitespace-nowrap">쇼핑 정보</div>
-                <div><Link to='/paymentDetails' className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base">주문 내역 {'>'}</Link></div>
+                <div className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base hover:cursor-pointer" onClick={() => handlePageChange('paymentDetails')}>주문 내역 {'>'}</div>
             </div>
 
             <div className="space-y-6">

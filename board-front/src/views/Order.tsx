@@ -476,12 +476,18 @@ export const Order: React.FC = () => {
                         onChange={(e) => setSelectedCoupon(parseInt(e.target.value))}
                         className="coupon"
                     >
-                        <option value={-1}>쿠폰을 선택하세요</option>
-                        {ordererInfo?.coupons.map((coupon, index) => (
+                   <option value={-1}>쿠폰을 선택하세요</option>
+                    {ordererInfo?.coupons.map((coupon, index) => (
+                        (totalItemPrice + totalShippingCost) >= coupon.minimumOrderAmount && (
                             <option key={index} value={index}>
-                                {coupon.couponName} (-{coupon.discount.toLocaleString()}원)
+                                {coupon.couponName} (-{coupon.discount.toLocaleString()}원) 
+                                <p>
+                                    (최소 주문 금액: {coupon.minimumOrderAmount.toLocaleString()}원)
+                                </p>
                             </option>
-                        ))}
+                        )
+                    ))}
+
 
                     </select>
 

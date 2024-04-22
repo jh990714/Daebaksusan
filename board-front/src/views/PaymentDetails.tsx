@@ -42,32 +42,16 @@ export const PaymentDetails: React.FC = () => {
     };
 
     return (
-        <div className="lg:mx-16 xl:mx-56 2xl:mx-80 mt-10 p-2 md:p-5 rounded-lg">
-           <div className="flex justify-between items-center sm:border-b sm:pb-4">
-                <h1 className="text-start sm:block text-xl text-blue-600 font-semibold">마이페이지</h1>
-               
-            </div>
-            <div className="sm:py-5">
-                <div className="sm:flex sm:justify-between">
-                    <div className="sm:block w-full sm:w-1/6 border-b border-t sm:border-b-0 sm:border-t-0 sm:border-r text-l font-semibold" >
-                        <MyPageMenu />
-                    </div>
-
-                    <div className="sm:w-4/5 sm:mt-5 md:ml-10">
-                        <div className='text-left text-2xl border-b font-semibold'> 주문 내역 </div>
-                        <div className='font-medium'>
-                            {paymentDetails ? (
-                                <>
-                                    <PaymentShowList paymentDetails={paymentDetails} />
-                                    <Pagination pageSize={pageSize} totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
-                                </>
-                            ) : (
-                                <p>Loading...</p>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div className="sm:w-4/5 sm:mt-5 md:ml-10">
+                {paymentDetails ? (
+                    <>
+                        <PaymentShowList paymentDetails={paymentDetails} />
+                        <Pagination pageSize={pageSize} totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
+                    </>
+                ) : (
+                    <p>Loading...</p>
+                )}
+            
+        </div>     
     );
 };
