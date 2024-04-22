@@ -3,6 +3,7 @@ package com.seafood.back.service;
 import java.util.List;
 
 import com.seafood.back.dto.CartDTO;
+import com.seafood.back.dto.PaymentItemDTO;
 import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductDealsEntity;
@@ -24,4 +25,5 @@ public interface ProductService {
     public List<ProductDTO> convertProductEntitiesToDTOs(List<ProductEntity> products);
     public List<ProductDTO> getTimeDealProducts();
     public List<ProductDTO> findProductRecommend();
+    public void addProductQuantities(List<PaymentItemDTO> orderItems);
 }

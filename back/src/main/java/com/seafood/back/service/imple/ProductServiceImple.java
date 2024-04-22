@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.seafood.back.dto.CartDTO;
+import com.seafood.back.dto.PaymentItemDTO;
 import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.CategoryEntity;
 import com.seafood.back.entity.OptionEntity;
@@ -255,5 +256,23 @@ public class ProductServiceImple implements ProductService{
         return productDTOs;
         
     }
- 
+
+    @Override
+    @Transactional
+    public void addProductQuantities(List<PaymentItemDTO> orderItems) {
+        for (PaymentItemDTO orderItem : orderItems) {
+            int productId = orderItem.getProduct().getProductId();
+            Optional<ProductEntity> productOptional = productRepository.findById(productId);
+            if (productOptional.isPresent()) {
+                ProductEntity product = productOptional.get();
+                int currentStock = product.getStockQuantity();
+                product.setStockQuantity(currentStock + orderItem.getQuantity());
+                
+                productRepository.save(product);
+            } else {
+                // 상품을 찾을 수 없는 경우의 예외 처리를 수행합니다.
+                throw new RuntimeException("상품을 찾을 수 없습니다.");
+            }
+        }
+    }
 }

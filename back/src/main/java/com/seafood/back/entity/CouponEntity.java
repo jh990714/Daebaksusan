@@ -1,6 +1,8 @@
 package com.seafood.back.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,12 +10,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "coupons")
-@Getter @Setter
+@Getter
+@Setter
 public class CouponEntity {
 
     @Id
@@ -29,4 +33,16 @@ public class CouponEntity {
 
     @Column(name = "discount", nullable = false)
     private BigDecimal discount;
+
+    @Column(name = "valid_from", nullable = false)
+    private Date validFrom;
+
+    @Column(name = "valid_until", nullable = false)
+    private Date validUntil;
+
+    @Column(name = "minimum_order_amount", nullable = false)
+    private BigDecimal minimumOrderAmount;
+
+    @Column(name = "expiration_period")
+    private Integer expirationPeriod;
 }

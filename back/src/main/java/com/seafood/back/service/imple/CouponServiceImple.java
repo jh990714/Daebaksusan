@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.seafood.back.dto.CouponAmountResult;
 import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.entity.CouponEntity;
 import com.seafood.back.entity.MemberCouponEntity;
@@ -24,9 +25,9 @@ public class CouponServiceImple implements CouponService{
     private final MemberCouponRepository memberCouponRepository;
     
     @Override
-    public BigDecimal couponAmount(String id, CouponDTO coupon) {
+    public CouponAmountResult couponAmount(String id, CouponDTO coupon) {
         if (id == null || coupon == null) {
-            return BigDecimal.ZERO;
+            return new CouponAmountResult(BigDecimal.ZERO, BigDecimal.ZERO);
         }
 
         List<MemberCouponEntity> coupons = memberCouponRepository.findCouponsByMemberId(id);
@@ -38,8 +39,10 @@ public class CouponServiceImple implements CouponService{
                 .map(MemberCouponEntity::getCoupon)
                 .orElse(null);
 
-        return sameCoupon.getDiscount();
+        BigDecimal couponAmount = sameCoupon.getDiscount();
+        BigDecimal minimumOrderAmount = sameCoupon.getMinimumOrderAmount();
 
+        return new CouponAmountResult(couponAmount, minimumOrderAmount);
     }
 
     @Override
@@ -54,6 +57,9 @@ public class CouponServiceImple implements CouponService{
                           dto.setCouponId(coupon.getCoupon().getCouponId());
                           dto.setCouponName(coupon.getCoupon().getCouponName());
                           dto.setDiscount(coupon.getCoupon().getDiscount());
+                          dto.setMinimumOrderAmount(coupon.getCoupon().getMinimumOrderAmount());
+                          dto.setIssueDate(coupon.getIssueDate());
+                          dto.setValidUntil(coupon.getValidUntil());
                           return dto;
                       })
                       .collect(Collectors.toList());
@@ -70,4 +76,18 @@ public class CouponServiceImple implements CouponService{
         }
         
     }
+
+    @Override
+    public void returnCoupon(String memberId, CouponDTO coupon) {
+        // 사용된 쿠폰을 회원의 보유 쿠폰 목록에 추가하는 기능을 구현합니다.
+        MemberCouponEntity memberCoupon = new MemberCouponEntity();
+        memberCoupon.setMemberId(memberId);
+        memberCoupon.setCouponId(coupon.getCouponId()); // 쿠폰 ID 설정
+        memberCoupon.setIssueDate(coupon.getIssueDate());
+        memberCoupon.setValidUntil(coupon.getValidUntil());
+
+        memberCouponRepository.save(memberCoupon);
+    }
+    
+   
 }

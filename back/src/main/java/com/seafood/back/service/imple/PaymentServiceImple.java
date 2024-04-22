@@ -18,19 +18,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.CartDTO;
+import com.seafood.back.dto.CouponAmountResult;
 import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.dto.PaymentAndOrderInfo;
+import com.seafood.back.dto.PaymentDetailDTO;
+import com.seafood.back.dto.PaymentItemDTO;
 import com.seafood.back.dto.ProductDTO;
-import com.seafood.back.entity.CouponEntity;
-import com.seafood.back.entity.MemberCouponEntity;
+
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.PaymentDetailsEntity;
 import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
-import com.seafood.back.respository.MemberCouponRepository;
+
 import com.seafood.back.respository.OptionRepository;
 import com.seafood.back.respository.PaymentDetailsRepository;
 import com.seafood.back.respository.ProductRepository;
@@ -49,6 +53,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImple implements PaymentService {
@@ -156,39 +161,38 @@ public class PaymentServiceImple implements PaymentService {
 
         return orderNumber;
     }
+
     @Transactional
     @Override
-    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password, CouponDTO coupon, BigDecimal points) {
+    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password,
+            CouponDTO coupon, BigDecimal points) {
         try {
             // 결제가 성공하면 상품 수량 변경
             productService.updateProductQuantities(orderItems);
-    
+
             // 결제가 성공하면 카트 아이템 삭제
             if (id != null) {
                 List<Long> cartItemIdsToDelete = orderItems.stream()
                         .map(CartDTO::getCartId)
                         .collect(Collectors.toList());
-    
+
                 cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
                 memberService.deductPoints(id, points);
             }
             // 결제 정보 저장
             String orderNumber = savePaymentDetails(id, impUid, password);
-    
+
             // 쿠폰 제거
             if (coupon != null) {
                 couponService.removeCoupon(id, coupon.getCouponId());
             }
-            
-            
+
             return orderNumber;
         } catch (Exception e) {
             cancelPayment(impUid);
             throw new RuntimeException("Error processing successful payment", e);
         }
     }
-    
-    
 
     @Override
     public Map<String, Object> verifyAndProcessPayment(String imp_uid, String password) throws Exception {
@@ -206,26 +210,30 @@ public class PaymentServiceImple implements PaymentService {
                 });
 
         BigDecimal points = objectMapper.convertValue(jsonMap.get("points"),
-            new TypeReference<BigDecimal>() {
-        });
+                new TypeReference<BigDecimal>() {
+                });
 
         BigDecimal paidAmount = iamportResponse.getResponse().getAmount();
         BigDecimal orderAmount = orderAmount(imp_uid, orderItems);
 
-        BigDecimal couponAmount = couponService.couponAmount(id, coupon);
+        CouponAmountResult couponAmountResult = couponService.couponAmount(id, coupon);
+
+        if (orderAmount.compareTo(couponAmountResult.getMinimumOrderAmount()) < 0) {
+            cancelPayment(imp_uid);
+            throw new IllegalArgumentException("주문 금액이 쿠폰의 최소 주문 금액을 충족하지 않습니다.");
+        }
 
         BigDecimal pointsUsed = BigDecimal.ZERO;
         if (points != null) {
             pointsUsed = points;
-            BigDecimal pointsAvailable = memberService.getAvailablePoints(id);
-            if (pointsUsed.compareTo(pointsAvailable) > 0) {
+            BigDecimal availablePoint = memberService.getAvailablePoints(id);
+            if (points.compareTo(availablePoint) > 0) {
                 cancelPayment(imp_uid);
                 throw new IllegalArgumentException("사용 가능한 포인트보다 더 많은 포인트를 사용하려고 합니다.");
             }
         }
 
-
-        BigDecimal expectedAmount = orderAmount.subtract(couponAmount).subtract(pointsUsed);
+        BigDecimal expectedAmount = orderAmount.subtract(couponAmountResult.getCouponAmount()).subtract(pointsUsed);
 
         if (expectedAmount.compareTo(paidAmount) == 0) {
             String orderNumber = processSuccessfulPayment(id, orderItems, imp_uid, password, coupon, pointsUsed);
@@ -241,19 +249,17 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public ResponseEntity<?> cancelPayment(String imp_uid) {
+    public IamportResponse<Payment> cancelPayment(String imp_uid) {
         try {
             CancelData cancelData = new CancelData(imp_uid, true);
             IamportResponse<Payment> cancelResponse = iamportClient.cancelPaymentByImpUid(cancelData);
             if (cancelResponse.getResponse().getStatus().equals("cancelled")) {
-                return ResponseEntity.ok(Map.of("message", "결제 취소 성공"));
+                return cancelResponse;
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("결제 취소 실패: " + cancelResponse.getResponse().getFailReason());
+                throw new IllegalAccessError(cancelResponse.getResponse().getFailReason());
             }
         } catch (IamportResponseException | IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("결제 취소 중 오류 발생");
+            throw new IllegalAccessError();
         }
     }
 
@@ -267,9 +273,20 @@ public class PaymentServiceImple implements PaymentService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("취소가 불가능합니다.");
             }
-            ResponseEntity<?> cancelResponse = cancelPayment(paymentDetail.getImpUid());
+            IamportResponse<Payment> cancelResponse = cancelPayment(paymentDetail.getImpUid());
+            PaymentDetailDTO paymentDetailDTO = mapToPaymentDetailDTO(cancelResponse);
+          
 
-            return ResponseEntity.ok(cancelResponse.getBody());
+            productService.addProductQuantities(paymentDetailDTO.getOrderItems());
+            // 사용된 포인트를 돌려주기
+            BigDecimal pointsUsed = paymentDetailDTO.getPoints();
+            memberService.deductPoints(memberId, pointsUsed.negate());
+
+            couponService.returnCoupon(memberId, paymentDetailDTO.getCoupon());
+
+            
+
+            return ResponseEntity.ok(cancelResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("환불 처리 중 오류 발생");
@@ -281,6 +298,8 @@ public class PaymentServiceImple implements PaymentService {
         try {
             PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByOrderNumber(orderNumber);
             IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
+
+            log.info(iamportResponse.getResponse().getImpUid());
 
             PaymentAndOrderInfo paymentAndOrderInfo = new PaymentAndOrderInfo();
             paymentAndOrderInfo.setOrderNumber(orderNumber);
@@ -344,22 +363,46 @@ public class PaymentServiceImple implements PaymentService {
             Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
                     new TypeReference<Map<String, Object>>() {
                     });
-    
+
             CouponDTO coupon = objectMapper.convertValue(jsonMap.get("coupon"),
                     new TypeReference<CouponDTO>() {
                     });
             BigDecimal points = objectMapper.convertValue(jsonMap.get("points"),
-                new TypeReference<BigDecimal>() {
-            });
+                    new TypeReference<BigDecimal>() {
+                    });
 
             paymentAndOrderInfo.setCoupon(coupon);
             paymentAndOrderInfo.setPoints(points);
 
             return ResponseEntity.ok(paymentAndOrderInfo);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("결제 정보 확인 중 오류 발생");
+            throw new IllegalAccessError("결제 정보 확인 중 오류 발생");
         }
+    }
+
+    public PaymentDetailDTO mapToPaymentDetailDTO(IamportResponse<Payment> iamportResponse) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
+                new TypeReference<Map<String, Object>>() {
+                });
+        
+        PaymentDetailDTO paymentDetailDTO = new PaymentDetailDTO();
+        List<PaymentItemDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
+                new TypeReference<List<PaymentItemDTO>>() {
+                });
+        CouponDTO coupon = objectMapper.convertValue(jsonMap.get("coupon"),
+                new TypeReference<CouponDTO>() {
+                });
+        BigDecimal points = objectMapper.convertValue(jsonMap.get("points"),
+                new TypeReference<BigDecimal>() {
+                });
+
+        paymentDetailDTO.setOrderItems(orderItems);
+        paymentDetailDTO.setCoupon(coupon);
+        paymentDetailDTO.setPoints(points);
+
+        return paymentDetailDTO;
+        
     }
 
 }

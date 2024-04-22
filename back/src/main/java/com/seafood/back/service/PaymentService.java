@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 
 import com.seafood.back.dto.CartDTO;
 import com.seafood.back.dto.CouponDTO;
+import com.siot.IamportRestClient.response.IamportResponse;
+import com.siot.IamportRestClient.response.Payment;
 
 public interface PaymentService {
     public BigDecimal orderAmount(String imp_uid, List<CartDTO> orderItems);
@@ -15,6 +17,6 @@ public interface PaymentService {
     public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password, CouponDTO couponId, BigDecimal points);
     public ResponseEntity<?> refundIamport(String id, String oderNumber);
     public Map<String, Object> verifyAndProcessPayment(String imp_uid, String password) throws Exception;
-    public ResponseEntity<?> cancelPayment(String imp_uid);
+    public IamportResponse<Payment> cancelPayment(String imp_uid);
     public ResponseEntity<?> getPaymentAndOrderInfo(String orderNumber);
 }
