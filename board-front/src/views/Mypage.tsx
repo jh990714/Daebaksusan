@@ -41,11 +41,11 @@ export const Mypage: React.FC = () => {
                 <div className="text-center sm:block text-2xl text-blue-600 font-semibold">마이페이지</div>
                 <div className="hidden sm:flex gap-2 text-lg">
                     <div>적립금</div>
-                    <div className="text-blue-700 font-bold">3,000점</div>
+                    <div className="text-blue-700 font-bold">{userInfo?.points}원</div>
                 </div>
                 <div className="hidden sm:flex gap-2 text-lg">
                     <div>쿠폰</div>
-                    <div className="text-blue-700 font-bold">0개</div>
+                    <div className="text-blue-700 font-bold">{userInfo?.coupons.length}개</div>
                 </div>
                 <div className="hidden sm:block grow text-end">
                     <span className="text-gray-600 font-semibold">{userInfo?.name} </span>
