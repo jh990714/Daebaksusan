@@ -166,8 +166,10 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, ord
 
                         <tr>
                             <td className="font-bold pr-4 py-2 whitespace-nowrap">사용한 적립금:</td>
-                            {paymentInfo?.points && (
+                            {paymentInfo?.points ? (
                                 <td className="py-2">{paymentInfo?.points?.toLocaleString()} 원</td>
+                            ) :(
+                                <td className="py-2">0 원</td>
                             )}
                         </tr>
 
