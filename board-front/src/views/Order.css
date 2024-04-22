@@ -163,18 +163,28 @@
         width: 90%;
     }
     .userName {
-        width: 20%;
+        width: 25%;
     }
     .phoneNumFirst {
-        width: 20%;
+        width: 25%;
     }
     .phoneNum {
-        width: 20%
+        width: 25%
     }
-    .addressContainer {
+    
+    .orderInfoContainer {
         width: 80%;
+        
     }
+    
     .totalPriceContainer {
         position: relative;
+        z-index: 0;
+    }
+    .coupon {
+        width: 80%;
+    }
+    .point {
+        width: 30%;
     }
 }

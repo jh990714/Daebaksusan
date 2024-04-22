@@ -170,6 +170,7 @@ public class PaymentServiceImple implements PaymentService {
                         .collect(Collectors.toList());
     
                 cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
+                memberService.deductPoints(id, points);
             }
             // 결제 정보 저장
             String orderNumber = savePaymentDetails(id, impUid, password);
@@ -179,7 +180,7 @@ public class PaymentServiceImple implements PaymentService {
                 couponService.removeCoupon(id, coupon.getCouponId());
             }
             
-            memberService.deductPoints(id, points);
+            
             return orderNumber;
         } catch (Exception e) {
             cancelPayment(impUid);
