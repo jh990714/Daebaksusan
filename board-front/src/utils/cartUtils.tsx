@@ -41,15 +41,10 @@ export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetState
 
         const url = '/cart/get';
         const response = await sendRequestWithToken(url, 'GET', null, setIsLoggedIn);
-
+        console.log(response)
         const parsedCartItems: Cart[] = response.map((item: any) => ({
-            id: item.cartId,
-            cartItem: {
-                product: item.product,
-                option: item.option,
-                quantity: item.quantity,
-                boxCnt: item.boxCnt,
-            },
+            cartId: item.cartId,
+            cartItem: item.cartItem,
             isSelected: true,
         }));
 
@@ -60,7 +55,7 @@ export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetState
         if (cartCookie) {
             const parsedCartItems: CartItem[] = JSON.parse(cartCookie);
             const updatedCartItems = parsedCartItems.map((item, index) => ({
-                id: index,
+                cartId: index,
                 cartItem: item,
                 isSelected: true,
             }));
@@ -83,7 +78,7 @@ export const fetchCartItemsDelete = async (cartItems: Cart[], setCartItems: Reac
 
         const url = '/cart/delete';
         const post = 'POST';
-        const data = remainingItemstSelect.map(item => item.id);
+        const data = remainingItemstSelect.map(item => item.cartId);
         console.log(data)
 
         const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
