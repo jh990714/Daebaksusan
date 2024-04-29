@@ -68,7 +68,7 @@ export const Mypage: React.FC = () => {
                         <MyPageMenu handlePageChange={handlePageChange} />
                     </div>
                     <div className="sm:w-4/5">
-                        {currentPage === 'mypageInfo' ? <MyPageInfo userInfo={userInfo}/> : null}
+                        {currentPage === 'mypageInfo' ? <MyPageInfo userInfo={userInfo} handlePageChange={handlePageChange}/> : null}
                         {currentPage === 'paymentDetails' ? <PaymentDetails /> : null}
                         {currentPage === 'myCoupon' ? <MyCoupons coupons={userInfo?.coupons}/> : null}
                     </div>

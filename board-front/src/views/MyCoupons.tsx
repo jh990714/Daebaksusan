@@ -19,6 +19,8 @@ export const MyCoupons: React.FC<MyCouponsProps> = ({ coupons }) => {
 
   return (
     <div>
+      <div className='mt-3 text-left text-2xl font-semibold'> 내 쿠폰함 </div>
+
       {currentCoupons?.map((coupon, index) => (
         <div key={index} className="bg-white border rounded-lg shadow-md p-1 m-3">
           <CouponComp coupon={coupon} />

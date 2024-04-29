@@ -3,8 +3,9 @@ import Member from 'types/interface/member.interface'
 
 interface MyPageInfoProps {
     userInfo?: Member
+    handlePageChange: (path: string) => void; // 수정된 부분
 }
-export const MyPageInfo: React.FC<MyPageInfoProps> = ({ userInfo }) => {
+export const MyPageInfo: React.FC<MyPageInfoProps> = ({ userInfo, handlePageChange }) => {
     return (
         <div>
             <div className="my-4 sm:hidden grid grid-cols-2">
@@ -20,7 +21,7 @@ export const MyPageInfo: React.FC<MyPageInfoProps> = ({ userInfo }) => {
                     <div className="text-lg font-semibold">쿠폰함</div>
                     <div className="text-blue-600 text-2xl font-semibold mt-2">{userInfo?.coupons.length.toLocaleString()}개</div>
                     <div className="mt-2 inline-block">
-                        <a href="#" className="text-inherit">쿠폰함 {'>'}</a>
+                        <div className="underline underline-offset-1 hover:cursor-pointer" onClick={() => handlePageChange('myCoupon')}>쿠폰함 {'>'}</div>
                     </div>
                 </div>
             </div>
