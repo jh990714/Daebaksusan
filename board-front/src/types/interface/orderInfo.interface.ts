@@ -7,4 +7,7 @@ export default interface OrdererInfo {
     postalCode: string;
     address: string;
     detailAddress: string;
+    itemName: string;
+    itemAmount: number;
+    pgProvider: string;
   }
