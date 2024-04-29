@@ -57,7 +57,7 @@ export const QuickCart = () => {
 
     const handleSelectChange = (id: number) => {
         const updatedItems = cartItems.map(item => {
-            if (item.id === id) {
+            if (item.cartId === id) {
                 return { ...item, isSelected: !item.isSelected };
             } else {
                 return item;
@@ -83,7 +83,7 @@ export const QuickCart = () => {
 
     const handleQuantityChange = (id: number, delta: number) => {
         const updatedItems = cartItems.map(item => {
-            if (item.id === id) {
+            if (item.cartId === id) {
                 const newQuantity = Math.min(Math.max(1, item.cartItem.quantity + delta), item.cartItem.product.stockQuantity);
                 const newBoxcnt = Math.ceil(newQuantity / item.cartItem.product.maxQuantityPerDelivery);
                 console.log(Math.ceil(newQuantity / item.cartItem.product.maxQuantityPerDelivery))
@@ -118,22 +118,22 @@ export const QuickCart = () => {
             <div className={styles.cartItemContainer}>
                 <span className={styles.checkboxContainer}>
                     <input
-                        id={`checkbox-${item.id}`}
+                        id={`checkbox-${item.cartId}`}
                         type="checkbox"
                         className={styles.customCheckbox}
                         checked={item.isSelected}
-                        onChange={() => handleSelectChange(item.id)}
+                        onChange={() => handleSelectChange(item.cartId)}
                     />
                 </span>
                 <div>
-                    <li key={item.id}>
+                    <li key={item.cartId}>
                         <ProductListComp product={item.cartItem.product} size='110px' fontSize='4px' />
                     </li>
                     <div className={styles.option}> - {item.cartItem.option!.name} + {item.cartItem.option!.addPrice}</div>
                     <div className={styles.quantityContainer}>
-                        <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.id, -1)}>-</button>
+                        <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.cartId, -1)}>-</button>
                         {item.cartItem.quantity}
-                        <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.id, 1)}>+</button>
+                        <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.cartId, 1)}>+</button>
                     </div>
                 </div>
             </div>

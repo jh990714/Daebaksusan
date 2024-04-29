@@ -78,8 +78,8 @@ public class PaymentServiceImple implements PaymentService {
         List<ProductDealsEntity> productDeals = productService.findProductDeal();
 
         for (CartDTO orderItem : orderItems) {
-            int productId = orderItem.getProduct().getProductId(); // 상품 ID
-            int optionId = orderItem.getOption().getOptionId(); // 옵션 ID
+            int productId = orderItem.getCartItem().getProduct().getProductId(); // 상품 ID
+            int optionId = orderItem.getCartItem().getOption().getOptionId(); // 옵션 ID
 
             // 상품과 옵션을 조회합니다.
             Optional<ProductEntity> productOptional = productRepository.findById(productId);
@@ -94,7 +94,7 @@ public class PaymentServiceImple implements PaymentService {
                 OptionEntity option = optionOptional.get();
 
                 // 주문된 상품의 수량체크
-                int orderedQuantity = orderItem.getQuantity();
+                int orderedQuantity = orderItem.getCartItem().getQuantity();
                 int remainingStock = productDTO.getStockQuantity() - orderedQuantity;
 
                 if (remainingStock < 0) {
@@ -107,7 +107,7 @@ public class PaymentServiceImple implements PaymentService {
                 int maxQuantityPerDelivery = productDTO.getMaxQuantityPerDelivery();
 
                 BigDecimal optionPrice = option.getAddPrice();
-                int quantity = orderItem.getQuantity();
+                int quantity = orderItem.getCartItem().getQuantity();
                 int boxCnt = (int) Math.ceil((double) quantity / maxQuantityPerDelivery);
 
                 BigDecimal productTotalPrice = productPrice.multiply(new BigDecimal(quantity));
@@ -120,46 +120,52 @@ public class PaymentServiceImple implements PaymentService {
         return sum;
     }
 
+    @Transactional
     @Override
     public String savePaymentDetails(String id, String impUid, String password) {
-        PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
+        try {
+            PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
-        // 현재 날짜를 가져옴
-        Date today = new Date();
+            // 현재 날짜를 가져옴
+            Date today = new Date();
 
-        // 날짜 포맷 지정
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+            // 날짜 포맷 지정
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
-        // 현재 날짜를 문자열로 변환
-        String currentDate = dateFormat.format(today);
+            // 현재 날짜를 문자열로 변환
+            String currentDate = dateFormat.format(today);
 
-        // 해당 날짜에 해당하는 주문번호들의 개수를 가져옴
-        // 시간을 무시하기 위해 현재 날짜의 시간을 00:00:00으로 설정
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(today);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        Date todayWithoutTime = calendar.getTime();
+            // 해당 날짜에 해당하는 주문번호들의 개수를 가져옴
+            // 시간을 무시하기 위해 현재 날짜의 시간을 00:00:00으로 설정
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(today);
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            Date todayWithoutTime = calendar.getTime();
 
-        int orderCountForToday = paymentDetailsRepository.getOrderCountForDate(todayWithoutTime);
+            int orderCountForToday = paymentDetailsRepository.getOrderCountForDate(todayWithoutTime);
 
-        // 주문번호를 생성 (날짜 + 해당 날짜의 주문번호 개수)
-        String orderNumber = currentDate + "_" + String.format("%08d", orderCountForToday + 1);
+            // 주문번호를 생성 (날짜 + 해당 날짜의 주문번호 개수)
+            String orderNumber = currentDate + "_" + String.format("%08d", orderCountForToday + 1);
 
-        if (id != null) {
-            paymentDetails.setMemberId(id);
+            if (id != null) {
+                paymentDetails.setMemberId(id);
+            }
+
+            paymentDetails.setOrderNumber(orderNumber);
+            paymentDetails.setImpUid(impUid);
+            paymentDetails.setIsCancel(true);
+            paymentDetails.setPassword(passwordEncoder.encode(password));
+            paymentDetails.setOrderDate(todayWithoutTime); // 주문날짜 설정
+            paymentDetailsRepository.save(paymentDetails);
+
+            return orderNumber;
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("주문 처리 중 오류가 발생했습니다.");
         }
-
-        paymentDetails.setOrderNumber(orderNumber);
-        paymentDetails.setImpUid(impUid);
-        paymentDetails.setIsCancel(true);
-        paymentDetails.setPassword(passwordEncoder.encode(password));
-        paymentDetails.setOrderDate(todayWithoutTime); // 주문날짜 설정
-        paymentDetailsRepository.save(paymentDetails);
-
-        return orderNumber;
     }
 
     @Transactional
@@ -195,7 +201,7 @@ public class PaymentServiceImple implements PaymentService {
     }
 
     @Override
-    public Map<String, Object> verifyAndProcessPayment(String imp_uid, String password) throws Exception {
+    public Map<String, Object> verifyAndProcessPayment(String imp_uid) throws Exception {
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(imp_uid);
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
@@ -211,6 +217,9 @@ public class PaymentServiceImple implements PaymentService {
 
         BigDecimal points = objectMapper.convertValue(jsonMap.get("points"),
                 new TypeReference<BigDecimal>() {
+                });
+        String password = objectMapper.convertValue(jsonMap.get("password"),
+                new TypeReference<String>() {
                 });
 
         BigDecimal paidAmount = iamportResponse.getResponse().getAmount();
@@ -240,6 +249,8 @@ public class PaymentServiceImple implements PaymentService {
             Map<String, Object> response = new HashMap<>();
             response.put("orderNumber", orderNumber);
             response.put("iamportResponse", iamportResponse);
+            response.put("orderItems", orderItems);
+
             return response;
         } else {
             cancelPayment(imp_uid);
@@ -275,16 +286,13 @@ public class PaymentServiceImple implements PaymentService {
             }
             IamportResponse<Payment> cancelResponse = cancelPayment(paymentDetail.getImpUid());
             PaymentDetailDTO paymentDetailDTO = mapToPaymentDetailDTO(cancelResponse);
-          
-            
-                productService.addProductQuantities(paymentDetailDTO.getOrderItems());
-                // 사용된 포인트를 돌려주기
-                BigDecimal pointsUsed = paymentDetailDTO.getPoints();
-                memberService.deductPoints(memberId, pointsUsed.negate());
 
-                couponService.returnCoupon(memberId, paymentDetailDTO.getCoupon());
+            productService.addProductQuantities(paymentDetailDTO.getOrderItems());
+            // 사용된 포인트를 돌려주기
+            BigDecimal pointsUsed = paymentDetailDTO.getPoints();
+            memberService.deductPoints(memberId, pointsUsed.negate());
 
-            
+            couponService.returnCoupon(memberId, paymentDetailDTO.getCoupon());
 
             return ResponseEntity.ok(cancelResponse);
         } catch (Exception e) {
@@ -380,12 +388,13 @@ public class PaymentServiceImple implements PaymentService {
         }
     }
 
-    public PaymentDetailDTO mapToPaymentDetailDTO(IamportResponse<Payment> iamportResponse) throws JsonMappingException, JsonProcessingException {
+    public PaymentDetailDTO mapToPaymentDetailDTO(IamportResponse<Payment> iamportResponse)
+            throws JsonMappingException, JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
                 new TypeReference<Map<String, Object>>() {
                 });
-        
+
         PaymentDetailDTO paymentDetailDTO = new PaymentDetailDTO();
         List<PaymentItemDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
                 new TypeReference<List<PaymentItemDTO>>() {
@@ -402,7 +411,7 @@ public class PaymentServiceImple implements PaymentService {
         paymentDetailDTO.setPoints(points);
 
         return paymentDetailDTO;
-        
+
     }
 
 }

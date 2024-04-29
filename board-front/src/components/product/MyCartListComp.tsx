@@ -23,13 +23,13 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
         if (event.target.value === '' || !isNaN(value) && value >= 0) {
             const newQuantity = Math.min(Math.max(1, isNaN(value) ? 0 : value), cartItem.cartItem.product.stockQuantity);
             const newBoxcnt = Math.ceil(newQuantity / cartItem.cartItem.product.maxQuantityPerDelivery);
-            onQuantityChange(cartItem.id, newQuantity, newBoxcnt);
+            onQuantityChange(cartItem.cartId, newQuantity, newBoxcnt);
         }
     };
 
     const handleCheckboxChange = () => {
         const newSelected = !cartItem.isSelected;
-        onSelectedChange(cartItem.id, newSelected);
+        onSelectedChange(cartItem.cartId, newSelected);
     };
 
     const calculateItemTotal = (item: Cart) => {
@@ -90,14 +90,14 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
                         </td>
                         <td className={styles.orderQuantity} data-label="수량">
                             <div className={styles.quantityContainer}>
-                                <button className={styles.quantityButton} onClick={() => handleQuantityChange(cartItem.id, -1)}>-</button>
+                                <button className={styles.quantityButton} onClick={() => handleQuantityChange(cartItem.cartId, -1)}>-</button>
                                 <input
                                     type="text"
                                     value={cartItem.cartItem.quantity.toLocaleString()}
                                     onChange={handleQuantityInputChange}
                                     className={styles.quantityInput}
                                 />
-                                <button className={styles.quantityButton} onClick={() => handleQuantityChange(cartItem.id, 1)}>+</button>
+                                <button className={styles.quantityButton} onClick={() => handleQuantityChange(cartItem.cartId, 1)}>+</button>
                             </div>
                         </td>
                         <td data-label="가격정보" className={styles.priceInfo}>
@@ -133,14 +133,14 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
                         {cartItem.cartItem.option?.name} + {cartItem.cartItem.option?.addPrice}
                     </div>
                     <div className={styles_m.quantityContainer}>
-                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(cartItem.id, -1)}>-</button>
+                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(cartItem.cartId, -1)}>-</button>
                         <input
                             type="text"
                             value={cartItem.cartItem.quantity.toLocaleString()}
                             onChange={handleQuantityInputChange}
                             className={styles_m.quantityInput}
                         />
-                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(cartItem.id, 1)}>+</button>
+                        <button className={styles_m.quantityButton} onClick={() => handleQuantityChange(cartItem.cartId, 1)}>+</button>
                     </div>
 
                     <div className={styles_m.orderTotal}>

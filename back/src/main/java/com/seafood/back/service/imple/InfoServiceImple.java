@@ -113,7 +113,7 @@ public class InfoServiceImple implements InfoService {
 
                 for (PaymentItemDTO item : orderItems) {
                     boolean isReview = reviewRepository.existsByProductIdAndOptionIdAndMemberIdAndOrderNumber(
-                            item.getProduct().getProductId(), item.getOption().getOptionId(), id,
+                            item.getCartItem().getProduct().getProductId(), item.getCartItem().getOption().getOptionId(), id,
                             paymentDetail.getOrderNumber());
 
                     item.setIsReview(isReview);

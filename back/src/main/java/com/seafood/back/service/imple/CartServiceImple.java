@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.seafood.back.dto.CartDTO;
+import com.seafood.back.dto.CartItemDTO;
 import com.seafood.back.dto.OptionDTO;
 import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.CartEntity;
@@ -46,12 +47,18 @@ public class CartServiceImple implements CartService{
 
             OptionEntity option = productService.getOptionById(cartItem.getOptionId());
 
+            
+            CartItemDTO cartItemDTO = new CartItemDTO();
+            cartItemDTO.setProduct(productDTO);
+            cartItemDTO.setOption(convertToOptionDTO(option));
+            cartItemDTO.setQuantity(cartItem.getQuantity());
+            cartItemDTO.setBoxCnt(cartItem.getBoxCnt());
+            
+
             CartDTO cartDTO = new CartDTO();
             cartDTO.setCartId(cartItem.getCartId());
-            cartDTO.setProduct(productDTO);
-            cartDTO.setOption(convertToOptionDTO(option));
-            cartDTO.setQuantity(cartItem.getQuantity());
-            cartDTO.setBoxCnt(cartItem.getBoxCnt());
+            cartDTO.setCartItem(cartItemDTO);
+
             cartDTOs.add(cartDTO);
         }
         return cartDTOs;

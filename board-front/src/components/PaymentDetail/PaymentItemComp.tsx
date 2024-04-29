@@ -22,9 +22,9 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
     const [writeReviewPopup, setWriteReviewPopup] = useState(false); // 리뷰 작성 팝업 상태 추가
     const [showReviewPopup, setShowReviewPopup] = useState(false);
 
-    const totalPrice = (orderItem.product.regularPrice - orderItem.product.salePrice) * orderItem.quantity;
-    const shippingCost = orderItem.product.shippingCost * orderItem.boxCnt;
-    const optionCost = orderItem.option?.addPrice ? orderItem.option.addPrice * orderItem.boxCnt : 0;
+    const totalPrice = (orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice) * orderItem.cartItem.quantity;
+    const shippingCost = orderItem.cartItem.product.shippingCost * orderItem.cartItem.boxCnt;
+    const optionCost = orderItem.cartItem.option?.addPrice ? orderItem.cartItem.option.addPrice * orderItem.cartItem.boxCnt : 0;
 
     const handleShowInfo = () => {
         setShowPaymentInfo(true);
@@ -56,7 +56,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                 <>
                     <td className="py-4 px-6">
                         <div style={{ position: 'relative', width: 100, height: 100, margin: '0 auto' }}>
-                            <img src={process.env.PUBLIC_URL + `/upload/${orderItem.product.imageUrl}`} alt={orderItem.product.name} style={{ width: '100%', height: '100%' }} />
+                            <img src={process.env.PUBLIC_URL + `/upload/${orderItem.cartItem.product.imageUrl}`} alt={orderItem.cartItem.product.name} style={{ width: '100%', height: '100%' }} />
                             {isCancelled && <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(128, 128, 128, 0.6)', zIndex: 1 }}></div>}
                         </div>
 
@@ -70,16 +70,16 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                         )}
                     </td>
                     <td className="py-4 px-6 max-w-[150px]">
-                        <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-base font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.product.name}</p>
-                        {orderItem.option && (
-                            <p className={`text-sm text-gray-500 ${isCancelled ? 'line-through' : ''} whitespace-nowrap`}>{orderItem.option.name} +{orderItem.option.addPrice.toLocaleString()}원</p>
+                        <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-base font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.product.name}</p>
+                        {orderItem.cartItem.option && (
+                            <p className={`text-sm text-gray-500 ${isCancelled ? 'line-through' : ''} whitespace-nowrap`}>{orderItem.cartItem.option.name} +{orderItem.cartItem.option.addPrice.toLocaleString()}원</p>
                         )}
                     </td>
                     <td className={`py-4 px-6 text-base font-bold ${isCancelled ? 'line-through' : ''} whitespace-nowrap`}>
                         {(totalPrice + shippingCost + optionCost).toLocaleString()}원
                     </td>
                     <td className={`py-4 px-6 text-base font-bold ${isCancelled ? 'line-through' : ''}`}>
-                        {orderItem.quantity}
+                        {orderItem.cartItem.quantity}
                     </td>
 
 
@@ -115,7 +115,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                 <>
                     <td className="py-2 px-0 md:px-4">
                         <div style={{ position: 'relative', width: 100, height: 100, margin: '0 auto' }}>
-                            <img src={process.env.PUBLIC_URL + `/upload/${orderItem.product.imageUrl}`} alt={orderItem.product.name} style={{ width: '100%', height: '100%' }} />
+                            <img src={process.env.PUBLIC_URL + `/upload/${orderItem.cartItem.product.imageUrl}`} alt={orderItem.cartItem.product.name} style={{ width: '100%', height: '100%' }} />
                             {isCancelled && <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(128, 128, 128, 0.6)', zIndex: 1 }}></div>}
                         </div>
                         {!isCancelled && (
@@ -128,10 +128,10 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                         )}
 
                         <div className="mt-5 max-w-[120px] m-auto">
-                            <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.product.name}</p>
-                            <p className={`text-xs text-gray-500 ${isCancelled ? 'line-through' : ''}`}>{orderItem.option?.name} +{orderItem.option?.addPrice.toLocaleString()}원</p>
+                            <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.product.name}</p>
+                            <p className={`text-xs text-gray-500 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.option?.name} +{orderItem.cartItem.option?.addPrice.toLocaleString()}원</p>
                             <p className={`text-xs font-bold ${isCancelled ? 'line-through' : ''}`}>
-                                {(totalPrice + shippingCost + optionCost).toLocaleString()}원 / {orderItem.quantity}개
+                                {(totalPrice + shippingCost + optionCost).toLocaleString()}원 / {orderItem.cartItem.quantity}개
                             </p>
                         </div>
 
@@ -169,8 +169,8 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
             {/* 결제 정보 팝업 컴포넌트 */}
             {showPaymentInfo && <PaymentInfoPopup onClose={() => setShowPaymentInfo(false)} orderNumber={orderNumber} onCancelStatusChange={onCancelStatusChange}/>}
             {/* 리뷰 작성 팝업 */}
-            {writeReviewPopup && <ReviewPopup onClose={() => setWriteReviewPopup(false)} orderNumber={orderNumber} product={orderItem.product} option={orderItem.option} />}
-            {showReviewPopup && <ReviewShowPopup onClose={() => setShowReviewPopup(false)} orderNumber={orderNumber} product={orderItem.product} option={orderItem.option} />}
+            {writeReviewPopup && <ReviewPopup onClose={() => setWriteReviewPopup(false)} orderNumber={orderNumber} product={orderItem.cartItem.product} option={orderItem.cartItem.option} />}
+            {showReviewPopup && <ReviewShowPopup onClose={() => setShowReviewPopup(false)} orderNumber={orderNumber} product={orderItem.cartItem.product} option={orderItem.cartItem.option} />}
         </tr>
     );
 };

@@ -16,7 +16,7 @@ public interface PaymentService {
     public String savePaymentDetails(String id, String imp_uid, String password);
     public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password, CouponDTO couponId, BigDecimal points);
     public ResponseEntity<?> refundIamport(String id, String oderNumber);
-    public Map<String, Object> verifyAndProcessPayment(String imp_uid, String password) throws Exception;
+    public Map<String, Object> verifyAndProcessPayment(String imp_uid) throws Exception;
     public IamportResponse<Payment> cancelPayment(String imp_uid);
     public ResponseEntity<?> getPaymentAndOrderInfo(String orderNumber);
 }

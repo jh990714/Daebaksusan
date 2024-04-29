@@ -16,7 +16,7 @@ export const MyCart = () => {
     const handleQuantityChange = (id: number, quantity: number, boxCnt: number) => {
         setCartItems(prevItems =>
             prevItems.map(item => {
-                if (item.id === id) {
+                if (item.cartId === id) {
                     return {
                         ...item,
                         cartItem: {
@@ -36,7 +36,7 @@ export const MyCart = () => {
     const handleSelectedChange = (id: number, isSelected: boolean) => {
         setCartItems(prevItems =>
             prevItems.map(item =>
-                item.id === id ? { ...item, isSelected } : item
+                item.cartId === id ? { ...item, isSelected } : item
             )
         );
     };
@@ -99,7 +99,7 @@ export const MyCart = () => {
 
             <ul className={styles.cartItemList}>
                 {cartItems.map((cartItem: Cart) => (
-                    <li key={cartItem.id}>
+                    <li key={cartItem.cartId}>
                         <MyCartListComp cartItem={cartItem} selectAll={selectAll} onQuantityChange={handleQuantityChange} onSelectedChange={handleSelectedChange} />
                     </li>
                 ))}

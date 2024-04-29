@@ -1,5 +1,5 @@
-import CartItem from "./cart.interface";
+import Cart from "./cart-item.interface";
 
-export default interface PaymentItem extends CartItem {
+export default interface PaymentItem extends Cart {
     isReview: boolean
 }

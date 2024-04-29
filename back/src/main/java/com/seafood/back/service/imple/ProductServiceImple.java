@@ -161,8 +161,8 @@ public class ProductServiceImple implements ProductService{
     @Transactional
     public void updateProductQuantities(List<CartDTO> orderItems) {
         for (CartDTO orderItem : orderItems) {
-            int productId = orderItem.getProduct().getProductId();
-            int orderedQuantity = orderItem.getQuantity();
+            int productId = orderItem.getCartItem().getProduct().getProductId();
+            int orderedQuantity = orderItem.getCartItem().getQuantity();
 
             // 상품을 데이터베이스에서 조회하여 수량을 변경합니다.
             Optional<ProductEntity> productOptional = productRepository.findById(productId);
@@ -261,12 +261,12 @@ public class ProductServiceImple implements ProductService{
     @Transactional
     public void addProductQuantities(List<PaymentItemDTO> orderItems) {
         for (PaymentItemDTO orderItem : orderItems) {
-            int productId = orderItem.getProduct().getProductId();
+            int productId = orderItem.getCartItem().getProduct().getProductId();
             Optional<ProductEntity> productOptional = productRepository.findById(productId);
             if (productOptional.isPresent()) {
                 ProductEntity product = productOptional.get();
                 int currentStock = product.getStockQuantity();
-                product.setStockQuantity(currentStock + orderItem.getQuantity());
+                product.setStockQuantity(currentStock + orderItem.getCartItem().getQuantity());
                 
                 productRepository.save(product);
             } else {

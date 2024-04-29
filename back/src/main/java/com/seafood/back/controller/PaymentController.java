@@ -7,11 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.seafood.back.dto.GuestInfo;
 import com.seafood.back.service.PaymentService;
 
 import lombok.RequiredArgsConstructor;
@@ -27,10 +25,10 @@ public class PaymentController {
     
 
     @PostMapping("/verifyIamport/{imp_uid}")
-    public ResponseEntity<?> paymentByImpUid(@PathVariable String imp_uid, @RequestBody GuestInfo guestInfo) {
+    public ResponseEntity<?> paymentByImpUid(@PathVariable String imp_uid) {
         try {
             
-            Map<String, Object> response = paymentService.verifyAndProcessPayment(imp_uid, guestInfo.getPassword());
+            Map<String, Object> response = paymentService.verifyAndProcessPayment(imp_uid);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("오류 발생: " + e.getMessage(), e);

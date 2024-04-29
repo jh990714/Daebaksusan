@@ -12,24 +12,12 @@ interface ProductListCompProps {
 }
 
 export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size, fontSize }) => {
-    const addToRecentProducts = (product: Product) => {
-        const maxRecentProducts = 7;
-        const recentProducts = Cookies.get('recentProducts') ? JSON.parse(Cookies.get('recentProducts')!) : [];
-
-        const updatedRecentProducts = recentProducts.filter((p: Product) => p.productId !== product.productId);
-        updatedRecentProducts.unshift(product);
-
-        if (updatedRecentProducts.length > maxRecentProducts) {
-            updatedRecentProducts.pop();
-        }
-
-        Cookies.set('recentProducts', JSON.stringify(updatedRecentProducts), { expires: 1 });
-    };
+   
 
     const discountRate = Math.round((product.salePrice / product.regularPrice) * 100);
 
     return (
-        <Link to={'/detail/'} state={{ product: product }} className={styles.detailLink} onClick={() => addToRecentProducts(product)}>
+        <Link to={'/detail/'} state={{ product: product }} className={styles.detailLink}>
             <div style={{
                 '--card-size': size,
                 '--card-font-size': fontSize,
