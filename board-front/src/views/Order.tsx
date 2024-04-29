@@ -191,30 +191,12 @@ export const Order: React.FC = () => {
         }
     };
 
-
-    const compareAndSetSelect = () => {
-        const updatedCartItems = cartItems.map(cartItem => {
-            const foundOrderItem = orderItems.find((orderItem: { id: number; }) => orderItem.id === cartItem.id);
-            console.log(foundOrderItem)
-            if (foundOrderItem) {
-                return { ...cartItem, isSelected: true };
-            } else {
-                return { ...cartItem, isSelected: false };
-            }
-        });
-        console.log(updatedCartItems)
-        return updatedCartItems
-    };
-
     const startPayment = (id: string | null) => {
         setIsPaymentInProgress(true);
         // 주문 상품 정보를 requestData 객체에 담음
-        const requestData = orderItems.map((orderItem: { id: number; cartItem: { product: Product; option: Option; quantity: number; boxCnt: number; }; }) => ({
-            cartId: orderItem.id,
-            product: orderItem.cartItem.product,
-            option: orderItem.cartItem.option,
-            quantity: orderItem.cartItem.quantity,
-            boxCnt: orderItem.cartItem.boxCnt
+        const requestData = orderItems.map((orderItem: Cart) => ({
+            cartId: orderItem.cartId,
+            cartItem: orderItem.cartItem
         }));
 
         // requestPay();
@@ -235,9 +217,11 @@ export const Order: React.FC = () => {
             custom_data: {
                 orderItems: requestData,
                 id: id,
+                password: guestPassword,
                 coupon: ordererInfo?.coupons[selectedCoupon],
                 points: selectedPoint
-            }
+            },
+            m_redirect_url : `${process.env.REACT_APP_FRONT_URL}/successOrder`
         };
 
         IMP.request_pay(paymentData, async function (rsp: any) {
@@ -245,40 +229,12 @@ export const Order: React.FC = () => {
             setIsPaymentInProgress(false); // 결제 진행 중 상태를 해제
 
             if (rsp.success) {
-                try {
-                    // 주문 상품 정보를 함께 서버에 전송하는 POST 요청 보내기
-                    console.log(rsp);
-                    const response = await axios.post(`${process.env.REACT_APP_API_URL}/payment/verifyIamport/` + rsp.imp_uid, {
-                        password: guestPassword // 비밀번호 추가
-                    });
-                    const orderNumber = response.data.orderNumber
-                    const iamportRespons = response.data.iamportResponse.response
-                    console.log(response)
-                    // 결제 확인 응답 처리
-                    if (rsp.paid_amount === iamportRespons.amount) {
-
-                        alert('결제 성공');
-                        const updatedCartItems = compareAndSetSelect()
-                        fetchCartItemsDelete(updatedCartItems, setCartItems, setIsLoggedIn);
-                        navigate('/successOrder', {
-                            state: {
-                                orderNumber: orderNumber,
-                                iamportResponse: iamportRespons
-                            }
-                        });
+                console.log(rsp)
+                navigate('/successOrder', {
+                    state: {
+                        imp_uid: rsp.imp_uid
                     }
-
-                } catch (error: any) {
-                    console.error('결제 확인 중 오류 발생:', error);
-                    // 여기서는 네트워크 오류 등의 클라이언트 측 에러를 처리할 수 있습니다p
-                    if (error.response && error.response.data) {
-                        alert(error.response.data.message);
-                    } else {
-
-                        alert('결제 실패');
-                    }
-
-                }
+                });
             } else {
                 // 결제가 실패했을 때 처리
                 console.error('결제 실패:', rsp.error_msg);
@@ -344,10 +300,6 @@ export const Order: React.FC = () => {
         }
         
     };
-
-    // const handleUseAllPoints = () => {
-    //     setSelectedPoint(availablePoint);
-    // };
 
     // 할인 금액
     const couponDiscount = () => {
