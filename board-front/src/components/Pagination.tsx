@@ -32,9 +32,6 @@ export const Pagination: React.FC<PaginationProps> = ({ pageSize, totalPages, cu
     const goToPage = (page: number) => {
         if (page >= 1 && page <= totalPages) {
             onPageChange(page);
-            // const screenWidth = window.innerWidth;
-            // const scrollPosition = screenWidth > 1024 ? 1035 : 1590;
-            // window.scrollTo({ top: scrollPosition, behavior: 'smooth' });
         }
     };
 

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ReviewDTO } from 'types/interface/review.interface';
 import ReviewComp from './ReviewComp'
 import { Pagination } from 'components/Pagination';
@@ -13,7 +13,8 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
   const [reviews, setReviews] = useState<ReviewDTO[]>([]);
   const [page, setPage] = useState<number>(1); // 페이지 번호
   const pageSize = 5; // 페이지 크기
-  const [totalPages, setTotalPages] = useState<number>(1); // 전체 페이지 수
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const reviesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -30,16 +31,23 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
     fetchReviews();
   }, [productId, page]);
 
-  
+
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-};
+    scrollPaymentShowListToTop();
+  };
+
+  const scrollPaymentShowListToTop = () => {
+    if (reviesRef.current) {
+      reviesRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
-    <div className="grid grid-rows w-full">
+    <div className="grid grid-rows w-full" ref={reviesRef}>
       <ReviewAverageComp />
       {reviews.map((review, index) => (
-          <ReviewComp key={index} review={review} />
+        <ReviewComp key={index} review={review} />
       ))}
       <Pagination pageSize={pageSize} totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
     </div>
