@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.seafood.back.dto.ReviewDTO;
 import com.seafood.back.dto.ReviewResponseDTO;
+import com.seafood.back.dto.ReviewStatsDTO;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductEntity;
@@ -113,6 +114,11 @@ public class ReviewServiceImpl implements ReviewService{
 
         return new PageImpl<>(reviewDTOs, pageable, reviewEntities.getTotalElements());
     
+    }
+
+    @Override
+    public ReviewStatsDTO getProductReviewStats(Integer productId) {
+        return reviewRepository.getProductReviewStats(productId);
     }
     
 }

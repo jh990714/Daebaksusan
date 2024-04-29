@@ -4,6 +4,7 @@ import { ReviewDTO } from 'types/interface/review.interface';
 import ReviewComp from './ReviewComp'
 import { Pagination } from 'components/Pagination';
 import { ReviewAverageComp } from './ReviewAverageComp';
+import { ReviewStats } from 'types';
 
 interface ReviewTabProps {
   productId: number;
@@ -11,6 +12,7 @@ interface ReviewTabProps {
 
 const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
   const [reviews, setReviews] = useState<ReviewDTO[]>([]);
+  const [reviewStats, setReveiwStats] = useState<ReviewStats>();
   const [page, setPage] = useState<number>(1); // 페이지 번호
   const pageSize = 5; // 페이지 크기
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -31,6 +33,22 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
     fetchReviews();
   }, [productId, page]);
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/reviews/stats/${productId}`);
+
+        setReveiwStats(response.data);
+        console.log(response.data);
+        console.log(productId)
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
+    fetchReviews();
+  }, [productId]);
+
+
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -45,7 +63,9 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
 
   return (
     <div className="grid grid-rows w-full" ref={reviesRef}>
-      <ReviewAverageComp />
+      {reviewStats &&
+        <ReviewAverageComp reviewStats={reviewStats} />
+      }
       {reviews.map((review, index) => (
         <ReviewComp key={index} review={review} />
       ))}

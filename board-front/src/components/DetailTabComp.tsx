@@ -54,7 +54,7 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
 
     return (
 
-        <div className=" static">
+        <div className="static">
             <div className="flex justify-center space-x-2">
                 <button className={buttonStyle('상품정보')} onClick={() => setActiveTab('상품정보')}>상품정보</button>
                 <button className={buttonStyle('구매안내')} onClick={() => setActiveTab('구매안내')}>구매안내</button>

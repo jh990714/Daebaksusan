@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.seafood.back.dto.ReviewDTO;
+import com.seafood.back.dto.ReviewStatsDTO;
 import com.seafood.back.service.ReviewService;
 
 import lombok.RequiredArgsConstructor;
@@ -31,4 +32,9 @@ public class ReviewController {
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
+    @GetMapping("/stats/{productId}")
+    public ResponseEntity<ReviewStatsDTO> getProductReviewStats(@PathVariable("productId") Integer productId) {
+        ReviewStatsDTO reviewStats = reviewService.getProductReviewStats(productId);
+        return ResponseEntity.ok(reviewStats);
+    }
 }
