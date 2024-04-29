@@ -50,7 +50,26 @@ export const Detail: React.FC = () => {
         };
 
         fetchOptions();
-    }, [product.productId]);
+    }, [product]);
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        addToRecentProducts(product);
+    }, [product]);
+
+    const addToRecentProducts = (product: Product) => {
+        const maxRecentProducts = 7;
+        const recentProducts = Cookies.get('recentProducts') ? JSON.parse(Cookies.get('recentProducts')!) : [];
+
+        const updatedRecentProducts = recentProducts.filter((p: Product) => p.productId !== product.productId);
+        updatedRecentProducts.unshift(product);
+
+        if (updatedRecentProducts.length > maxRecentProducts) {
+            updatedRecentProducts.pop();
+        }
+
+        Cookies.set('recentProducts', JSON.stringify(updatedRecentProducts), { expires: 1 });
+    };
 
     // 스크롤 이벤트 핸들러
     const handleScroll = () => {
@@ -59,15 +78,13 @@ export const Detail: React.FC = () => {
         setIsSticky(sticky);
     };
 
-    // 컴포넌트가 마운트되었을 때 스크롤 이벤트 리스너 추가
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
 
-        // 컴포넌트가 언마운트되기 전에 이벤트 리스너 제거
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []); // 빈 배열로 의존성 배열을 설정하여 컴포넌트가 마운트될 때만 이벤트 리스너가 추가되도록 함
+    }, []);
 
 
     const handleQuantityChange = (value: number) => {
@@ -123,8 +140,8 @@ export const Detail: React.FC = () => {
             setoption(null);
         }
     };
-
-    function showList(quantity: number, maxQuantityPerDelivery: number) {
+    
+    const showList = (quantity: number, maxQuantityPerDelivery: number) => {
         let arr = [];
         const n = quantity / maxQuantityPerDelivery;
         let count = 0;
@@ -167,7 +184,7 @@ export const Detail: React.FC = () => {
             console.log(response);
 
             const updatedCartItems = cartItems.map(cart => {
-                if (cart.id === response.cartId) {
+                if (cart.cartId === response.cartId) {
                     // 이미 해당 ID를 가진 카트 아이템이 존재하면 업데이트
                     return {
                         ...cart,
@@ -185,12 +202,12 @@ export const Detail: React.FC = () => {
             });
 
 
-            const isNewItem = updatedCartItems.every(cart => cart.id !== response.cartId);
+            const isNewItem = updatedCartItems.every(cart => cart.cartId !== response.cartId);
 
             if (isNewItem) {
                 // 새로운 아이템일 경우 목록에 추가
                 const newCart: Cart = {
-                    id: response.cartId,
+                    cartId: response.cartId,
                     cartItem: {
                         product: product,
                         option,
@@ -264,7 +281,7 @@ export const Detail: React.FC = () => {
             Cookies.set('cartItems', JSON.stringify(updatedCartItems), { expires: new Date(halfDayLater) });
 
             const newCartItems = updatedCartItems.map((item, index) => ({
-                id: index,
+                cartId: index,
                 cartItem: item,
                 isSelected: true,
             }));
@@ -288,7 +305,7 @@ export const Detail: React.FC = () => {
         };
 
         const newCart: Cart = {
-            id: -1,
+            cartId: -1,
             cartItem: newItem,
             isSelected: true
         }
