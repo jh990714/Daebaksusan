@@ -45,7 +45,7 @@ public class InfoController {
             Page<PaymentDetailDTO> paymentDetails = infoService.getOrdertDetails(id, page, pageSize);
             return ResponseEntity.ok().body(paymentDetails);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("실패");
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
     @PostMapping("/reviewSave")
