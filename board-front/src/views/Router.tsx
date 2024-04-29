@@ -14,6 +14,7 @@ import { PaymentDetails } from './PaymentDetails'
 import OAuth from './Authentication/OAuth'
 import { SuccessOrder } from './SuccessOrder'
 import GuestOrderSearch from './GuestOrderSearch'
+import { OrderRedirectPage } from './OrderRedirectPage'
 
 
 export const Router:React.FC = () => {
@@ -36,8 +37,9 @@ export const Router:React.FC = () => {
       <Route path="/categoryProducts/:category/:sub" element={<CategoryProduct path='categoryProducts/category/sub'/>} />
       <Route path="/product/search" element={<CategoryProduct path='search'/>} />
       <Route path='/auth/oauth-response/:token' element={<OAuth/>} />
-      <Route path='/successOrder' element={<SuccessOrder/>} />
+      {/* <Route path='/successOrder' element={<SuccessOrder/>} /> */}
       <Route path='/guestOrderSearch' element={<GuestOrderSearch/>} />
+      <Route path='/successOrder' element={<OrderRedirectPage/>} />
     </Routes>
   )
 }
