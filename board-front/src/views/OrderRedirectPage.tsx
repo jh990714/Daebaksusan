@@ -41,6 +41,7 @@ export const OrderRedirectPage = () => {
         try {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/payment/verifyIamport/${imp_uid}`);
             const { orderNumber, iamportResponse, orderItems } = response.data;
+
             console.log(response.data);
             setOrderNumber(orderNumber);
             setOrderInfo({

@@ -47,7 +47,7 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", 
         handleResize();
 
         window.addEventListener('resize', handleResize);
-        
+        console.log(settings)
         return () => window.removeEventListener('resize', handleResize);
         
     }, []);
@@ -73,8 +73,7 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", 
     };
     
     return (
-
-        <Slider {...settings}>
+        <Slider {...settings} key={slidesToShow}>
             {items.map((item, index) => (
                 <div key={index} className={`p-1 ${Component ? 'h-auto' : 'h-[200px]'}`}>
                     {Component ?(
@@ -85,7 +84,6 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", 
                 </div>
             ))}
         </Slider>
-
     );
 };
 
