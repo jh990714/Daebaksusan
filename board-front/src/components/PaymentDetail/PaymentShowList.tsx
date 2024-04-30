@@ -6,12 +6,14 @@ import styles from './PaymentShowList.module.css';
 import { PaymentItemComp } from './PaymentItemComp';
 
 interface PaymentShowListProps {
-    paymentDetails: PaymentDetail[]
+    paymentDetails: PaymentDetail[],
+    onPaymentDetailsChange?: (updatedPaymentDetails: PaymentDetail[]) => void
 }
 
-export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails }) => {
+export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails, onPaymentDetailsChange }) => {
     const [isMobileView, setIsMobileView] = useState(false);
     const [cancelStatus, setCancelStatus] = useState<boolean[]>([]);
+   
 
     useEffect(() => {
         const handleResize = () => {
@@ -31,9 +33,22 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
     }, [paymentDetails]);
 
     const handleCancelStatusChange = (index: number, newValue: boolean) => {
-        const newCancelStatus = [...cancelStatus];
-        newCancelStatus[index] = newValue;
-        setCancelStatus(newCancelStatus);
+        const newCancelStatus = [...paymentDetails];
+        newCancelStatus[index].cancel = newValue;
+        
+        if (onPaymentDetailsChange) {
+            onPaymentDetailsChange(newCancelStatus);
+        }
+    };
+
+    const handleReviewStatusChange = (index: number, newValue: boolean) => {
+        const newPaymentDetails = [...paymentDetails];
+        newPaymentDetails[index].orderItems.forEach(orderItem => {
+            orderItem.isReview = newValue;
+        });
+        if (onPaymentDetailsChange) {
+            onPaymentDetailsChange(newPaymentDetails);
+        }
     };
 
     return (
@@ -65,6 +80,7 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                                     rowspan={paymentDetail.orderItems.length}
                                     isMobileView={isMobileView}
                                     onCancelStatusChange={(newValue: boolean) => handleCancelStatusChange(index, newValue)}
+                                    onReviewStatusChange={(newValue: boolean) => handleReviewStatusChange(index, newValue)}
                                 />
                             ))}
                             

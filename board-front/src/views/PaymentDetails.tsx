@@ -48,13 +48,18 @@ export const PaymentDetails: React.FC = () => {
         }
     };
 
+    const updatePaymentDetails = (updatedPaymentDetails: PaymentDetail[]) => {
+        setPaymentDetails(updatedPaymentDetails);
+    };
+
+
     return (
         <div className="sm:w-4/5 sm:mt-5 md:ml-10" ref={paymentShowListRef}>
             <div className='mt-3 text-left text-2xl border-b font-semibold'> 주문 내역 </div>
             <div className='font-medium'>
                 {paymentDetails ? (
                     <>
-                        <PaymentShowList paymentDetails={paymentDetails} />
+                        <PaymentShowList paymentDetails={paymentDetails} onPaymentDetailsChange={updatePaymentDetails}/>
                         <Pagination pageSize={pageSize} totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
                     </>
                 ) : (

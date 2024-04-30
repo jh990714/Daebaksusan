@@ -10,9 +10,10 @@ interface ReviewPopupProps {
     product: Product;
     option?: Option | null;
     orderNumber: string;
+    onReviewStatusChange: (newValue: boolean) => void;
 }
 
-export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, orderNumber, product, option }) => {
+export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, orderNumber, product, option, onReviewStatusChange }) => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     
     const initialState: ReviewState = {
@@ -52,15 +53,6 @@ export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, orderNumber, 
         }
     };
 
-    // const encodeFileToBase64 = (file: File) => {
-    //     return new Promise<string>((resolve, reject) => {
-    //         const reader = new FileReader();
-    //         reader.readAsDataURL(file);
-    //         reader.onload = () => resolve(reader.result?.toString() || '');
-    //         reader.onerror = error => reject(error);
-    //     });
-    // };
-
     const handleDeleteImage = (index: number, event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault(); // 기본 동작 중지
 
@@ -73,7 +65,7 @@ export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, orderNumber, 
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        // event.preventDefault();
+        event.preventDefault();
         try {
             const url = '/info/reviewSave';
             const method = 'POST';
@@ -97,6 +89,9 @@ export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, orderNumber, 
             console.log(formData)
             // FormData를 서버로 전송
             const response = await sendRequestWithToken(url, method, formData, setIsLoggedIn);
+            onReviewStatusChange(true);
+
+            // isReivew -> true
         } catch (error) {
             console.error('Error submitting review:', error);
         }
