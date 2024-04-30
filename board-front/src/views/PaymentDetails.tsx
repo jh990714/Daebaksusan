@@ -6,6 +6,7 @@ import { useAuthContext } from 'hook/AuthProvider';
 import { MyPageMenu } from 'components/MyPage/MyPageMenu';
 import { Pagination } from 'components/Pagination';
 import { PaymentDetail } from 'types';
+import { Loading } from 'components/Loading/Loading';
 
 export const PaymentDetails: React.FC = () => {
     const navigate = useNavigate();
@@ -57,7 +58,7 @@ export const PaymentDetails: React.FC = () => {
                         <Pagination pageSize={pageSize} totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
                     </>
                 ) : (
-                    <p>Loading...</p>
+                    <Loading />
                 )}
             </div>
         </div>

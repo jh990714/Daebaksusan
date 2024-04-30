@@ -8,6 +8,7 @@ import { Cart, OrdererInfo } from 'types';
 import { useCart } from 'hook/CartProvider';
 import { fetchCartItemsDelete } from 'utils/cartUtils';
 import { useAuthContext } from 'hook/AuthProvider';
+import { Loading } from 'components/Loading/Loading';
 
 export const OrderRedirectPage = () => {
     const { cartItems, setCartItems } = useCart();
@@ -94,7 +95,7 @@ export const OrderRedirectPage = () => {
 
     return (
         <div className='orderContainer md:px-4 lg:px-8 xl:px-16'>
-            <OrderFlow currentStep={2} />
+            <OrderFlow currentStep={3} />
             <div className="bg-white min-h-screen text-left">
                 {paymentSuccess !== null && orderNumber ? (
                     paymentSuccess ? (
@@ -106,7 +107,7 @@ export const OrderRedirectPage = () => {
                         <OrderFailedComp />
                     )
                 ) : (
-                    <div>Loading...</div>
+                    <Loading />
                 )}
             </div>
         </div>
