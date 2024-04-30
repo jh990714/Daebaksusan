@@ -246,10 +246,21 @@ export const Order: React.FC = () => {
 
     // 입력 필드 변경 시 에러 상태를 해제하는 함수
     const handleChange = (field: string, value: string) => {
-        setInputErrors({
-            ...inputErrors,
-            [field]: false, // 현재 변경하는 필드의 에러 상태를 false로 설정
-        });
+        if (field === 'ordererName' || field === 'receiverName') {
+            // 정규식을 사용하여 한글만 입력되도록 유효성 검사
+            const regex = /^[가-힣ㄱ-ㅎㅏ-ㅣ]*$/;
+
+            if (!regex.test(value)) {
+                return;
+            }
+            
+        } else {
+            // 정규식을 사용하여 숫자만 입력되도록 유효성 검사
+            const regex = /^[0-9]*$/;
+            if (!regex.test(value)) {
+                return;
+            }
+        }
 
         // 필드에 따라 상태 업데이트
         if (field === 'ordererName') {
@@ -265,6 +276,11 @@ export const Order: React.FC = () => {
         } else if (field === 'receiverPhoneLast') {
             setReceiverPhoneLast(value);
         }
+
+        setInputErrors({
+            ...inputErrors,
+            [field]: false, // 현재 변경하는 필드의 에러 상태를 false로 설정
+        });
     }
 
     const handlePaymentMethodClick = (selectedPg: string, method: string) => {
