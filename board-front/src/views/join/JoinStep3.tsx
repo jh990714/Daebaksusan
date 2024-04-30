@@ -2,10 +2,11 @@ import axios from 'axios';
 import { AddressFinderButton } from 'components/Button/AddressFinderButton';
 import JoinTimeLineComp from 'components/JoinTimeLineComp';
 import React, { useState, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AddressData, AddressObj } from 'types';
 
 export const JoinStep3: React.FC = () => {
-
+    const navigate = useNavigate();
     // 상태 관리
     const [memberId, setMemberId] = useState('');
     const [password, setPassword] = useState('');
@@ -24,9 +25,58 @@ export const JoinStep3: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
         const fullPhone = `${phone1}-${phone2}-${phone3}`;
         const fullEmail = `${email}@${emailDomain}`;
 
+        // 회원 ID와 비밀번호 확인
+        const idRegex = /^[a-zA-Z0-9]+$/;
+        if (!memberId.match(idRegex)) {
+            alert('아이디는 알파벳과 숫자만 포함해야 합니다.');
+            return;
+        }
+
+        if (memberId.length < 4) {
+            alert('아이디는 최소 4자 이상이어야 합니다.');
+            return;
+        }
+        
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,15}$/;
+        if (!password.match(passwordRegex)) {
+            alert('비밀번호는 영문, 숫자, 특수문자가 각각 하나 이상 포함되어야 합니다.');
+            return;
+        }
+
+        if (password.length < 8 || password.length > 15) {
+            alert('비밀번호는 특수문자 + 영문 + 숫자 8 ~ 15자리 이어야 합니다.');
+            return;
+        }
+
+        if (password !== passwordConfirm) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        const nameRegex = /^[가-힣]+$/;
+        if (!name.match(nameRegex)) {
+            alert('이름은 한글만 입력 가능합니다.');
+            return;
+        }
+
+        const phoneRegex = /^[0-9]+$/;
+        if (!phone1.match(phoneRegex) || !phone2.match(phoneRegex) || !phone3.match(phoneRegex)) {
+            alert('휴대폰 번호는 숫자만 입력 가능합니다.');
+            return;
+        }
+
+
+        // 이메일 형식 확인
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+        if (!fullEmail.match(emailRegex)) {
+            alert('올바른 이메일 형식이 아닙니다.');
+            return;
+        }
+        
         try {
             const response = await axios.post(`${process.env.REACT_APP_API_URL}/members/signUp`, {
                 id: memberId,
@@ -39,43 +89,57 @@ export const JoinStep3: React.FC = () => {
                 detailAddress: addressObj.details
             });
             console.log(response.data);
-            // 성공적인 응답 처리
-        } catch (error) {
-            console.error('회원가입 실패:', error);
-            // 오류 처리
+            navigate('/login')
+        } catch (error: any) {
+            alert(error.response.data);
         }
 
     };
+    const handlePhoneChange = (field: string, value: string) => {
+        const regex = /^[0-9]*$/;
+        if (!regex.test(value)) {
+            return;
+        }
+        
+        if (field === 'phone1') {
+            setPhone1(value);
+        } else if (field === 'phone2') {
+            setPhone2(value);
+        } else if (field === 'phone3') {
+            setPhone3(value);
+        }
+    }
+
     const onCompletePostcode = (data: AddressData) => {
         const { address, addressType, bname, buildingName, sido, sigungu, zonecode } = data;
         let extraAddress = '';
         let localAddress = `${sido} ${sigungu}`;
-    
+
         if (addressType === 'R') {
-          extraAddress += bname ? bname : '';
-          extraAddress += buildingName ? (extraAddress ? `, ${buildingName}` : buildingName) : '';
-          const fullAddress = address.replace(localAddress, '') + (extraAddress ? ` (${extraAddress})` : '');
-          
-          const newAddressObj = {
-            address: localAddress + fullAddress,
-            zip: zonecode,
-            details: ''
-          };
+            extraAddress += bname ? bname : '';
+            extraAddress += buildingName ? (extraAddress ? `, ${buildingName}` : buildingName) : '';
+            const fullAddress = address.replace(localAddress, '') + (extraAddress ? ` (${extraAddress})` : '');
 
-          setAddressObj(newAddressObj);
+            const newAddressObj = {
+                address: localAddress + fullAddress,
+                zip: zonecode,
+                details: ''
+            };
+
+            setAddressObj(newAddressObj);
         }
-      };
-
-      // 상세 주소 업데이트 함수 추가
-  const handleDetailAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const updatedAddressObj = {
-      ...addressObj,
-      details: e.target.value
     };
-    setAddressObj(updatedAddressObj); // 필요한 경우 부모 컴포넌트에도 업데이트 반영
-  };
-  
-  const buttonClassName = "text-white text-xs bg-blue-600 hover:bg-blue-400 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-2 m-2 text-center";
+
+    // 상세 주소 업데이트 함수 추가
+    const handleDetailAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const updatedAddressObj = {
+            ...addressObj,
+            details: e.target.value
+        };
+        setAddressObj(updatedAddressObj); // 필요한 경우 부모 컴포넌트에도 업데이트 반영
+    };
+
+    const buttonClassName = "text-white text-xs bg-blue-600 hover:bg-blue-400 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-2 m-2 text-center";
     return (
         <div className="container mx-auto mt-10 p-5 rounded-lg">
             <div className="flex justify-between items-center border-b pb-4">
@@ -146,15 +210,15 @@ export const JoinStep3: React.FC = () => {
                                             <div className="col-span-5 flex">
                                                 <input type="text" id="phone1" name="phone1" required maxLength={3}
                                                     className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                                    placeholder="010" value={phone1} onChange={(e) => setPhone1(e.target.value)} />
+                                                    placeholder="010" value={phone1} onChange={(e) => handlePhoneChange('phone1', e.target.value)} />
                                                 <div className="flex items-center text-xs">-</div>
                                                 <input type="text" id="phone2" name="phone2" required maxLength={4}
                                                     className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                                    placeholder="1234" value={phone2} onChange={(e) => setPhone2(e.target.value)} />
+                                                    placeholder="1234" value={phone2} onChange={(e) => handlePhoneChange('phone2', e.target.value)} />
                                                 <div className="flex items-center text-xs">-</div>
                                                 <input type="text" id="phone3" name="phone3" required maxLength={4}
                                                     className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                                    placeholder="5678" value={phone3} onChange={(e) => setPhone3(e.target.value)} />
+                                                    placeholder="5678" value={phone3} onChange={(e) => handlePhoneChange('phone3', e.target.value)} />
                                             </div>
                                         </div>
 
@@ -181,14 +245,14 @@ export const JoinStep3: React.FC = () => {
                                                 <div className="col-span-5 flex">
                                                     <input type="text" id="postal_code" name="postal_code" required
                                                         className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                                        placeholder="우편 번호" value={addressObj.zip} readOnly/>
-                                                    <AddressFinderButton onCompletePostcode={onCompletePostcode} className={buttonClassName}/>
+                                                        placeholder="우편 번호" value={addressObj.zip} readOnly />
+                                                    <AddressFinderButton onCompletePostcode={onCompletePostcode} className={buttonClassName} />
                                                     {/* <button className="text-white text-xs bg-blue-600 hover:bg-blue-400 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-2 m-2 text-center">주소찾기</button> */}
                                                 </div>
                                                 <div className="col-span-5 flex">
                                                     <input type="text" id="address" name="address" required
                                                         className="m-2 w-64 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                                                        placeholder="주소" value={addressObj.address} readOnly/>
+                                                        placeholder="주소" value={addressObj.address} readOnly />
                                                 </div>
                                                 <div className="col-span-5 flex">
                                                     <input type="text" id="detail_address" name="detail_address" required
