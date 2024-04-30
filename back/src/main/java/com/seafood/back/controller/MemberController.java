@@ -39,12 +39,15 @@ public class MemberController {
     }
     
     @PostMapping("/signUp")
-    public ResponseEntity<MemberEntity> registerMember(@RequestBody MemberEntity member) {
-        log.info(member.getPassword());
-        MemberEntity registeredMember = memberService.registerNewMember(member);
-        
-        return ResponseEntity.ok(registeredMember);
+    public ResponseEntity<?> registerMember(@RequestBody MemberEntity member) {
+        try {
+            MemberEntity registeredMember = memberService.registerNewMember(member);
+            return ResponseEntity.ok(registeredMember);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 또는 다른 적절한 처리
+        }
     }
+
 }
 
 @Getter
