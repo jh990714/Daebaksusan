@@ -203,6 +203,13 @@ public class PaymentServiceImple implements PaymentService {
     @Override
     public Map<String, Object> verifyAndProcessPayment(String imp_uid) throws Exception {
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(imp_uid);
+
+        PaymentDetailsEntity paymentDetails = paymentDetailsRepository.findByImpUid(imp_uid);
+
+        if (paymentDetails != null) {
+            return null;
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
                 new TypeReference<Map<String, Object>>() {

@@ -20,6 +20,7 @@ public interface PaymentDetailsRepository extends JpaRepository<PaymentDetailsEn
     Page<PaymentDetailsEntity> findByMemberIdOrderByPaymentDetailIdDesc(String id, Pageable pageable);
     PaymentDetailsEntity findByMemberIdAndOrderNumber(String id, String orderNumber);
     PaymentDetailsEntity findByOrderNumber(String orderNumber);
+    PaymentDetailsEntity findByImpUid(String imp_uid);
     PaymentDetailsEntity findByPasswordAndOrderNumber(String password, String orderNumber);
 
     @Query("SELECT COUNT(*) FROM PaymentDetailsEntity p WHERE p.orderDate = :date")
