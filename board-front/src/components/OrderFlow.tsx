@@ -16,12 +16,13 @@ export const OrderFlow: React.FC<OrderFlowProps> = ({ currentStep }) => {
   return (
     <>
       <div className={styles.path}>
-          <ul>
-              <li>홈</li>
-              {/* <li>마이페이지</li> */}
-              <li>장바구니</li>
-          </ul>
-        </div>
+        {/* <ul>
+          <li>홈</li>
+        
+          <li>장바구니</li>
+        </ul> */}
+      </div>
+    
       <ul className={styles.orderFlow}>
         {steps.map((step, index) => (
           <li key={step.number} className={index + 1 === currentStep ? styles.active : styles.inactive}>

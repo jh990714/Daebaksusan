@@ -13,7 +13,7 @@ interface PaymentShowListProps {
 export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails, onPaymentDetailsChange }) => {
     const [isMobileView, setIsMobileView] = useState(false);
     const [cancelStatus, setCancelStatus] = useState<boolean[]>([]);
-   
+
 
     useEffect(() => {
         const handleResize = () => {
@@ -29,25 +29,49 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
     useEffect(() => {
         const initialCancelStatus = paymentDetails.map(payment => payment.cancel);
         setCancelStatus(initialCancelStatus);
+
         console.log(initialCancelStatus)
     }, [paymentDetails]);
 
     const handleCancelStatusChange = (index: number, newValue: boolean) => {
-        const newCancelStatus = [...paymentDetails];
-        newCancelStatus[index].cancel = newValue;
-        
+        const updatedPaymentDetails = paymentDetails.map((paymentDetail, i) => {
+            if (i === index) {
+                return {
+                    ...paymentDetail,
+                    cancel: newValue
+                };
+            }
+            return paymentDetail;
+        });
+
+        setCancelStatus(updatedPaymentDetails.map(paymentDetail => paymentDetail.cancel));
+
         if (onPaymentDetailsChange) {
-            onPaymentDetailsChange(newCancelStatus);
+            onPaymentDetailsChange(updatedPaymentDetails);
         }
     };
 
-    const handleReviewStatusChange = (index: number, newValue: boolean) => {
-        const newPaymentDetails = [...paymentDetails];
-        newPaymentDetails[index].orderItems.forEach(orderItem => {
-            orderItem.isReview = newValue;
+    const handleReviewStatusChange = (index: number, innerIndex: number, newValue: boolean) => {
+        const updatedPaymentDetails = paymentDetails.map((paymentDetail, i) => {
+            if (i === index) {
+                return {
+                    ...paymentDetail,
+                    orderItems: paymentDetail.orderItems.map((orderItem, j) => {
+                        if (j === innerIndex) {
+                            return {
+                                ...orderItem,
+                                isReview: newValue
+                            };
+                        }
+                        return orderItem;
+                    })
+                };
+            }
+            return paymentDetail;
         });
+
         if (onPaymentDetailsChange) {
-            onPaymentDetailsChange(newPaymentDetails);
+            onPaymentDetailsChange(updatedPaymentDetails);
         }
     };
 
@@ -80,10 +104,10 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                                     rowspan={paymentDetail.orderItems.length}
                                     isMobileView={isMobileView}
                                     onCancelStatusChange={(newValue: boolean) => handleCancelStatusChange(index, newValue)}
-                                    onReviewStatusChange={(newValue: boolean) => handleReviewStatusChange(index, newValue)}
+                                    onReviewStatusChange={(newValue: boolean) => handleReviewStatusChange(index, innerIndex, newValue)}
                                 />
                             ))}
-                            
+
                             <tr>
                                 <td colSpan={7}></td>
                             </tr>

@@ -80,16 +80,20 @@ export const OrderRedirectPage = () => {
                 const imp_success = searchParams.get('imp_success');
                 const error_msg = searchParams.get('error_msg');
 
-                if (imp_success === 'true' && imp_uid) {
-                    await handlePaymentResponse(imp_uid);
-                } else {
-                    console.error('결제 실패:', error_msg);
-                    alert('결제 실패');
-                    setPaymentSuccess(false);
+                if (imp_success && imp_uid) {
+                    if (imp_success === 'true') {
+                        console.log(imp_success, imp_uid)
+                        await handlePaymentResponse(imp_uid);
+                    }
+                    else {
+                        console.error('결제 실패:', error_msg);
+                        alert('결제 실패');
+                        setPaymentSuccess(false)
+                    }
                 }
             }
         };
-
+        
         handleData();
     }, []);
 
@@ -97,8 +101,8 @@ export const OrderRedirectPage = () => {
         <div className='orderContainer md:px-4 lg:px-8 xl:px-16'>
             <OrderFlow currentStep={3} />
             <div className="bg-white min-h-screen text-left">
-                {paymentSuccess !== null && orderNumber ? (
-                    paymentSuccess ? (
+                {paymentSuccess !== null ? (
+                    paymentSuccess && orderNumber ? (
                         <OrderSuccessComp
                             orderNumber={orderNumber}
                             orderInfo={orderInfo}
