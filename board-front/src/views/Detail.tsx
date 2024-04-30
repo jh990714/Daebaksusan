@@ -396,7 +396,7 @@ export const Detail: React.FC = () => {
                         </div>
                         <div className="flex justify-center space-x-2 py-4">
                             <button className="bg-blue-700 text-white font-bold px-4 py-2 rounded" disabled={isSoldOut} onClick={handleGoToOrder}>구매하기</button>
-                            <button className="bg-blue-700 text-white font-bold px-4 py-2 rounded" onClick={handleAddToCart}>장바구니</button>
+                            <button className="bg-blue-700 text-white font-bold px-4 py-2 rounded" disabled={isSoldOut} onClick={handleAddToCart}>장바구니</button>
 
                         </div>
 
