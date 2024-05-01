@@ -6,9 +6,10 @@ interface IconProps {
     hoverIcon: string;
     title: string;
     link: string; 
+    size?: number;
 }
 
-const IconComp: React.FC<IconProps> = ({ defaultIcon, hoverIcon, title, link }) => {
+const IconComp: React.FC<IconProps> = ({ defaultIcon, hoverIcon, title, link, size=50 }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     const handleMouseOver = () => {
@@ -24,12 +25,12 @@ const IconComp: React.FC<IconProps> = ({ defaultIcon, hoverIcon, title, link }) 
             <Link to={link} state={{ category: null }} className="flex">
                 {isHovered ? (
                     <div className="flex scale-110">
-                        <img src={hoverIcon} alt={`${title} Hovered Image`} style={{ width: 50, height: 50}} />
+                        <img src={hoverIcon} alt={`${title} Hovered Image`} style={{ width: size, height: size}} />
                         <span className="m-1 content-center text-blue-700 hidden xl:block"> {title} </span>
                     </div>
                 ) : (
                     <>
-                        <img src={defaultIcon} alt={title} style={{ width: 50, height: 50 }} />
+                        <img src={defaultIcon} alt={title} style={{ width: size, height: size }} />
                         <span className="m-1 content-center hidden xl:block"> {title} </span>
                     </>
                     
