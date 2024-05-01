@@ -7,6 +7,7 @@ import newIcon from '../assets/newIcon.png'
 import bestIcon from '../assets/bestIcon.png'
 import allIcon from '../assets/allIcon.png'
 import menuIcon from '../assets/tabBar.png'
+import homeICon from '../assets/homeIcon.png'
 
 import newBlueIcon from '../assets/newBlueIcon.png'
 import bestBlueIcon from '../assets/bestBlueIcon.png'
@@ -31,9 +32,11 @@ export const NavigationBar = () => {
     const searchResultsRef = useRef<HTMLUListElement>(null);
     const inputMobileRef = useRef<HTMLInputElement>(null);
     const searchResultsMobileRef = useRef<HTMLUListElement>(null);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+    const [isNavVisible, setIsNavVisible] = useState<boolean>(true);
+    const [prevScrollY, setPrevScrollY] = useState<number>(0);
+    const [isCategoriesOpen, setIsCategoriesOpen] = useState<boolean>(false);
+    const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
     const [categories, setCategories] = useState<Category[]>([]);
     const [query, setQuery] = useState<string>('');
     const [searchResults, setSearchResults] = useState<SearchResults>([]);
@@ -62,6 +65,21 @@ export const NavigationBar = () => {
     useEffect(() => {
         console.log('로그인 상태가 변경되었습니다:', isLoggedIn);
     }, [isLoggedIn]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            setIsNavVisible(currentScrollY <= prevScrollY || currentScrollY === 0);
+            setPrevScrollY(currentScrollY);
+           
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [prevScrollY]);
 
     useEffect(() => {
         const fetchSearchResults = async () => {
@@ -95,7 +113,7 @@ export const NavigationBar = () => {
         if (inputMobileRef.current) {
             inputMobileRef.current.focus(); // 포커스 설정
         }
-        
+
     }, [searchResults]);
 
     const handleSearch = () => {
@@ -131,7 +149,7 @@ export const NavigationBar = () => {
         if (event.key === 'ArrowDown') {
             console.log(event.key);
             event.preventDefault();
-            
+
             if (searchResultsRef.current) {
                 searchResultsRef.current.focus();
             }
@@ -145,7 +163,7 @@ export const NavigationBar = () => {
             event.preventDefault();
             handleSearch();
         }
-       
+
     }, [handleSearch]);
 
     const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -167,8 +185,8 @@ export const NavigationBar = () => {
     }
 
     return (
-        <nav className={styles.navContainer} onMouseLeave={closeCategory}>
-            <div className={styles.navBar}>
+        <nav className={styles.navContainer} onMouseLeave={closeCategory} >
+            <div className={styles.navBar} style={{ display: isNavVisible ? 'flex' : 'none' }}>
                 <div className={styles.navLeft}>
                     <Link to='' className={styles.logo}>
                         <img src={logo} alt="로고" width="130" height="auto"></img>
@@ -226,31 +244,31 @@ export const NavigationBar = () => {
 
                     <div className={styles.navRight}>
                         <div className={`${styles.searchContainer}`}>
-                        <div className={styles.searchInput}>
-                        <input
-                            id='searchInput'
-                            type="text"
-                            placeholder="상품을 검색해보세요!"
-                            value={query}
-                            onChange={handleInputChange}
-                            onKeyDown={handleSearchKeyDown}
-                            ref={inputRef}
-                        />
-                        <img src={searchIcon} alt='검색' className={styles.icon} style={{ width: 30, height: 30 }} onClick={handleSearch} />
+                            <div className={styles.searchInput}>
+                                <input
+                                    id='searchInput'
+                                    type="text"
+                                    placeholder="상품을 검색해보세요!"
+                                    value={query}
+                                    onChange={handleInputChange}
+                                    onKeyDown={handleSearchKeyDown}
+                                    ref={inputRef}
+                                />
+                                <img src={searchIcon} alt='검색' className={styles.icon} style={{ width: 30, height: 30 }} onClick={handleSearch} />
 
-                    </div>
-                    {/* 검색 결과 리스트 */}
-                    <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsRef}>
-                        {searchResults && searchResults.map((result, index) =>
-                            result && result.name && (
-                                <li
-                                    className={index === selectedItemIndex ? styles.selectedItem : ''}
-                                    key={index} onClick={() => handleSearchItemClick(index)}>
-                                    {result.name}
-                                </li>
-                            )
-                        )}
-                    </ul>
+                            </div>
+                            {/* 검색 결과 리스트 */}
+                            <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsRef}>
+                                {searchResults && searchResults.map((result, index) =>
+                                    result && result.name && (
+                                        <li
+                                            className={index === selectedItemIndex ? styles.selectedItem : ''}
+                                            key={index} onClick={() => handleSearchItemClick(index)}>
+                                            {result.name}
+                                        </li>
+                                    )
+                                )}
+                            </ul>
                         </div>
                         <div className={styles.userCategory}>
                             <ul>
@@ -293,19 +311,37 @@ export const NavigationBar = () => {
                 <div className={styles.productUserCategory}> {/* productCategory와 userCategory를 함께 감싸는 컨테이너 */}
 
                     <ul>
-                        <IconComp defaultIcon={bestIcon} hoverIcon={bestBlueIcon} title={'인기 상품'} link={'/best'} />
-                        <IconComp defaultIcon={newIcon} hoverIcon={newBlueIcon} title={'최신 상품'} link={'/new'} />
-                        <IconComp defaultIcon={allIcon} hoverIcon={allBlueIcon} title={'모든 상품'} link={'/all'} />
+                        <div>
+                            <IconComp defaultIcon={bestIcon} hoverIcon={bestBlueIcon} title={'인기 상품'} link={'/best'} size={35} />
+                            <p>인기 상품</p>
+                        </div>
+                        <div>
+                            <IconComp defaultIcon={newIcon} hoverIcon={newBlueIcon} title={'최신 상품'} link={'/new'} size={35}/>
+                            <p>최신 상품</p>
+                        </div>
+                        <div>
+                            <IconComp defaultIcon={homeICon} hoverIcon={homeICon} title={'홈'} link={'/'} size={35}/>
+                            <p>홈</p>
+                        </div>
 
 
                         {!isLoggedIn ? (
                             // 로그인 되지 않았을 때 로그인 버튼 표시
-                            <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'로그인'} link={'/login'} />
+                            <div>
+                                <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'로그인'} link={'/login'} size={35} />
+                                <p>로그인</p>
+                            </div>
                         ) : (
                             // 로그인 되었을 때 마이페이지 버튼 표시
-                            <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'마이페이지'} link={'/myPage'} />
+                            <div>
+                                <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'마이페이지'} link={'/myPage'} size={35}/>
+                                <p>마이페이지</p>
+                            </div>
                         )}
-                        <IconComp defaultIcon={cartIcon} hoverIcon={cartBlueIcon} title={'장바구니'} link={'/cart'} />
+                        <div>
+                            <IconComp defaultIcon={cartIcon} hoverIcon={cartBlueIcon} title={'장바구니'} link={'/cart'} size={35}/>
+                            <p>장바구니</p>
+                        </div>
                     </ul>
                 </div>
             </div>
