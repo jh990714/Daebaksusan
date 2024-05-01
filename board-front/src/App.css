@@ -50,7 +50,7 @@
 }
 
 .Footer {
-  margin-bottom: 50px;
+  margin-bottom: 35px;
 }
 
 @media screen and (max-width: 900px) {
@@ -59,7 +59,7 @@
   }
 
   .Footer {
-    margin: 0;
+    margin-bottom: 50px;
   }
 }
 
