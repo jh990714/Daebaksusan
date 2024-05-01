@@ -32,8 +32,8 @@ export const GuestPaymentModal: React.FC<GuestPaymentModalProps> = ({ isOpen, on
                     className="w-full p-2 border border-gray-300 rounded mb-4"
                 />
                 <div className="flex justify-end">
-                    <button className="px-4 py-2 mr-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={onConfirm}>결제하기</button>
-                    <button className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400" onClick={onClose}>닫기</button>
+                    <button className="px-4 py-2 mr-2 bg-blue-500 text-white rounded hover:bg-blue-600 whitespace-nowrap" onClick={onConfirm}>결제하기</button>
+                    <button className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 whitespace-nowrap" onClick={onClose}>닫기</button>
                 </div>
             </div>
         </div>
