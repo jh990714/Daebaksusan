@@ -63,14 +63,15 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", 
         slidesToShow: Math.max(1, Math.floor(slidesToShow / rows)),
         autoplay: items.length > slidesToShow,
         autoplaySpeed: 2000,
-        slidesToScroll: 1,
         vertical: false,
         swipe: items.length > slidesToShow,
         swipeToSlide: items.length > slidesToShow,
         arrows: items.length > slidesToShow,
         prevArrow: <CustomArrow />,
         nextArrow: <CustomArrow />,
+        // ...(slidesToShow >= 4 && { slidesToScroll: 1 }),
     };
+
     
     return (
         <Slider {...settings} key={slidesToShow}>
