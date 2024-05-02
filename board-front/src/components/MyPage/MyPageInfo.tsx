@@ -13,7 +13,7 @@ export const MyPageInfo: React.FC<MyPageInfoProps> = ({ userInfo, handlePageChan
                     <div className="text-lg font-semibold">적립금</div>
                     <div className="text-blue-600 text-2xl font-semibold mt-2">{userInfo?.points.toLocaleString()}점</div>
                     <div className="mt-2 inline-block">
-                        <a href="#" className="text-inherit">적립금 조회 {'>'}</a>
+                    <div className="underline underline-offset-1 hover:cursor-pointer" onClick={() => handlePageChange('myPoints')}>적립금 조회 {'>'}</div>
                     </div>
 
                 </div>

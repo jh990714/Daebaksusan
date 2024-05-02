@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.seafood.back.dto.MemberDTO;
+import com.seafood.back.dto.MemberUpdateDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
@@ -23,4 +24,7 @@ public interface InfoService {
             MultipartFile[] imageFiles);
 
     ReviewDTO getReviews(String id, ReviewCriteriaDTO reviewCriteriaDTO);
+
+    void updateInfo(String id, MemberUpdateDTO memberUpdateDTO);
+
 }

@@ -8,6 +8,8 @@ import Member from 'types/interface/member.interface';
 import { MyPageInfo } from 'components/MyPage/MyPageInfo';
 import { PaymentDetails } from './PaymentDetails';
 import { MyCoupons } from './MyCoupons';
+import { MyPoints } from './MyPoints';
+import { UpdateInfo } from './UpdateInfo';
 
 export const Mypage: React.FC = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
@@ -44,13 +46,30 @@ export const Mypage: React.FC = () => {
         setCurrentPage(page);
     };
 
+    const renderContent = () => {
+        switch (currentPage) {
+            case 'mypageInfo':
+                return <MyPageInfo userInfo={userInfo} handlePageChange={handlePageChange}/>;
+            case 'paymentDetails':
+                return <PaymentDetails /> ;
+            case 'myCoupon':
+                return <MyCoupons coupons={userInfo?.coupons}/>;
+            case 'myPoints':
+                return <MyPoints />;
+            case 'updateInfo':
+                return <UpdateInfo userInfo={userInfo}/>;
+            default:
+                return null;
+        }
+    };
+
     return (
         <div className="lg:mx-16 xl:mx-56 2xl:mx-80 mt-10 p-2 md:p-5 rounded-lg whitespace-nowrap">
             <div className="sm:flex sm:gap-3 md:gap-10 lg:gap-20 2xl:gap-32 sm:border-b sm:p-4">
                 <div className="text-center sm:block text-2xl text-blue-600 font-semibold hover:cursor-pointer" onClick={()=>handlePageChange('mypageInfo')}>마이페이지</div>
                 <div className="hidden sm:flex gap-2 text-lg">
                     <div>적립금</div>
-                    <div className="text-blue-700 font-bold">{userInfo?.points}원</div>
+                    <div className="text-blue-700 font-bold hover:cursor-pointer" onClick={()=>handlePageChange('myPoints')}>{userInfo?.points}원</div>
                 </div>
                 <div className="hidden sm:flex gap-2 text-lg">
                     <div>쿠폰</div>
@@ -67,10 +86,8 @@ export const Mypage: React.FC = () => {
                     <div className="sm:block w-full sm:w-1/6 border-b border-t sm:border-b-0 sm:border-t-0 sm:border-r text-l font-semibold" >
                         <MyPageMenu handlePageChange={handlePageChange} />
                     </div>
-                    <div className="sm:w-4/5">
-                        {currentPage === 'mypageInfo' ? <MyPageInfo userInfo={userInfo} handlePageChange={handlePageChange}/> : null}
-                        {currentPage === 'paymentDetails' ? <PaymentDetails /> : null}
-                        {currentPage === 'myCoupon' ? <MyCoupons coupons={userInfo?.coupons}/> : null}
+                    <div className="sm:w-4/5 sm:mt-5 md:ml-10">
+                        {renderContent()}
                     </div>
                 </div>
             </div>

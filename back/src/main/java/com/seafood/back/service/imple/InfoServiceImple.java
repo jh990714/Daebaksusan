@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import java.math.BigDecimal;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +28,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.dto.MemberDTO;
+import com.seafood.back.dto.MemberUpdateDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.PaymentItemDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
@@ -51,6 +54,7 @@ import com.seafood.back.respository.ReviewResponseRepository;
 import com.seafood.back.service.CouponService;
 import com.seafood.back.service.InfoService;
 import com.seafood.back.service.MemberService;
+import com.seafood.back.service.PointsTransactionService;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -66,6 +70,7 @@ import lombok.extern.slf4j.Slf4j;
 public class InfoServiceImple implements InfoService {
     
     private final MemberService memberService;
+    private final PointsTransactionService pointsTransactionService;
 
     private final MemberRepository memberRepository;
     private final PaymentDetailsRepository paymentDetailsRepository;
@@ -203,7 +208,7 @@ public class InfoServiceImple implements InfoService {
         reviewEntity.setIsBest(false); // 기본값으로 false 설정
 
         ReviewEntity savedReviewEntity = reviewRepository.save(reviewEntity);
-
+        
         if (imageFiles != null) { // null 체크 추가
             for (MultipartFile imageFile : imageFiles) {
                 if (imageFile != null && !imageFile.isEmpty()) { // null 및 비어있는지 체크
@@ -223,6 +228,21 @@ public class InfoServiceImple implements InfoService {
                 }
             }
         }
+        String description;
+        BigDecimal usageAmount;
+
+        if (imageFiles == null) {
+            description = "리뷰 작성";
+            usageAmount = BigDecimal.valueOf(500);
+        }
+        else {
+            description = "포토 리뷰 작성";
+            usageAmount = BigDecimal.valueOf(1000);
+        }
+
+        BigDecimal subTotal = memberService.deductPoints(id, usageAmount.negate());
+        pointsTransactionService.createTransaction(id, description, usageAmount, subTotal);
+        
     }
 
     private String saveImage(MultipartFile imageFile) throws IOException {
@@ -297,5 +317,14 @@ public class InfoServiceImple implements InfoService {
         reviewDTO.setResponses(reviewResponseDTOs);
 
         return reviewDTO;
+    }
+
+    @Override
+    public void updateInfo(String id, MemberUpdateDTO memberUpdateDTO) {
+        if (!id.equals(memberUpdateDTO.getId())) {
+            throw new IllegalArgumentException("ID가 일치하지 않습니다.");
+        }
+        
+        memberService.updateMember(memberUpdateDTO);
     }
 }

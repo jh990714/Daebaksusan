@@ -3,6 +3,7 @@ package com.seafood.back.service;
 import java.math.BigDecimal;
 
 import com.seafood.back.dto.MemberDTO;
+import com.seafood.back.dto.MemberUpdateDTO;
 import com.seafood.back.entity.MemberEntity;
 
 public interface MemberService {
@@ -12,6 +13,7 @@ public interface MemberService {
     public MemberEntity registerNewMember(MemberEntity member);
     public MemberDTO getMemberInfo(String id);
     public BigDecimal getAvailablePoints(String id);
-    public void deductPoints(String id, BigDecimal points);
+    public BigDecimal deductPoints(String id, BigDecimal points);
+    public void updateMember(MemberUpdateDTO memberUpdateDTO);
 }
 

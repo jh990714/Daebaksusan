@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.dto.MemberDTO;
+import com.seafood.back.dto.MemberUpdateDTO;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.MemberPointsEntity;
 import com.seafood.back.respository.MemberPointsRepository;
@@ -20,10 +21,11 @@ import com.seafood.back.service.MemberService;
 import com.seafood.back.utils.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-
 public class MemberServiceImple implements MemberService {
 
     private final CouponService couponService;
@@ -122,7 +124,7 @@ public class MemberServiceImple implements MemberService {
     }
 
     @Override
-    public void deductPoints(String id, BigDecimal points) {
+    public BigDecimal deductPoints(String id, BigDecimal points) {
         // 회원의 포인트 정보 조회
         MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(id);
 
@@ -135,9 +137,47 @@ public class MemberServiceImple implements MemberService {
 
             memberPoints.setPoints(updatedPoints);
             memberPointsRepository.save(memberPoints);
+
+            return memberPoints.getPoints();
         } else {
             throw new IllegalArgumentException("해당 회원의 포인트 정보가 없습니다.");
         }
+    }
+
+    @Override
+    public void updateMember(MemberUpdateDTO memberUpdateDTO) {
+        MemberEntity member = memberRepository.findById(memberUpdateDTO.getId());
+
+        if (member == null) {
+            throw new IllegalArgumentException("해당 ID를 가진 회원이 없습니다.");
+        }
+
+        if (memberUpdateDTO.getCurrentPassword() != null && !memberUpdateDTO.getCurrentPassword().isEmpty()) {
+
+            if (!passwordEncoder.matches(memberUpdateDTO.getCurrentPassword(), member.getPassword())){
+                throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+            }
+        }
+
+        if (memberUpdateDTO.getPassword() != null && !memberUpdateDTO.getPassword().isEmpty()) {
+            member.setPassword(passwordEncoder.encode(memberUpdateDTO.getPassword()));
+        }
+
+        if (memberUpdateDTO.getEmail() != null) {
+            member.setEmail(memberUpdateDTO.getEmail());
+        }
+
+        if (memberUpdateDTO.getPostalCode() != null) {
+            member.setPostalCode(memberUpdateDTO.getPostalCode());
+        }
+        if (memberUpdateDTO.getAddress() != null) {
+            member.setAddress(memberUpdateDTO.getAddress());
+        }
+        if (memberUpdateDTO.getDetailAddress() != null) {
+            member.setDetailAddress(memberUpdateDTO.getDetailAddress());
+        }
+
+        memberRepository.save(member);
     }
 
 }

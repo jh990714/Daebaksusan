@@ -26,7 +26,7 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
     }, []); // 빈 의존성 배열을 전달하여 컴포넌트 마운트 시에만 실행되도록 함
 
     // showButtons 상태에 따라 클래스를 조건부로 적용
-    const containerClasses = `fixed flex-col gap-2  bottom-[500px] left-[150px] ${showButtons ? 'hidden xl:inline-flex' : 'hidden'}`;
+    const containerClasses = `fixed flex-col gap-2  bottom-[500px] left-[0px] ${showButtons ? 'hidden xl:inline-flex' : 'hidden'}`;
 
 
     // 각 탭의 내용을 반환하는 함수입니다.
