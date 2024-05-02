@@ -24,6 +24,22 @@
   margin-bottom: 1rem;
 }
 
+.sortSelect {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  background-color: #fff;
+  color: #333;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.sortSelect:hover,
+.sortSelect:focus {
+  border-color: #007bff;
+}
+
 
 .productListContainer {
   flex-wrap: wrap;

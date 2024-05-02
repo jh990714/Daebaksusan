@@ -13,11 +13,12 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 	const category = useLocation().state.category;
 
 
-	
+
 	const [products, setProducts] = useState<Product[]>([]);
 	const [colums, setColums] = useState<number>(4);
 	const [rows, setRows] = useState<number>(4);
-	const [visibleCount, setVisibleCount] = useState<number>(colums*rows);
+	const [visibleCount, setVisibleCount] = useState<number>(colums * rows);
+	const [sortBy, setSortBy] = useState<string>();
 
 	let pageTitle;
 
@@ -65,7 +66,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 
 				const response = await axios.get<Product[]>(url);
 				setProducts(response.data);
-				
+
 
 				console.log(response.data)
 			} catch (error) {
@@ -77,30 +78,30 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 	}, [path, category]);
 
 	useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 480) {
+		const handleResize = () => {
+			if (window.innerWidth < 480) {
 
-				setVisibleCount(2*rows)
-                setColums(2);
-				
-            } else if (window.innerWidth < 768) {
-				setVisibleCount(3*rows)
+				setVisibleCount(2 * rows)
+				setColums(2);
+
+			} else if (window.innerWidth < 768) {
+				setVisibleCount(3 * rows)
 				setColums(3);
-				
+
 			} else if (window.innerWidth < 1024) {
-				setVisibleCount(3*rows)
-                setColums(3);
-            }
+				setVisibleCount(3 * rows)
+				setColums(3);
+			}
 			else {
 				setColums(4);
 			}
-        };
+		};
 
-        handleResize();
+		handleResize();
 
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
 
 
 	// 현재 페이지에 보여줄 상품 데이터 계산
@@ -109,17 +110,54 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 	};
 
 	const handleMoreClick = () => {
-		setVisibleCount(prevCount => Math.min(prevCount + (rows*colums), products.length));
+		setVisibleCount(prevCount => Math.min(prevCount + (rows * colums), products.length));
 	}
+
+	const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setSortBy(e.target.value);
+	};
+
+	const sortedProducts = () => {
+		switch (sortBy) {
+			case 'categories':
+				// 카테고리 정보가 있는 경우
+				if (products.length > 0 && products[0].category !== undefined) {
+					return [...products].sort((a, b) => a.category - b.category);
+				} else {
+					// 카테고리 정보가 없는 경우 원래 순서 그대로 반환
+					return products;
+				}
+			case 'name':
+				return [...products].sort((a, b) => a.name.localeCompare(b.name));
+			case 'newest':
+				return [...products].sort((a, b) => new Date(b.arrivalDate).getTime() - new Date(a.arrivalDate).getTime());
+			case 'price':
+				return [...products].sort((a, b) => a.regularPrice - b.regularPrice);
+			case 'priceDesc':
+				return [...products].sort((a, b) => b.regularPrice - a.regularPrice);
+			default:
+				return products;
+		}
+	};
+
+
 	return (
 		<div className={styles.homeContainer}>
 			<div className={styles.productListContainer}>
 				<div className={styles.productListHeader}>
 					<div className={styles.productListTitle}>{pageTitle}</div>
+					<select value={sortBy} onChange={handleSortChange} className={styles.sortSelect}>
+						<option value="default"></option>
+						<option value="categories">카테고리순</option>
+						<option value="newest">최신순</option>
+						<option value="price">낮은가격순</option>
+						<option value="priceDesc">높은가격순</option>
+					</select>
+
 				</div>
 				<div>
 					<ul className={styles.productList}>
-						{getCurrentPageData().map((product: Product, index: number) => (
+						{sortedProducts().slice(0, visibleCount).map((product: Product, index: number) => (
 							<li key={product.productId} className={index >= visibleCount - colums && visibleCount < products.length ? `${styles.blurEffect}` : ''}>
 								<ProductListComp product={product} size='255px' fontSize='7px' />
 							</li>
@@ -128,7 +166,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 				</div>
 			</div>
 			{visibleCount < products.length && (
-				<button className={styles.moreButtonContainer} onClick={handleMoreClick}>더 보 기</button>
+				<button className={styles.moreButtonContainer} onClick={handleMoreClick}>더 보기</button>
 			)}
 		</div>
 	)
