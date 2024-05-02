@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.seafood.back.dto.MemberDTO;
+import com.seafood.back.dto.MemberUpdateDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
@@ -79,5 +80,17 @@ public class InfoController {
             return ResponseEntity.badRequest().body("실패");
         }
     }
+
+    @PostMapping("/updateInfo")
+    public ResponseEntity<?> updateInfo(Authentication authentication, @RequestBody MemberUpdateDTO memberUpdateDTO) {
+        try {
+            String id = authentication.getName();
+            infoService.updateInfo(id, memberUpdateDTO);
+            return ResponseEntity.ok().body("s");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
 
 }
