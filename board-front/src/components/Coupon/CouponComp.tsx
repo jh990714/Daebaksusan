@@ -6,8 +6,7 @@ interface CouponCompProps {
 }
 
 export const CouponComp: React.FC<CouponCompProps> = ({ coupon }) => {
-  const circleCount = 10; // 생성할 원의 개수
-  const circleSpacing = 22; // 원 사이의 간격
+  
   // 원을 생성하고 배치하는 함수
   // const renderCircles = () => {
   //   const circles = [];
@@ -27,6 +26,8 @@ export const CouponComp: React.FC<CouponCompProps> = ({ coupon }) => {
     const circles = [];
     const circleSize = 14;
     const circleOffset = 7; 
+    const circleCount = 9; // 생성할 원의 개수
+    const circleSpacing = 22; // 원 사이의 간격
     
     for (let i = 0; i < circleCount; i++) {
       const topPosition = i * circleSpacing;
@@ -41,7 +42,7 @@ export const CouponComp: React.FC<CouponCompProps> = ({ coupon }) => {
     return circles;
   };
   return (
-    <div className="relative p-6 m-3 rounded-lg shadow-inner bg-gradient-to-l from-blue-400 to-blue-600 h-[200px]">
+    <div className="relative p-6 m-3 rounded-lg shadow-inner bg-gradient-to-l from-blue-400 to-blue-600 h-[180px]">
       {renderCircles()}
       <div className="absolute top-[-20px] right-20 w-2 h-7 rounded-full bg-white"></div>
       <div className="absolute bottom-[-20px] right-20 w-2 h-7 rounded-full bg-white"></div>
