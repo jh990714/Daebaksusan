@@ -1,5 +1,4 @@
-/* 테이블 헤더 스타일 */
-.paymentItemList table th {
+.pointsDetailContainer table th {
     color: #333;
     padding: 10px;
     text-align: center;
@@ -9,10 +8,9 @@
     font-size: 14px;
 }
 
-/* 테이블 바디 셀 스타일 */
-.paymentItemList table td {
+.pointsDetailContainer table td {
     border-bottom: 1px solid #ddd;
     padding: 20px 5px ;
     text-align: center;
+    font-size: 14px;
 }
-

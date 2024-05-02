@@ -18,6 +18,8 @@ import PaymentItem from "./interface/payment-item.interface";
 import Coupon from "./interface/coupon.interface";
 import PaymentAndOrderInfo from "./interface/pymentAndOrderInfo.interface";
 import ReviewStats from "./interface/reviewStats.interface";
+import { PointsDetails } from "./interface/pointsDetail.interface";
+import Member from "./interface/member.interface";
 
 export type{
     ResponseCode,
@@ -40,4 +42,6 @@ export type{
     Coupon,
     PaymentAndOrderInfo,
     ReviewStats,
+    PointsDetails,
+    Member
 }

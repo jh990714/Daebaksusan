@@ -39,10 +39,10 @@ export const PaymentDetails: React.FC = () => {
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
-        scrollPaymentShowListToTop();
+        scrollToTop();
     };
 
-    const scrollPaymentShowListToTop = () => {
+    const scrollToTop = () => {
         if (paymentShowListRef.current) {
             paymentShowListRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -54,7 +54,7 @@ export const PaymentDetails: React.FC = () => {
 
 
     return (
-        <div className="sm:w-4/5 sm:mt-5 md:ml-10" ref={paymentShowListRef}>
+        <div ref={paymentShowListRef}>
             <div className='mt-3 text-left text-2xl border-b font-semibold'> 주문 내역 </div>
             <div className='font-medium'>
                 {paymentDetails ? (

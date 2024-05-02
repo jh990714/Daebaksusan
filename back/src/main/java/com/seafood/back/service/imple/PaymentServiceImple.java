@@ -42,6 +42,7 @@ import com.seafood.back.service.CartService;
 import com.seafood.back.service.CouponService;
 import com.seafood.back.service.MemberService;
 import com.seafood.back.service.PaymentService;
+import com.seafood.back.service.PointsTransactionService;
 import com.seafood.back.service.ProductService;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
@@ -62,6 +63,7 @@ public class PaymentServiceImple implements PaymentService {
     private final CartService cartService;
     private final CouponService couponService;
     private final MemberService memberService;
+    private final PointsTransactionService pointsTransactionService;
 
     private final IamportClient iamportClient;
 
@@ -136,7 +138,6 @@ public class PaymentServiceImple implements PaymentService {
             String currentDate = dateFormat.format(today);
 
             // 해당 날짜에 해당하는 주문번호들의 개수를 가져옴
-            // 시간을 무시하기 위해 현재 날짜의 시간을 00:00:00으로 설정
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(today);
             calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -182,8 +183,14 @@ public class PaymentServiceImple implements PaymentService {
                         .map(CartDTO::getCartId)
                         .collect(Collectors.toList());
 
+                
                 cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
-                memberService.deductPoints(id, points);
+
+                if (points != BigDecimal.ZERO) {
+                    
+                    BigDecimal subTotal = memberService.deductPoints(id, points);
+                    pointsTransactionService.createTransaction(id, "상품 구매", points.negate(), subTotal);
+                }
             }
             // 결제 정보 저장
             String orderNumber = savePaymentDetails(id, impUid, password);
@@ -240,7 +247,7 @@ public class PaymentServiceImple implements PaymentService {
         }
 
         BigDecimal pointsUsed = BigDecimal.ZERO;
-        if (points != null) {
+        if (points != BigDecimal.ZERO) {
             pointsUsed = points;
             BigDecimal availablePoint = memberService.getAvailablePoints(id);
             if (points.compareTo(availablePoint) > 0) {
@@ -297,7 +304,8 @@ public class PaymentServiceImple implements PaymentService {
             productService.addProductQuantities(paymentDetailDTO.getOrderItems());
             // 사용된 포인트를 돌려주기
             BigDecimal pointsUsed = paymentDetailDTO.getPoints();
-            memberService.deductPoints(memberId, pointsUsed.negate());
+            BigDecimal subTotal = memberService.deductPoints(memberId, pointsUsed.negate()); 
+            pointsTransactionService.createTransaction(memberId, "결제취소", pointsUsed, subTotal);
 
             couponService.returnCoupon(memberId, paymentDetailDTO.getCoupon());
 
