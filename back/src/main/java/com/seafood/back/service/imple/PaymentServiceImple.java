@@ -288,6 +288,7 @@ public class PaymentServiceImple implements PaymentService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> refundIamport(String memberId, String orderNumber) {
         try {
@@ -304,8 +305,11 @@ public class PaymentServiceImple implements PaymentService {
             productService.addProductQuantities(paymentDetailDTO.getOrderItems());
             // 사용된 포인트를 돌려주기
             BigDecimal pointsUsed = paymentDetailDTO.getPoints();
-            BigDecimal subTotal = memberService.deductPoints(memberId, pointsUsed.negate()); 
-            pointsTransactionService.createTransaction(memberId, "결제취소", pointsUsed, subTotal);
+
+            if (pointsUsed != BigDecimal.ZERO) {
+                BigDecimal subTotal = memberService.deductPoints(memberId, pointsUsed.negate()); 
+                pointsTransactionService.createTransaction(memberId, "결제취소", pointsUsed, subTotal);
+            }
 
             couponService.returnCoupon(memberId, paymentDetailDTO.getCoupon());
 
