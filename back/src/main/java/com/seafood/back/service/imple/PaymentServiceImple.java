@@ -222,7 +222,11 @@ public class PaymentServiceImple implements PaymentService {
                 });
         
         Number memberIdNumber = (Number) jsonMap.get("id");
-        Long memberId = memberIdNumber.longValue();
+        Long memberId = null;
+
+        if (memberIdNumber != null) {
+            memberId = memberIdNumber.longValue();
+        }
                 
         List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
                 new TypeReference<List<CartDTO>>() {

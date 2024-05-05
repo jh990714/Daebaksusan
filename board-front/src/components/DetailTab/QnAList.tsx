@@ -23,7 +23,7 @@ export const QnAList: React.FC<QnAListProps> = ({ productId }) => {
 
     useEffect(() => {
         fetchData();
-    }, [page]);
+    }, [page, productId]);
 
     const fetchData = async () => {
         try {
