@@ -13,7 +13,7 @@ import { PaymentDetail, PointsDetails } from 'types';
 export const MyPoints = () => {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
-    const [pointsDetails, setPointsDetails] = useState<PointsDetails[]>();
+    const [pointsDetails, setPointsDetails] = useState<PointsDetails[]|null>(null);
     const [page, setPage] = useState<number>(1); // 페이지 번호
     const pageSize = 5; // 페이지 크기
     const [totalPages, setTotalPages] = useState<number>(1); // 전체 페이지 수

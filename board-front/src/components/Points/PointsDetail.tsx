@@ -8,7 +8,6 @@ interface PointsDetailProps {
 
 
 export const PointsDetail: React.FC<PointsDetailProps> = ({ pointsTransactions }) => {
-  console.log(new Date(pointsTransactions[0].date))
   return (
     <div className={styles.pointsDetailContainer}>
       <table>

@@ -32,7 +32,7 @@ export const MyPageMenu: React.FC<MyPageMenuProps> = ({ handlePageChange }) => {
             <div className="space-y-6">
                 <div className="py-1 text-base lg:text-xl text-start border-b whitespace-nowrap">회원정보</div>
                 <div className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base hover:cursor-pointer" onClick={() => handlePageChange('updateInfo')}>정보 수정 {'>'}</div>
-                <div><Link to="#" className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base">회원 탈퇴 {'>'}</Link></div>
+                <div className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base hover:cursor-pointer" onClick={() => handlePageChange('memberDelete')}>회원 탈퇴 {'>'}</div>
                 <div onClick={handleLogOut}><Link to='' className="text-gray-700 no-underline whitespace-nowrap text-sm lg:text-base">로그아웃 {'>'}</Link></div>
             </div>
         </div>

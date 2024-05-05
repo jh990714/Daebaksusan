@@ -5,13 +5,14 @@ import ReviewComp from './ReviewComp'
 import { Pagination } from 'components/Pagination';
 import { ReviewAverageComp } from './ReviewAverageComp';
 import { ReviewStats } from 'types';
+import { Loading } from 'components/Loading/Loading';
 
 interface ReviewTabProps {
   productId: number;
 }
 
 const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
-  const [reviews, setReviews] = useState<ReviewDTO[]>([]);
+  const [reviews, setReviews] = useState<ReviewDTO[] | null>(null);
   const [reviewStats, setReveiwStats] = useState<ReviewStats>();
   const [page, setPage] = useState<number>(1); // 페이지 번호
   const pageSize = 5; // 페이지 크기
@@ -66,10 +67,16 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
       {reviewStats &&
         <ReviewAverageComp reviewStats={reviewStats} />
       }
-      {reviews.map((review, index) => (
-        <ReviewComp key={index} review={review} />
-      ))}
-      <Pagination pageSize={pageSize} totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
+      {reviews ? (
+        <>
+          {reviews.map((review, index) => (
+            <ReviewComp key={index} review={review} />
+          ))}
+          <Pagination pageSize={pageSize} totalPages={totalPages} currentPage={page} onPageChange={handlePageChange} />
+          </>
+      ) : (
+        <Loading />
+      )}
     </div>
   )
 }

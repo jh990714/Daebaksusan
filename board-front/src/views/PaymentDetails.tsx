@@ -28,7 +28,7 @@ export const PaymentDetails: React.FC = () => {
             const data = null;
             const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
             
-            console.log(response.content)
+            console.log(response)
             setPaymentDetails(response.content);
             setTotalPages(Math.ceil(response.totalElements / pageSize));
         } catch (error) {
