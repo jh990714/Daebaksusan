@@ -10,4 +10,5 @@ public interface CouponService {
     public List<CouponDTO> mapCouponsToDTOs(String memberId);
     public void removeCoupon(String id, Long couponId);
     public void returnCoupon(String memberId, CouponDTO coupon);
+    public void createMemberCoupon(String memberId, Long couponId);
 }
