@@ -8,6 +8,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class CouponDTO {
+    private Long Id;
     private Long couponId;
     private String couponName;
     private BigDecimal discount;

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ReviewTabComp from './DetailTab/ReviewTabComp';
+import { QnAList } from './DetailTab/QnAList';
+
 
 
 
@@ -39,7 +41,7 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
             case '후기':
                 return <ReviewTabComp productId={productId}/>;
             case 'QnA':
-                return <div>QnA 내용입니다.</div>;
+                return <QnAList productId={productId} />;
             default:
                 return null;
         }
@@ -67,7 +69,7 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
                 <button className={fixedbuttonStyle('후기')} onClick={() => setActiveTab('후기')}>후기</button>
                 <button className={fixedbuttonStyle('QnA')} onClick={() => setActiveTab('QnA')}>Q&A</button>
             </div>
-            <div className="flex justify-center border p-4 rounded">
+            <div className="flex justify-center border rounded">
                 {renderContent()}
             </div>
         </div>

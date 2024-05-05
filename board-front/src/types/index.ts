@@ -20,6 +20,7 @@ import PaymentAndOrderInfo from "./interface/pymentAndOrderInfo.interface";
 import ReviewStats from "./interface/reviewStats.interface";
 import { PointsDetails } from "./interface/pointsDetail.interface";
 import Member from "./interface/member.interface";
+import { QnA } from "./interface/qna.interface";
 
 export type{
     ResponseCode,
@@ -43,5 +44,6 @@ export type{
     PaymentAndOrderInfo,
     ReviewStats,
     PointsDetails,
-    Member
+    Member,
+    QnA,
 }

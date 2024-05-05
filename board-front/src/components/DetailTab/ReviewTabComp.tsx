@@ -63,7 +63,7 @@ const ReviewTabComp: React.FC<ReviewTabProps> = ({ productId }) => {
   };
 
   return (
-    <div className="grid grid-rows w-full" ref={reviesRef}>
+    <div className="grid grid-rows w-full p-4" ref={reviesRef}>
       {reviewStats &&
         <ReviewAverageComp reviewStats={reviewStats} />
       }

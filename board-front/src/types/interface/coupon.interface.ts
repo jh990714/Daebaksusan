@@ -1,4 +1,5 @@
 export default interface Coupon {
+    id: number,
     couponId: number,
     couponName: string,
     discount: number,
