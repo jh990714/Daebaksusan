@@ -10,6 +10,7 @@ import { PaymentDetails } from './PaymentDetails';
 import { MyCoupons } from './MyCoupons';
 import { MyPoints } from './MyPoints';
 import { UpdateInfo } from './UpdateInfo';
+import { MemberDelete } from './MemberDelete';
 
 export const Mypage: React.FC = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
@@ -27,7 +28,7 @@ export const Mypage: React.FC = () => {
                 const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
                 console.log(response);
                 setUserInfo(response);
-            } catch (error) {
+            } catch (error: any) {
                 navigate('/login');
                 setIsLoggedIn(false);
                 console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
@@ -58,6 +59,8 @@ export const Mypage: React.FC = () => {
                 return <MyPoints />;
             case 'updateInfo':
                 return <UpdateInfo userInfo={userInfo}/>;
+            case 'memberDelete':
+                return <MemberDelete />;
             default:
                 return null;
         }
@@ -77,8 +80,8 @@ export const Mypage: React.FC = () => {
                 </div>
                 <div className="hidden sm:block grow text-end">
                     <span className="text-gray-600 font-semibold">{userInfo?.name} </span>
-                    <span className="text-gray-600">고객님</span>
-                    <a href="#" className="text-blue-600 ml-2">회원 정보 수정 {'>'}</a>
+                    <span className="text-gray-600">고객님 </span>
+                    <span className="text-blue-700 underline whitespace-nowrap text-sm lg:text-base hover:cursor-pointer" onClick={() => handlePageChange('updateInfo')}>회원 정보 수정 {'>'}</span>
                 </div>
             </div>
             <div className="sm:py-5">
