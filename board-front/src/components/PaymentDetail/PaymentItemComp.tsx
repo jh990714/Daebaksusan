@@ -83,8 +83,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                     {isFirstItem && (
                         <>
                             <td className="py-4 px-6 lg:py-2 lg:px-6 border-l" rowSpan={rowspan}>
-                                <div className="flex flex-col h-full">
-
+                                <div>
                                     {isCancelled ? (
                                         <p className="text-xs font-medium text-red-500">취소 완료</p>
                                     ) : (
@@ -92,8 +91,6 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                                     )}
 
                                     <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 whitespace-nowrap " onClick={handleShowInfo}>결제 정보</button>
-
-
                                 </div>
                             </td>
 

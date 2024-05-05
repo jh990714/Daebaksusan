@@ -93,8 +93,20 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                 </thead>
                 <tbody>
                     {paymentDetails.map((paymentDetail, index) => (
+
                         <React.Fragment key={index}>
+                            {(index === 0 || new Date(paymentDetail.orderDate).toLocaleDateString('ko-KR') !== new Date(paymentDetails[index - 1].orderDate).toLocaleDateString('ko-KR')) && (
+                                <tr>
+                                    <td className={styles.paymentDate} colSpan={7}>
+                                        {new Date(paymentDetail.orderDate).toLocaleDateString('ko-KR')}
+                                    </td>
+                                </tr>
+                            )}
+
                             {paymentDetail.orderItems.map((orderItem, innerIndex) => (
+
+
+
                                 <PaymentItemComp
                                     key={innerIndex}
                                     orderItem={orderItem}
@@ -106,6 +118,7 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                                     onCancelStatusChange={(newValue: boolean) => handleCancelStatusChange(index, newValue)}
                                     onReviewStatusChange={(newValue: boolean) => handleReviewStatusChange(index, innerIndex, newValue)}
                                 />
+
                             ))}
 
                             <tr>
