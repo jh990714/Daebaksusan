@@ -1,5 +1,6 @@
 package com.seafood.back.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,8 +25,8 @@ public class MemberCouponEntity {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "member_id", nullable = false)
-    private String memberId;
+    // @Column(name = "member_id", nullable = false)
+    // private String memberId;
 
     @Column(name = "coupon_id", nullable = false) // 쿠폰 ID 추가
     private Long couponId; // 쿠폰 ID 필드 추가
@@ -39,4 +40,8 @@ public class MemberCouponEntity {
 
     @Column(name = "valid_until", nullable = false)
     private Date validUntil;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
+    private MemberEntity member;
 }

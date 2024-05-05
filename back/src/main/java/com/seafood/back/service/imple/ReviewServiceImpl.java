@@ -56,9 +56,8 @@ public class ReviewServiceImpl implements ReviewService{
             reviewDTO.setReviewDate(reviewEntity.getReviewDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
             reviewDTO.setIsBest(reviewEntity.getIsBest());
 
-            String memberId = reviewEntity.getMemberId();
-            MemberEntity memberEntity = memberRepository.findById(memberId);
-            String name = memberEntity.getName();
+            
+            String name = reviewEntity.getMember().getName();
             
             // 이름이 2글자 이상인 경우에만 가운데를 별표로 대체
             if (name.length() >= 3) {
@@ -100,8 +99,9 @@ public class ReviewServiceImpl implements ReviewService{
             for(ReviewResponseEntity reviewResponseEntity: reviewResponseEntities){
                 ReviewResponseDTO reviewResponseDTO = new ReviewResponseDTO();
 
-                int adminId = reviewResponseEntity.getAdminId();
-                reviewResponseDTO.setName(memberRepository.findByMemberId(adminId).getName());
+                // int adminId = reviewResponseEntity.getAdminId();
+                // reviewResponseDTO.setName(memberRepository.findByMemberId(adminId).getName());
+                reviewResponseDTO.setName(reviewResponseEntity.getMember().getName());
                 reviewResponseDTO.setResponseText(reviewResponseEntity.getResponseText());
                 reviewResponseDTO.setResponseDate(reviewResponseEntity.getResponseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 

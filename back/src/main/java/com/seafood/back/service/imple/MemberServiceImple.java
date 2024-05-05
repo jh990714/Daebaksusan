@@ -54,15 +54,20 @@ public class MemberServiceImple implements MemberService {
     }
 
     @Override
-    public boolean authenticateMember(String memberId, String password) {
-        MemberEntity user = memberRepository.findById(memberId);
+    public MemberEntity authenticateMember(String memberId, String password) {
+        MemberEntity member = memberRepository.findById(memberId);
 
-        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
-            return false;
+        if (member == null) {
+            new RuntimeException("해당하는 회원이 없습니다.");
         }
-        return true;
 
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return member;
     }
+
 
     @Transactional
     @Override
@@ -79,6 +84,9 @@ public class MemberServiceImple implements MemberService {
             memberPoints.setMemberId(savedMember.getId());
             memberPoints.setPoints(BigDecimal.ZERO); // 초기 포인트는 0으로 설정
             memberPointsRepository.save(memberPoints);
+
+            couponService.createMemberCoupon(member.getId(), (long) 3);
+            
 
             return savedMember;
         } catch (DataIntegrityViolationException e) {
@@ -123,6 +131,7 @@ public class MemberServiceImple implements MemberService {
         return memberPoints != null ? memberPoints.getPoints() : BigDecimal.ZERO;
     }
 
+    @Transactional
     @Override
     public BigDecimal deductPoints(String id, BigDecimal points) {
         // 회원의 포인트 정보 조회
@@ -179,5 +188,16 @@ public class MemberServiceImple implements MemberService {
 
         memberRepository.save(member);
     }
+
+    @Override
+    public void withdrawMember(String memberId, String password) {
+        // 회원 인증을 수행하고, 탈퇴 처리를 진행합니다.
+        MemberEntity member = authenticateMember(memberId, password);
+        
+        // 회원 탈퇴 처리
+        memberRepository.delete(member);
+    }
+    
+        
 
 }

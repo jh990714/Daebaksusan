@@ -10,7 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.PointsDetailsEntity;
+import com.seafood.back.respository.MemberRepository;
 import com.seafood.back.respository.PointsTransactionRepository;
 import com.seafood.back.service.PointsTransactionService;
 
@@ -22,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class PointsTransactionServiceImple implements PointsTransactionService{
 
     private final PointsTransactionRepository pointsTransactionRepository;
+     private final MemberRepository memberRepository;
     
     @Override
     public Page<PointsDetailsEntity> getAllTransactions(String memberId, int page, int size) {
@@ -35,8 +38,10 @@ public class PointsTransactionServiceImple implements PointsTransactionService{
     @Transactional
     @Override
     public PointsDetailsEntity createTransaction(String memberId, String description, BigDecimal usageAmount, BigDecimal subTotal) {
+        MemberEntity member = memberRepository.findById(memberId);
         PointsDetailsEntity transactionEntity = new PointsDetailsEntity();
-        transactionEntity.setMemberId(memberId);
+
+        transactionEntity.setMember(member);
         transactionEntity.setDate(new Date());
         transactionEntity.setDescription(description);
         transactionEntity.setUsageAmount(usageAmount);

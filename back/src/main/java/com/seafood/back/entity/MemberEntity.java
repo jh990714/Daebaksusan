@@ -2,12 +2,14 @@ package com.seafood.back.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +22,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Setter
 @Entity
-public class MemberEntity{
+public class MemberEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -56,8 +58,6 @@ public class MemberEntity{
     @Column(name = "role")
     private String role;
 
-
-
     public MemberEntity(String id, String password, String name, String phone, String email, String type) {
         this.id = id;
         this.password = password;
@@ -70,5 +70,5 @@ public class MemberEntity{
         this.type = type;
         this.role = "ROLE_USER";
     }
-
+    
 }

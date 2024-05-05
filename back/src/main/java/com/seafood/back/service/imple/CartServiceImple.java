@@ -9,10 +9,12 @@ import com.seafood.back.dto.CartItemDTO;
 import com.seafood.back.dto.OptionDTO;
 import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.CartEntity;
+import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
 import com.seafood.back.respository.CartRepository;
+import com.seafood.back.respository.MemberRepository;
 import com.seafood.back.respository.ProductRepository;
 import com.seafood.back.service.CartService;
 import com.seafood.back.service.ProductService;
@@ -33,6 +35,7 @@ public class CartServiceImple implements CartService{
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final ProductService productService;
+    private final MemberRepository memberRepository;
 
     @Override
     public List<CartDTO> getCartItemsForMember(String id) {
@@ -71,7 +74,6 @@ public class CartServiceImple implements CartService{
     }
 
 
-    @SuppressWarnings("null")
     @Override
     public CartEntity addToCart(String id, Integer productId, Integer optionId, Integer quantity, Integer boxCnt) {
         Optional<CartEntity> existingCartItemOptional = cartRepository.findByMemberIdAndProductIdAndOptionId(id,
@@ -106,10 +108,11 @@ public class CartServiceImple implements CartService{
                 // 최대 수량을 초과할 경우 에러 처리 또는 예외 처리를 할 수 있습니다.
                 throw new RuntimeException("최대 수량을 초과했습니다.");
             }
+            MemberEntity member = memberRepository.findById(id);
 
             // 장바구니에 해당 상품과 옵션을 가진 아이템이 존재하지 않는 경우
             CartEntity cart = new CartEntity();
-            cart.setMemberId(id);
+            cart.setMember(member);
             cart.setProductId(productId);
             cart.setOptionId(optionId);
             cart.setQuantity(quantity);

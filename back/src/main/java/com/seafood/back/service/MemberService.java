@@ -7,7 +7,7 @@ import com.seafood.back.dto.MemberUpdateDTO;
 import com.seafood.back.entity.MemberEntity;
 
 public interface MemberService {
-    public boolean authenticateMember(String username, String password);
+    public MemberEntity authenticateMember(String username, String password);
     public String getAccessToken(String userName);
     public String getRefreshToken(String userName);
     public MemberEntity registerNewMember(MemberEntity member);
@@ -15,5 +15,6 @@ public interface MemberService {
     public BigDecimal getAvailablePoints(String id);
     public BigDecimal deductPoints(String id, BigDecimal points);
     public void updateMember(MemberUpdateDTO memberUpdateDTO);
+    public void withdrawMember(String memberId, String password);
 }
 

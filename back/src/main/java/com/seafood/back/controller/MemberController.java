@@ -14,8 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import org.springframework.security.core.Authentication;
 
 
 @Slf4j
@@ -28,14 +31,17 @@ public class MemberController {
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        if (memberService.authenticateMember(loginRequest.getId(), loginRequest.getPassword())) {
+        try {
+            MemberEntity member = memberService.authenticateMember(loginRequest.getId(), loginRequest.getPassword());
+
             String accessToken = memberService.getAccessToken(loginRequest.getId());
             String refreshToken = memberService.getRefreshToken(loginRequest.getId());
             TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
             
             return ResponseEntity.ok(tokenResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패"); // 실패 시 401 반환
     }
     
     @PostMapping("/signUp")
@@ -45,6 +51,20 @@ public class MemberController {
             return ResponseEntity.ok(registeredMember);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 또는 다른 적절한 처리
+        }
+    }
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<?> withdrawMember(Authentication authentication, @RequestBody LoginRequest loginRequest) {
+        try {
+            String memberId = authentication.getName();
+            log.info(memberId);
+            log.info(loginRequest.getPassword());
+            memberService.withdrawMember(memberId, loginRequest.getPassword());
+            
+            return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

@@ -130,6 +130,8 @@ public class InfoServiceImple implements InfoService {
                     paymentDetailDTO.setCancel(true);
                 }
 
+                paymentDetailDTO.setOrderDate(paymentDetail.getOrderDate());
+                log.info(paymentDetailDTO.getOrderDate().toString());
                 paymentDetailDTOs.add(paymentDetailDTO);
             } catch (IamportResponseException | IOException e) {
                 // 예외 발생 시 처리
@@ -197,8 +199,10 @@ public class InfoServiceImple implements InfoService {
     @Transactional
     public void saveReview(String id, String orderNumber, Integer productId, Integer optionId, String contents, Integer score,
             MultipartFile[] imageFiles) {
+        MemberEntity member = memberRepository.findById(id);
+
         ReviewEntity reviewEntity = new ReviewEntity();
-        reviewEntity.setMemberId(id);
+        reviewEntity.setMember(member);
         reviewEntity.setOrderNumber(orderNumber);
         reviewEntity.setProductId(productId);
         reviewEntity.setOptionId(optionId);
@@ -280,9 +284,8 @@ public class InfoServiceImple implements InfoService {
         reviewDTO.setReviewDate(reviewEntity.getReviewDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         reviewDTO.setIsBest(reviewEntity.getIsBest());
 
-        String memberId = reviewEntity.getMemberId();
-        MemberEntity memberEntity = memberRepository.findById(memberId);
-        reviewDTO.setName(memberEntity.getName());
+        String name = reviewEntity.getMember().getName();
+        reviewDTO.setName(name);
 
         ProductEntity productEntity = productRepository.findByProductId(reviewEntity.getProductId());
         reviewDTO.setProductName(productEntity.getName());
@@ -306,8 +309,9 @@ public class InfoServiceImple implements InfoService {
         for (ReviewResponseEntity reviewResponseEntity : reviewResponseEntities) {
             ReviewResponseDTO reviewResponseDTO = new ReviewResponseDTO();
 
-            int adminId = reviewResponseEntity.getAdminId();
-            reviewResponseDTO.setName(memberRepository.findByMemberId(adminId).getName());
+            // int adminId = reviewResponseEntity.getAdminId();
+            // reviewResponseDTO.setName(memberRepository.findByMemberId(adminId).getName());
+            reviewResponseDTO.setName(reviewResponseEntity.getMember().getName());
             reviewResponseDTO.setResponseText(reviewResponseEntity.getResponseText());
             reviewResponseDTO.setResponseDate(
                     reviewResponseEntity.getResponseDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));

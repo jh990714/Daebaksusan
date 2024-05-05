@@ -2,11 +2,12 @@ package com.seafood.back.entity;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,8 +34,8 @@ public class ReviewEntity {
     @Column(name = "option_id")
     private Integer optionId;
 
-    @Column(name = "member_id")
-    private String memberId; 
+    // @Column(name = "member_id")
+    // private String memberId; 
 
     @Column(name = "contents")
     private String contents;
@@ -50,4 +51,8 @@ public class ReviewEntity {
 
     @Column(name = "order_number")
     private String orderNumber;
+
+    @ManyToOne(cascade = CascadeType.ALL) // or CascadeType.REMOVE if you only want delete cascade
+    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
+    private MemberEntity member;
 }    
