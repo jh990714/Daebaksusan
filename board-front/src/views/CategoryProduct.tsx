@@ -147,9 +147,8 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 				<div className={styles.productListHeader}>
 					<div className={styles.productListTitle}>{pageTitle}</div>
 					<select value={sortBy} onChange={handleSortChange} className={styles.sortSelect}>
-						<option value="default"></option>
-						<option value="categories">카테고리순</option>
 						<option value="newest">최신순</option>
+						<option value="categories">카테고리순</option>
 						<option value="price">낮은가격순</option>
 						<option value="priceDesc">높은가격순</option>
 					</select>
