@@ -27,9 +27,9 @@ public class PointsTransactionController {
                                                                         @RequestParam(defaultValue = "1") int page,
                                                                         @RequestParam(defaultValue = "10") int pageSize) {
         try {                                                                
-            String id = authentication.getName();
+            Long memberId = Long.parseLong(authentication.getName());
 
-            Page<PointsDetailsEntity> transactions = pointsTransactionService.getAllTransactions(id, page, pageSize);
+            Page<PointsDetailsEntity> transactions = pointsTransactionService.getAllTransactions(memberId, page, pageSize);
             return ResponseEntity.ok(transactions);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -12,19 +12,19 @@ import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
 
 public interface InfoService {
-    MemberDTO getUserInfo(String id);
+    public MemberDTO getUserInfo(Long memberId);
 
-    Page<PaymentDetailDTO> getOrdertDetails(String id, int page, int size);
-    List<PaymentDetailDTO> getPaymentByOrderNumberAndPassword(String orderNumber, String password);
+    public Page<PaymentDetailDTO> getOrdertDetails(Long memberId, int page, int size);
+    public List<PaymentDetailDTO> getPaymentByOrderNumberAndPassword(String orderNumber, String password);
 
 
     // void saveReview(String id, ReviewRequestDTO reviewRequestDTO);
 
-    void saveReview(String id, String orderNumber, Integer productId, Integer optionId, String contents, Integer score,
+    public void saveReview(Long memberId, String orderNumber, Long productId, Long optionId, String contents, Integer score,
             MultipartFile[] imageFiles);
 
-    ReviewDTO getReviews(String id, ReviewCriteriaDTO reviewCriteriaDTO);
+    public ReviewDTO getReviews(Long memberId, ReviewCriteriaDTO reviewCriteriaDTO);
 
-    void updateInfo(String id, MemberUpdateDTO memberUpdateDTO);
+    public void updateInfo(MemberUpdateDTO memberUpdateDTO);
 
 }

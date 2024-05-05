@@ -8,8 +8,8 @@ import com.seafood.back.entity.OptionEntity;
 import java.util.List;
 
 @Repository
-public interface OptionRepository extends JpaRepository<OptionEntity, Integer> {
-    List<OptionEntity> findByProductId(Integer productId);
+public interface OptionRepository extends JpaRepository<OptionEntity, Long> {
+    List<OptionEntity> findByProductId(Long productId);
 
-    OptionEntity findByOptionId(Integer optionId);
+    OptionEntity findByOptionId(Long optionId);
 }

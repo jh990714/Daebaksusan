@@ -34,8 +34,8 @@ public class MemberController {
         try {
             MemberEntity member = memberService.authenticateMember(loginRequest.getId(), loginRequest.getPassword());
 
-            String accessToken = memberService.getAccessToken(loginRequest.getId());
-            String refreshToken = memberService.getRefreshToken(loginRequest.getId());
+            String accessToken = memberService.getAccessToken(member.getMemberId());
+            String refreshToken = memberService.getRefreshToken(member.getMemberId());
             TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
             
             return ResponseEntity.ok(tokenResponse);
@@ -57,9 +57,8 @@ public class MemberController {
     @DeleteMapping("/withdraw")
     public ResponseEntity<?> withdrawMember(Authentication authentication, @RequestBody LoginRequest loginRequest) {
         try {
-            String memberId = authentication.getName();
-            log.info(memberId);
-            log.info(loginRequest.getPassword());
+            Long memberId = Long.parseLong(authentication.getName());
+
             memberService.withdrawMember(memberId, loginRequest.getPassword());
             
             return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");

@@ -85,20 +85,20 @@ public class InfoServiceImple implements InfoService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public MemberDTO getUserInfo(String id) {
-        MemberDTO memberDto = memberService.getMemberInfo(id);
+    public MemberDTO getUserInfo(Long memberId) {
+        MemberDTO memberDto = memberService.getMemberInfo(memberId);
 
         return memberDto;
     }
 
     @Override
-    public Page<PaymentDetailDTO> getOrdertDetails(String id, int page, int size) {
+    public Page<PaymentDetailDTO> getOrdertDetails(Long memberId, int page, int size) {
         // 페이지 번호를 0부터 시작하도록 수정
         Pageable pageable = PageRequest.of(page - 1, size);
 
         // 페이지네이션된 데이터를 가져옴
         Page<PaymentDetailsEntity> paymentDetailsPage = paymentDetailsRepository
-                .findByMemberIdOrderByPaymentDetailIdDesc(id, pageable);
+                .findByMemberIdOrderByPaymentDetailIdDesc(memberId, pageable);
 
         // PaymentDetailDTO 리스트를 담을 리스트 생성
         List<PaymentDetailDTO> paymentDetailDTOs = new ArrayList<>();
@@ -117,8 +117,8 @@ public class InfoServiceImple implements InfoService {
                 // }
 
                 for (PaymentItemDTO item : orderItems) {
-                    boolean isReview = reviewRepository.existsByProductIdAndOptionIdAndMemberIdAndOrderNumber(
-                            item.getCartItem().getProduct().getProductId(), item.getCartItem().getOption().getOptionId(), id,
+                    boolean isReview = reviewRepository.existsByProductIdAndOptionIdAndMember_memberIdAndOrderNumber(
+                            item.getCartItem().getProduct().getProductId(), item.getCartItem().getOption().getOptionId(), memberId,
                             paymentDetail.getOrderNumber());
 
                     item.setIsReview(isReview);
@@ -197,9 +197,9 @@ public class InfoServiceImple implements InfoService {
 
 
     @Transactional
-    public void saveReview(String id, String orderNumber, Integer productId, Integer optionId, String contents, Integer score,
+    public void saveReview(Long memberId, String orderNumber, Long productId, Long optionId, String contents, Integer score,
             MultipartFile[] imageFiles) {
-        MemberEntity member = memberRepository.findById(id);
+        MemberEntity member = memberRepository.findByMemberId(memberId);
 
         ReviewEntity reviewEntity = new ReviewEntity();
         reviewEntity.setMember(member);
@@ -244,8 +244,8 @@ public class InfoServiceImple implements InfoService {
             usageAmount = BigDecimal.valueOf(1000);
         }
 
-        BigDecimal subTotal = memberService.deductPoints(id, usageAmount.negate());
-        pointsTransactionService.createTransaction(id, description, usageAmount, subTotal);
+        BigDecimal subTotal = memberService.deductPoints(memberId, usageAmount.negate());
+        pointsTransactionService.createTransaction(memberId, description, usageAmount, subTotal);
         
     }
 
@@ -272,9 +272,9 @@ public class InfoServiceImple implements InfoService {
     }
 
     @Override
-    public ReviewDTO getReviews(String id, ReviewCriteriaDTO reviewCriteriaDTO) {
-        ReviewEntity reviewEntity = reviewRepository.findByProductIdAndOptionIdAndMemberIdAndOrderNumber(
-            reviewCriteriaDTO.getProductId(), reviewCriteriaDTO.getOptionId(), id, reviewCriteriaDTO.getOrderNumber());
+    public ReviewDTO getReviews(Long memberId, ReviewCriteriaDTO reviewCriteriaDTO) {
+        ReviewEntity reviewEntity = reviewRepository.findByProductIdAndOptionIdAndMember_memberIdAndOrderNumber(
+            reviewCriteriaDTO.getProductId(), reviewCriteriaDTO.getOptionId(), memberId, reviewCriteriaDTO.getOrderNumber());
 
         ReviewDTO reviewDTO = new ReviewDTO();
 
@@ -290,12 +290,12 @@ public class InfoServiceImple implements InfoService {
         ProductEntity productEntity = productRepository.findByProductId(reviewEntity.getProductId());
         reviewDTO.setProductName(productEntity.getName());
 
-        int optionId = reviewEntity.getOptionId();
+        Long optionId = reviewEntity.getOptionId();
 
         OptionEntity optionEntity = optionRepository.findByOptionId(optionId);
         reviewDTO.setOptionName(optionEntity.getName());
 
-        int reviewId = reviewEntity.getReviewId();
+        Long reviewId = reviewEntity.getReviewId();
 
         List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewId);
         List<String> imageUrls = new ArrayList<String>();
@@ -324,11 +324,7 @@ public class InfoServiceImple implements InfoService {
     }
 
     @Override
-    public void updateInfo(String id, MemberUpdateDTO memberUpdateDTO) {
-        if (!id.equals(memberUpdateDTO.getId())) {
-            throw new IllegalArgumentException("ID가 일치하지 않습니다.");
-        }
-        
+    public void updateInfo(MemberUpdateDTO memberUpdateDTO) {
         memberService.updateMember(memberUpdateDTO);
     }
 }

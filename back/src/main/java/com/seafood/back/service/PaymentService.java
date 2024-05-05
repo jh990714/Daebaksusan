@@ -13,9 +13,9 @@ import com.siot.IamportRestClient.response.Payment;
 
 public interface PaymentService {
     public BigDecimal orderAmount(String imp_uid, List<CartDTO> orderItems);
-    public String savePaymentDetails(String id, String imp_uid, String password);
-    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password, CouponDTO couponId, BigDecimal points);
-    public ResponseEntity<?> refundIamport(String id, String oderNumber);
+    public String savePaymentDetails(Long memberId, String imp_uid, String password);
+    public String processSuccessfulPayment(Long memberId, List<CartDTO> orderItems, String impUid, String password, CouponDTO couponId, BigDecimal points);
+    public ResponseEntity<?> refundIamport(Long memberId, String orderNumber);
     public Map<String, Object> verifyAndProcessPayment(String imp_uid) throws Exception;
     public IamportResponse<Payment> cancelPayment(String imp_uid);
     public ResponseEntity<?> getPaymentAndOrderInfo(String orderNumber);

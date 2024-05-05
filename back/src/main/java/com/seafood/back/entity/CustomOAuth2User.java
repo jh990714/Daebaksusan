@@ -11,10 +11,9 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomOAuth2User implements OAuth2User{
+public class CustomOAuth2User implements OAuth2User {
 
-    private String memberId;
-
+    private Long memberId;
 
     @Override
     public Map<String, Object> getAttributes() {
@@ -23,12 +22,16 @@ public class CustomOAuth2User implements OAuth2User{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-       return null;
+        return null;
+    }
+
+    public Long getMemberId() {
+        return this.memberId;
     }
 
     @Override
     public String getName() {
-       return this.memberId;
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getName'");
     }
-    
 }

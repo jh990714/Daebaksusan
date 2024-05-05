@@ -31,8 +31,8 @@ public class InfoController {
 
     @GetMapping
     public ResponseEntity<MemberDTO> myPage(Authentication authentication) {
-        String id = authentication.getName();
-        MemberDTO userInfo = infoService.getUserInfo(id);
+        Long memberId = Long.parseLong(authentication.getName());
+        MemberDTO userInfo = infoService.getUserInfo(memberId);
 
         return ResponseEntity.ok().body(userInfo);
     }
@@ -42,8 +42,8 @@ public class InfoController {
                                                @RequestParam(defaultValue = "1") int page,
                                                @RequestParam(defaultValue = "10") int pageSize) {
         try {
-            String id = authentication.getName();
-            Page<PaymentDetailDTO> paymentDetails = infoService.getOrdertDetails(id, page, pageSize);
+            Long memberId = Long.parseLong(authentication.getName());
+            Page<PaymentDetailDTO> paymentDetails = infoService.getOrdertDetails(memberId, page, pageSize);
             return ResponseEntity.ok().body(paymentDetails);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -52,15 +52,15 @@ public class InfoController {
     @PostMapping("/reviewSave")
     public ResponseEntity<?> saveReview(Authentication authentication,
                                         @RequestParam("orderNumber") String orderNumber,
-                                        @RequestParam("productId") Integer productId,
-                                        @RequestParam(name = "optionId", required = false) Integer optionId,
+                                        @RequestParam("productId") Long productId,
+                                        @RequestParam(name = "optionId", required = false) Long optionId,
                                         @RequestParam("contents") String contents,
                                         @RequestParam("score") Integer score,
                                         @RequestParam(value = "imageFiles", required = false) MultipartFile[] imageFiles)
 {
         try {
-            String id = authentication.getName();
-            infoService.saveReview(id, orderNumber, productId, optionId, contents, score, imageFiles);
+            Long memberId = Long.parseLong(authentication.getName());
+            infoService.saveReview(memberId, orderNumber, productId, optionId, contents, score, imageFiles);
     
             return ResponseEntity.ok().body("성공");
         } catch (Exception e) {
@@ -72,9 +72,9 @@ public class InfoController {
     public ResponseEntity<?> getReviews(Authentication authentication,
                                         @RequestBody ReviewCriteriaDTO reviewCriteriaDTO) {
         try {
-            String id = authentication.getName();
+            Long memberId = Long.parseLong(authentication.getName());
             log.info(reviewCriteriaDTO.getOrderNumber());
-            ReviewDTO reviewDTO = infoService.getReviews(id, reviewCriteriaDTO);
+            ReviewDTO reviewDTO = infoService.getReviews(memberId, reviewCriteriaDTO);
             return ResponseEntity.ok().body(reviewDTO);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("실패");
@@ -84,8 +84,9 @@ public class InfoController {
     @PostMapping("/updateInfo")
     public ResponseEntity<?> updateInfo(Authentication authentication, @RequestBody MemberUpdateDTO memberUpdateDTO) {
         try {
-            String id = authentication.getName();
-            infoService.updateInfo(id, memberUpdateDTO);
+            Long memberId = Long.parseLong(authentication.getName());
+            memberUpdateDTO.setMemberId(memberId);
+            infoService.updateInfo(memberUpdateDTO);
             return ResponseEntity.ok().body("s");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

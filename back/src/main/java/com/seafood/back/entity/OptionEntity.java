@@ -20,10 +20,10 @@ public class OptionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "option_id")
-    private Integer optionId;
+    private Long optionId;
 
     @Column(name = "product_id")
-    private Integer productId;
+    private Long productId;
 
     @Column(name = "name")
     private String name;  

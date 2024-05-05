@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.seafood.back.entity.PointsDetailsEntity;
 
-public interface PointsTransactionRepository extends JpaRepository<PointsDetailsEntity, Integer>{
-    Page<PointsDetailsEntity> findByMemberIdOrderByPtIdDesc(String memberId, Pageable pageable);
+public interface PointsTransactionRepository extends JpaRepository<PointsDetailsEntity, Long>{
+    Page<PointsDetailsEntity> findByMember_memberIdOrderByPtIdDesc(Long memberId, Pageable pageable);
 }

@@ -64,6 +64,6 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService{
         
 
 
-        return new CustomOAuth2User(id);
+        return new CustomOAuth2User();
     }
 }

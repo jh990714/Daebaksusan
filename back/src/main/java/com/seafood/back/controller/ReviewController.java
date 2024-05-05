@@ -25,7 +25,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Page<ReviewDTO>> findReviews(@PathVariable Integer productId,
+    public ResponseEntity<Page<ReviewDTO>> findReviews(@PathVariable Long productId,
                                                         @RequestParam(defaultValue = "1") int page,
                                                         @RequestParam(defaultValue = "10") int pageSize) {
         Page<ReviewDTO> reviews = reviewService.findReviews(productId, page, pageSize);
@@ -33,7 +33,7 @@ public class ReviewController {
     }
 
     @GetMapping("/stats/{productId}")
-    public ResponseEntity<ReviewStatsDTO> getProductReviewStats(@PathVariable("productId") Integer productId) {
+    public ResponseEntity<ReviewStatsDTO> getProductReviewStats(@PathVariable("productId") Long productId) {
         ReviewStatsDTO reviewStats = reviewService.getProductReviewStats(productId);
         return ResponseEntity.ok(reviewStats);
     }

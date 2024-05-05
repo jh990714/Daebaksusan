@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ReviewRequestDTO {
-    Integer productId;
-    Integer optionId;
+    Long productId;
+    Long optionId;
     String contents;
     Integer score;
     MultipartFile[] imageFiles;

@@ -7,7 +7,7 @@ import com.seafood.back.entity.MemberCouponEntity;
 import java.util.List;
 
 public interface MemberCouponRepository extends JpaRepository<MemberCouponEntity, Long> {
-    List<MemberCouponEntity> findCouponsByMemberId(String memberId);
+    List<MemberCouponEntity> findCouponsByMember_memberId(Long memberId);
 
-    void deleteByCouponCouponIdAndMemberId(Long couponId, String memberId);
+    void deleteByIdAndMember_memberId(Long id, Long memberId);
 }

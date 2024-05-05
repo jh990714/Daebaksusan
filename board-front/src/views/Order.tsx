@@ -164,7 +164,7 @@ export const Order: React.FC = () => {
             const data = null;
 
             const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
-            id = response.id
+            id = response.memberId
 
             startPayment(id)
 
@@ -292,6 +292,18 @@ export const Order: React.FC = () => {
         setIsModalOpen(false);
     };
 
+    const handleCouponChange: ChangeEventHandler<HTMLSelectElement> = (event) => {
+        const selectedIndex = parseInt(event.target.value);
+
+        const selectedCouponObj = ordererInfo?.coupons[selectedIndex];
+        const coupon = selectedCouponObj ? selectedCouponObj.discount : 0;
+
+        if (totalItemPrice + totalShippingCost - selectedPoint - coupon >= 0) {
+            setSelectedCoupon(selectedIndex);
+        }
+    };
+    
+
     const handleSelectedPointChange: ChangeEventHandler<HTMLInputElement> = (event) => {
         const inputValue = event.target.value.trim(); // 입력값의 양 끝 공백 제거
         const value = Number(inputValue); // 입력된 값을 숫자로 변환
@@ -304,7 +316,7 @@ export const Order: React.FC = () => {
             if (value > ordererInfo.points) {
                 setSelectedPoint(ordererInfo.points);
             } else {
-                if (totalItemPrice + totalShippingCost - value >= 0) {
+                if (totalItemPrice + totalShippingCost - value - couponDiscount() >= 0) {
                     setSelectedPoint(value);
                 } else {
                     setSelectedPoint(0);
@@ -441,20 +453,20 @@ export const Order: React.FC = () => {
                     <div className='font-bold mb-2'> 쿠폰 </div>
                     <select
                         value={selectedCoupon}
-                        onChange={(e) => setSelectedCoupon(parseInt(e.target.value))}
+                        onChange={handleCouponChange}
                         className="coupon"
                     >
-                   <option value={-1}>쿠폰을 선택하세요</option>
-                    {ordererInfo?.coupons.map((coupon, index) => (
-                        (totalItemPrice + totalShippingCost) >= coupon.minimumOrderAmount && (
-                            <option key={index} value={index}>
-                                {coupon.couponName} (-{coupon.discount.toLocaleString()}원) 
-                                <p>
-                                    (최소 주문 금액: {coupon.minimumOrderAmount.toLocaleString()}원)
-                                </p>
-                            </option>
-                        )
-                    ))}
+                        <option value={-1}>쿠폰을 선택하세요</option>
+                            {ordererInfo?.coupons.map((coupon, index) => (
+                                (totalItemPrice + totalShippingCost) >= coupon.minimumOrderAmount &&(
+                                    <option key={index} value={index}>
+                                        {coupon.couponName} (-{coupon.discount.toLocaleString()}원) 
+                                        <p>
+                                            (최소 주문 금액: {coupon.minimumOrderAmount.toLocaleString()}원)
+                                        </p>
+                                    </option>
+                                )
+                            ))}
 
 
                     </select>

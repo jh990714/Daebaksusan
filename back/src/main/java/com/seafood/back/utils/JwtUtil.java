@@ -8,11 +8,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class JwtUtil {
 
-    public static String getId(String token, String secretKey) {
+    public static Long getId(String token, String secretKey) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token)
-        .getBody().get("ID", String.class);
+                .getBody().get("ID", Long.class);
     }
-
+    
     public static boolean isExpired(String token, String secretKey) {
         // Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
         // Date expiration = claims.getExpiration();
@@ -27,7 +27,7 @@ public class JwtUtil {
                 .getBody().getExpiration().before(new Date());
     }
 
-    public static String createJwt(String id, String secretKey, Long expiredMs) {
+    public static String createJwt(Long id, String secretKey, Long expiredMs) {
         Claims claims = Jwts.claims();
 
         claims.put("ID", id);
@@ -45,8 +45,8 @@ public class JwtUtil {
             // db에서도 해줘야함
             return null;
         }
-        String ID = getId(refreshToken, refreshSecretKey);
-        return createJwt(ID, accessSecretKey, expiredMs);
+        Long Id = getId(refreshToken, refreshSecretKey);
+        return createJwt(Id, accessSecretKey, expiredMs);
     }
 
     

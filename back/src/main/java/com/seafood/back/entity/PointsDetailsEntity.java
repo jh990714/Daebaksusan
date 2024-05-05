@@ -24,7 +24,7 @@ public class PointsDetailsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pt_id")
-    private Integer ptId;
+    private Long ptId;
 
     // @Column(name = "member_id")
     // private String memberId;
@@ -42,6 +42,6 @@ public class PointsDetailsEntity {
     private BigDecimal subTotal;
 
     @ManyToOne(cascade = CascadeType.ALL) // or CascadeType.REMOVE if you only want delete cascade
-    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
     private MemberEntity member;
 }

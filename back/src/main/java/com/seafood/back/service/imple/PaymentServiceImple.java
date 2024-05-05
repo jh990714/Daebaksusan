@@ -80,8 +80,8 @@ public class PaymentServiceImple implements PaymentService {
         List<ProductDealsEntity> productDeals = productService.findProductDeal();
 
         for (CartDTO orderItem : orderItems) {
-            int productId = orderItem.getCartItem().getProduct().getProductId(); // 상품 ID
-            int optionId = orderItem.getCartItem().getOption().getOptionId(); // 옵션 ID
+            Long productId = orderItem.getCartItem().getProduct().getProductId(); // 상품 ID
+            Long optionId = orderItem.getCartItem().getOption().getOptionId(); // 옵션 ID
 
             // 상품과 옵션을 조회합니다.
             Optional<ProductEntity> productOptional = productRepository.findById(productId);
@@ -124,7 +124,7 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String savePaymentDetails(String id, String impUid, String password) {
+    public String savePaymentDetails(Long memberId, String impUid, String password){
         try {
             PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
@@ -151,8 +151,8 @@ public class PaymentServiceImple implements PaymentService {
             // 주문번호를 생성 (날짜 + 해당 날짜의 주문번호 개수)
             String orderNumber = currentDate + "_" + String.format("%08d", orderCountForToday + 1);
 
-            if (id != null) {
-                paymentDetails.setMemberId(id);
+            if (memberId != null) {
+                paymentDetails.setMemberId(memberId);
             }
 
             paymentDetails.setOrderNumber(orderNumber);
@@ -171,33 +171,32 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String processSuccessfulPayment(String id, List<CartDTO> orderItems, String impUid, String password,
-            CouponDTO coupon, BigDecimal points) {
+    public String processSuccessfulPayment(Long memberId, List<CartDTO> orderItems, String impUid, String password, CouponDTO coupon, BigDecimal points) {
         try {
             // 결제가 성공하면 상품 수량 변경
             productService.updateProductQuantities(orderItems);
 
             // 결제가 성공하면 카트 아이템 삭제
-            if (id != null) {
+            if (memberId != null) {
                 List<Long> cartItemIdsToDelete = orderItems.stream()
                         .map(CartDTO::getCartId)
                         .collect(Collectors.toList());
 
                 
-                cartService.deleteSelectedCartItems(id, cartItemIdsToDelete);
+                cartService.deleteSelectedCartItems(memberId, cartItemIdsToDelete);
 
                 if (points != BigDecimal.ZERO) {
                     
-                    BigDecimal subTotal = memberService.deductPoints(id, points);
-                    pointsTransactionService.createTransaction(id, "상품 구매", points.negate(), subTotal);
+                    BigDecimal subTotal = memberService.deductPoints(memberId, points);
+                    pointsTransactionService.createTransaction(memberId, "상품 구매", points.negate(), subTotal);
                 }
             }
             // 결제 정보 저장
-            String orderNumber = savePaymentDetails(id, impUid, password);
+            String orderNumber = savePaymentDetails(memberId, impUid, password);
 
             // 쿠폰 제거
             if (coupon != null) {
-                couponService.removeCoupon(id, coupon.getCouponId());
+                couponService.removeCoupon(memberId, coupon.getId());
             }
 
             return orderNumber;
@@ -221,7 +220,10 @@ public class PaymentServiceImple implements PaymentService {
         Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
                 new TypeReference<Map<String, Object>>() {
                 });
-        String id = (String) jsonMap.get("id");
+        
+        Number memberIdNumber = (Number) jsonMap.get("id");
+        Long memberId = memberIdNumber.longValue();
+                
         List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
                 new TypeReference<List<CartDTO>>() {
                 });
@@ -239,7 +241,7 @@ public class PaymentServiceImple implements PaymentService {
         BigDecimal paidAmount = iamportResponse.getResponse().getAmount();
         BigDecimal orderAmount = orderAmount(imp_uid, orderItems);
 
-        CouponAmountResult couponAmountResult = couponService.couponAmount(id, coupon);
+        CouponAmountResult couponAmountResult = couponService.couponAmount(memberId, coupon);
 
         if (orderAmount.compareTo(couponAmountResult.getMinimumOrderAmount()) < 0) {
             cancelPayment(imp_uid);
@@ -249,7 +251,7 @@ public class PaymentServiceImple implements PaymentService {
         BigDecimal pointsUsed = BigDecimal.ZERO;
         if (points != BigDecimal.ZERO) {
             pointsUsed = points;
-            BigDecimal availablePoint = memberService.getAvailablePoints(id);
+            BigDecimal availablePoint = memberService.getAvailablePoints(memberId);
             if (points.compareTo(availablePoint) > 0) {
                 cancelPayment(imp_uid);
                 throw new IllegalArgumentException("사용 가능한 포인트보다 더 많은 포인트를 사용하려고 합니다.");
@@ -259,7 +261,7 @@ public class PaymentServiceImple implements PaymentService {
         BigDecimal expectedAmount = orderAmount.subtract(couponAmountResult.getCouponAmount()).subtract(pointsUsed);
 
         if (expectedAmount.compareTo(paidAmount) == 0) {
-            String orderNumber = processSuccessfulPayment(id, orderItems, imp_uid, password, coupon, pointsUsed);
+            String orderNumber = processSuccessfulPayment(memberId, orderItems, imp_uid, password, coupon, pointsUsed);
             Map<String, Object> response = new HashMap<>();
             response.put("orderNumber", orderNumber);
             response.put("iamportResponse", iamportResponse);
@@ -290,7 +292,7 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public ResponseEntity<?> refundIamport(String memberId, String orderNumber) {
+    public ResponseEntity<?> refundIamport(Long memberId, String orderNumber) {
         try {
             PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByMemberIdAndOrderNumber(memberId,
                     orderNumber);

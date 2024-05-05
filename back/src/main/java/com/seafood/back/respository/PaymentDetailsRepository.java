@@ -17,8 +17,8 @@ import com.seafood.back.entity.PaymentDetailsEntity;
 public interface PaymentDetailsRepository extends JpaRepository<PaymentDetailsEntity, Long> {
     @Query(value = "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = 'payment_details' AND table_schema = DATABASE()", nativeQuery = true)
     Long getAutoIncrementId();
-    Page<PaymentDetailsEntity> findByMemberIdOrderByPaymentDetailIdDesc(String id, Pageable pageable);
-    PaymentDetailsEntity findByMemberIdAndOrderNumber(String id, String orderNumber);
+    Page<PaymentDetailsEntity> findByMemberIdOrderByPaymentDetailIdDesc(Long memberId, Pageable pageable);
+    PaymentDetailsEntity findByMemberIdAndOrderNumber(Long memberId, String orderNumber);
     PaymentDetailsEntity findByOrderNumber(String orderNumber);
     PaymentDetailsEntity findByImpUid(String imp_uid);
     PaymentDetailsEntity findByPasswordAndOrderNumber(String password, String orderNumber);

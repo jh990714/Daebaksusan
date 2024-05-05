@@ -41,7 +41,7 @@ public class MemberCouponEntity {
     @Column(name = "valid_until", nullable = false)
     private Date validUntil;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
     private MemberEntity member;
 }

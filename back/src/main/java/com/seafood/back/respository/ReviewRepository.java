@@ -10,20 +10,20 @@ import org.springframework.data.jpa.repository.Query;
 import com.seafood.back.dto.ReviewStatsDTO;
 import com.seafood.back.entity.ReviewEntity;
 
-public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
+public interface ReviewRepository extends JpaRepository<ReviewEntity, Long> {
 
-        List<ReviewEntity> findByProductId(Integer productId);
+        List<ReviewEntity> findByProductId(Long productId);
 
-        Page<ReviewEntity> findByProductId(Integer productId, Pageable pageable);
+        Page<ReviewEntity> findByProductId(Long productId, Pageable pageable);
 
-        Page<ReviewEntity> findByMemberIdOrderByReviewDateDesc(int i, Pageable pageable);
+        Page<ReviewEntity> findByMember_memberIdOrderByReviewDateDesc(Long memberId, Pageable pageable);
 
-        boolean existsByProductIdAndOptionIdAndMemberIdAndOrderNumber(Integer productId, Integer optionId,
-                        String memberId,
+        boolean existsByProductIdAndOptionIdAndMember_memberIdAndOrderNumber(Long productId, Long optionId,
+                        Long memberId,
                         String orderNumber);
 
-        ReviewEntity findByProductIdAndOptionIdAndMemberIdAndOrderNumber(Integer productId, Integer optionId,
-                        String memberId,
+        ReviewEntity findByProductIdAndOptionIdAndMember_memberIdAndOrderNumber(Long productId, Long optionId,
+                        Long memberId,
                         String orderNumber);
 
         @Query("SELECT new com.seafood.back.dto.ReviewStatsDTO(" +
@@ -37,6 +37,6 @@ public interface ReviewRepository extends JpaRepository<ReviewEntity, Integer> {
                         "FROM ReviewEntity r " +
                         "WHERE r.productId = :productId " +
                         "GROUP BY r.productId")
-        ReviewStatsDTO getProductReviewStats(Integer productId);
+        ReviewStatsDTO getProductReviewStats(Long productId);
 
 }

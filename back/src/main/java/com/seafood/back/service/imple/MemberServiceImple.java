@@ -44,18 +44,18 @@ public class MemberServiceImple implements MemberService {
     private Long refreshTokenExpiredMs = (long) (1000 * 60 * 60 * 24 * 7); // 리프레시 토큰 만료 시간 (7일)
 
     @Override
-    public String getAccessToken(String userName) {
-        return JwtUtil.createJwt(userName, accessSecretKey, accessTokenExpiredMs);
+    public String getAccessToken(Long memberId) {
+        return JwtUtil.createJwt(memberId, accessSecretKey, accessTokenExpiredMs);
     }
 
     @Override
-    public String getRefreshToken(String userName) {
-        return JwtUtil.createJwt(userName, refreshSecretKey, refreshTokenExpiredMs);
+    public String getRefreshToken(Long memberId) {
+        return JwtUtil.createJwt(memberId, refreshSecretKey, refreshTokenExpiredMs);
     }
 
     @Override
-    public MemberEntity authenticateMember(String memberId, String password) {
-        MemberEntity member = memberRepository.findById(memberId);
+    public MemberEntity authenticateMember(Long memberId, String password) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
 
         if (member == null) {
             new RuntimeException("해당하는 회원이 없습니다.");
@@ -68,6 +68,20 @@ public class MemberServiceImple implements MemberService {
         return member;
     }
 
+    @Override
+    public MemberEntity authenticateMember(String id, String password) {
+        MemberEntity member = memberRepository.findById(id);
+
+        if (member == null) {
+            new RuntimeException("해당하는 회원이 없습니다.");
+        }
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return member;
+    }
 
     @Transactional
     @Override
@@ -81,11 +95,11 @@ public class MemberServiceImple implements MemberService {
 
             // 회원 포인트 정보 생성 및 저장
             MemberPointsEntity memberPoints = new MemberPointsEntity();
-            memberPoints.setMemberId(savedMember.getId());
+            memberPoints.setMemberId(savedMember.getMemberId());
             memberPoints.setPoints(BigDecimal.ZERO); // 초기 포인트는 0으로 설정
             memberPointsRepository.save(memberPoints);
 
-            couponService.createMemberCoupon(member.getId(), (long) 3);
+            couponService.createMemberCoupon(member.getMemberId(), (long) 3);
             
 
             return savedMember;
@@ -99,8 +113,8 @@ public class MemberServiceImple implements MemberService {
     }
 
     @Override
-    public MemberDTO getMemberInfo(String id) {
-        MemberEntity member = memberRepository.findById(id);
+    public MemberDTO getMemberInfo(Long memberId) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
         MemberDTO memberDto = new MemberDTO();
 
         memberDto.setMemberId(member.getMemberId());
@@ -112,30 +126,30 @@ public class MemberServiceImple implements MemberService {
         memberDto.setAddress(member.getAddress());
         memberDto.setDetailAddress(member.getDetailAddress());
 
-        MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(id);
+        MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(memberId);
         if (memberPoints != null) {
             memberDto.setPoints(memberPoints.getPoints());
         } else {
             memberDto.setPoints(BigDecimal.ZERO);
         }
 
-        List<CouponDTO> couponDTOs = couponService.mapCouponsToDTOs(id);
+        List<CouponDTO> couponDTOs = couponService.mapCouponsToDTOs(memberId);
         memberDto.setCoupons(couponDTOs);
 
         return memberDto;
     }
 
     @Override
-    public BigDecimal getAvailablePoints(String id) {
-        MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(id);
+    public BigDecimal getAvailablePoints(Long memberId) {
+        MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(memberId);
         return memberPoints != null ? memberPoints.getPoints() : BigDecimal.ZERO;
     }
 
     @Transactional
     @Override
-    public BigDecimal deductPoints(String id, BigDecimal points) {
+    public BigDecimal deductPoints(Long memberId, BigDecimal points) {
         // 회원의 포인트 정보 조회
-        MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(id);
+        MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(memberId);
 
         if (memberPoints != null) {
             BigDecimal currentPoints = memberPoints.getPoints();
@@ -155,7 +169,7 @@ public class MemberServiceImple implements MemberService {
 
     @Override
     public void updateMember(MemberUpdateDTO memberUpdateDTO) {
-        MemberEntity member = memberRepository.findById(memberUpdateDTO.getId());
+        MemberEntity member = memberRepository.findByMemberId(memberUpdateDTO.getMemberId());
 
         if (member == null) {
             throw new IllegalArgumentException("해당 ID를 가진 회원이 없습니다.");
@@ -190,7 +204,7 @@ public class MemberServiceImple implements MemberService {
     }
 
     @Override
-    public void withdrawMember(String memberId, String password) {
+    public void withdrawMember(Long memberId, String password) {
         // 회원 인증을 수행하고, 탈퇴 처리를 진행합니다.
         MemberEntity member = authenticateMember(memberId, password);
         

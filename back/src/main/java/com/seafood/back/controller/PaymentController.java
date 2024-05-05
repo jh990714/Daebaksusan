@@ -39,9 +39,9 @@ public class PaymentController {
     @PostMapping("/refundIamport/{orderNumber}")
     public ResponseEntity<?> cancelPayment(Authentication authentication, @PathVariable String orderNumber) {
         try {
-            String id = authentication.getName();
+            Long memberId = Long.parseLong(authentication.getName());
 
-            ResponseEntity<?> response = paymentService.refundIamport(id, orderNumber);
+            ResponseEntity<?> response = paymentService.refundIamport(memberId, orderNumber);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("결제 취소 중 오류 발생: " + e.getMessage(), e);

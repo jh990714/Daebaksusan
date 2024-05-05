@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class MemberUpdateDTO {
-    private Integer memberId;
+    private Long memberId;
     private String id;
     private String name;
     private String phone;

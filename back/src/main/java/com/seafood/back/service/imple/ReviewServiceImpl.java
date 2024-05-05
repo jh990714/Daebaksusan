@@ -42,7 +42,7 @@ public class ReviewServiceImpl implements ReviewService{
     private final ReviewResponseRepository reviewResponseRepository;
 
     @Override
-    public Page<ReviewDTO> findReviews(Integer productId, int page, int size ) {
+    public Page<ReviewDTO> findReviews(Long productId, int page, int size ) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<ReviewEntity> reviewEntities = reviewRepository.findByProductId(productId, pageable);
 
@@ -79,12 +79,12 @@ public class ReviewServiceImpl implements ReviewService{
             ProductEntity productEntity = productRepository.findByProductId(productId);
             reviewDTO.setProductName(productEntity.getName());
 
-            int optionId = reviewEntity.getOptionId();
+            Long optionId = reviewEntity.getOptionId();
 
             OptionEntity optionEntity = optionRepository.findByOptionId(optionId);
             reviewDTO.setOptionName(optionEntity.getName());
 
-            int reviewId = reviewEntity.getReviewId();
+            Long reviewId = reviewEntity.getReviewId();
 
             List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewId);
             List<String> imageUrls = new ArrayList<String>();
@@ -117,7 +117,7 @@ public class ReviewServiceImpl implements ReviewService{
     }
 
     @Override
-    public ReviewStatsDTO getProductReviewStats(Integer productId) {
+    public ReviewStatsDTO getProductReviewStats(Long productId) {
         return reviewRepository.getProductReviewStats(productId);
     }
     

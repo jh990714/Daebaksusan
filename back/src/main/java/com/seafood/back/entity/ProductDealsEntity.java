@@ -20,7 +20,7 @@ public class ProductDealsEntity {
     private Long dealId;
 
     @Column(name = "product_id")
-    private Integer productId;
+    private Long productId;
 
     @Column(name = "deal_price")
     private BigDecimal dealPrice;

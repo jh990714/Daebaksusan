@@ -26,13 +26,13 @@ public class ReviewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
-    private Integer reviewId;
+    private Long reviewId;
 
     @Column(name = "product_id")
-    private Integer productId;
+    private Long productId;
     
     @Column(name = "option_id")
-    private Integer optionId;
+    private Long optionId;
 
     // @Column(name = "member_id")
     // private String memberId; 
@@ -52,7 +52,7 @@ public class ReviewEntity {
     @Column(name = "order_number")
     private String orderNumber;
 
-    @ManyToOne(cascade = CascadeType.ALL) // or CascadeType.REMOVE if you only want delete cascade
-    @JoinColumn(name = "member_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
     private MemberEntity member;
 }    

@@ -27,18 +27,18 @@ public class PointsTransactionServiceImple implements PointsTransactionService{
      private final MemberRepository memberRepository;
     
     @Override
-    public Page<PointsDetailsEntity> getAllTransactions(String memberId, int page, int size) {
+    public Page<PointsDetailsEntity> getAllTransactions(Long memberId, int page, int size) {
 
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        Page<PointsDetailsEntity> pointsDetailsPage = pointsTransactionRepository.findByMemberIdOrderByPtIdDesc(memberId, pageable);
+        Page<PointsDetailsEntity> pointsDetailsPage = pointsTransactionRepository.findByMember_memberIdOrderByPtIdDesc(memberId, pageable);
         return pointsDetailsPage;
     }
 
     @Transactional
     @Override
-    public PointsDetailsEntity createTransaction(String memberId, String description, BigDecimal usageAmount, BigDecimal subTotal) {
-        MemberEntity member = memberRepository.findById(memberId);
+    public PointsDetailsEntity createTransaction(Long memberId, String description, BigDecimal usageAmount, BigDecimal subTotal) {
+        MemberEntity member = memberRepository.findByMemberId(memberId);
         PointsDetailsEntity transactionEntity = new PointsDetailsEntity();
 
         transactionEntity.setMember(member);

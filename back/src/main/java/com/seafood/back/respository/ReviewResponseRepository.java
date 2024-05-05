@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.seafood.back.entity.ReviewResponseEntity;
 
-public interface ReviewResponseRepository extends JpaRepository<ReviewResponseEntity, Integer> {
+public interface ReviewResponseRepository extends JpaRepository<ReviewResponseEntity, Long> {
 
-    List<ReviewResponseEntity> findByReviewId(int reviewId);
+    List<ReviewResponseEntity> findByReviewId(Long reviewId);
     
 }

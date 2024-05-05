@@ -6,9 +6,9 @@ import com.seafood.back.dto.CouponAmountResult;
 import com.seafood.back.dto.CouponDTO;
 
 public interface CouponService {
-    public CouponAmountResult couponAmount(String id, CouponDTO coupon);
-    public List<CouponDTO> mapCouponsToDTOs(String memberId);
-    public void removeCoupon(String id, Long couponId);
-    public void returnCoupon(String memberId, CouponDTO coupon);
-    public void createMemberCoupon(String memberId, Long couponId);
+    public CouponAmountResult couponAmount(Long memberId, CouponDTO coupon);
+    public List<CouponDTO> mapCouponsToDTOs(Long memberId);
+    public void removeCoupon(Long memberId, Long couponId);
+    public void returnCoupon(Long memberId, CouponDTO coupon);
+    public void createMemberCoupon(Long memberId, Long couponId);
 }

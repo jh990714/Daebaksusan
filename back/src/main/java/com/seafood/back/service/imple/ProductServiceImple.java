@@ -71,7 +71,7 @@ public class ProductServiceImple implements ProductService{
     
 
     @Override
-    public List<OptionEntity> findOption(Integer productId) {
+    public List<OptionEntity> findOption(Long productId) {
         List<OptionEntity> options = new ArrayList<>();
         optionRepository.findByProductId(productId).forEach(e -> options.add(e));
         return options;
@@ -146,13 +146,13 @@ public class ProductServiceImple implements ProductService{
     }
 
     @Override
-    public ProductEntity getProductById(Integer productId) {
+    public ProductEntity getProductById(Long productId) {
 
         return productRepository.findByProductId(productId);
     }
 
     @Override
-    public OptionEntity getOptionById(Integer optionId) {
+    public OptionEntity getOptionById(Long optionId) {
         
         return optionRepository.findByOptionId(optionId);
     }
@@ -161,7 +161,7 @@ public class ProductServiceImple implements ProductService{
     @Transactional
     public void updateProductQuantities(List<CartDTO> orderItems) {
         for (CartDTO orderItem : orderItems) {
-            int productId = orderItem.getCartItem().getProduct().getProductId();
+            Long productId = orderItem.getCartItem().getProduct().getProductId();
             int orderedQuantity = orderItem.getCartItem().getQuantity();
 
             // 상품을 데이터베이스에서 조회하여 수량을 변경합니다.
@@ -246,7 +246,7 @@ public class ProductServiceImple implements ProductService{
     public List<ProductDTO> getTimeDealProducts() {
         List<ProductDealsEntity> productDeals = findProductDeal();
 
-        List<Integer> productIds = productDeals.stream()
+        List<Long> productIds = productDeals.stream()
             .map(ProductDealsEntity::getProductId)
             .collect(Collectors.toList());
         
@@ -261,7 +261,7 @@ public class ProductServiceImple implements ProductService{
     @Transactional
     public void addProductQuantities(List<PaymentItemDTO> orderItems) {
         for (PaymentItemDTO orderItem : orderItems) {
-            int productId = orderItem.getCartItem().getProduct().getProductId();
+            Long productId = orderItem.getCartItem().getProduct().getProductId();
             Optional<ProductEntity> productOptional = productRepository.findById(productId);
             if (productOptional.isPresent()) {
                 ProductEntity product = productOptional.get();

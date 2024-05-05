@@ -9,7 +9,7 @@ import com.seafood.back.dto.ReviewStatsDTO;
 
 
 public interface ReviewService {
-    public Page<ReviewDTO> findReviews(Integer productId, int page, int size );
+    public Page<ReviewDTO> findReviews(Long productId, int page, int size );
 
-    public ReviewStatsDTO getProductReviewStats(Integer productId);
+    public ReviewStatsDTO getProductReviewStats(Long productId);
 }

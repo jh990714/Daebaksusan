@@ -53,7 +53,7 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}/options")
-    public ResponseEntity<List<OptionEntity>> getOption(@PathVariable Integer productId) {
+    public ResponseEntity<List<OptionEntity>> getOption(@PathVariable Long productId) {
         List<OptionEntity> option = productService.findOption(productId);
     
         return new ResponseEntity<>(option, HttpStatus.OK);

@@ -23,10 +23,10 @@ public class ReviewImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "image_id")
-    private Integer imageId;
+    private Long imageId;
 
     @Column(name = "review_id")
-    private Integer reviewId;
+    private Long reviewId;
 
     @Column(name = "image_url")
     private String imageUrl;

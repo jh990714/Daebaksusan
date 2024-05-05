@@ -5,8 +5,8 @@ import lombok.Setter;
 
 @Getter @Setter
 public class OrderDTO {
-    private Integer cartId;
-    private Integer productId;
+    private Long cartId;
+    private Long productId;
     private Integer optionId;
     private Integer quantity;
 }

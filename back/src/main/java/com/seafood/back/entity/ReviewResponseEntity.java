@@ -28,10 +28,10 @@ public class ReviewResponseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "response_id")
-    private Integer responseId;
+    private Long responseId;
 
     @Column(name = "review_id")
-    private Integer reviewId;
+    private Long reviewId;
     
     // @Column(name = "admin_id")
     // private Integer adminId;

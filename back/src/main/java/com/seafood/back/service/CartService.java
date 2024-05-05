@@ -8,8 +8,8 @@ import com.seafood.back.dto.CartDTO;
 import com.seafood.back.entity.CartEntity;
 
 public interface CartService {
-    public List<CartDTO> getCartItemsForMember(String id);
-    public void deleteSelectedCartItems(String id, List<Long> cartItemIdsToDelete);
-    ResponseEntity<?> saveCartItems(String id, CartEntity[] cartItems);
-    public CartEntity addToCart(String id, Integer productId, Integer optionId, Integer quantity, Integer boxCnt);
+    public List<CartDTO> getCartItemsForMember(Long memberId);
+    public void deleteSelectedCartItems(Long memberId, List<Long> cartItemIdsToDelete);
+    ResponseEntity<?> saveCartItems(Long memberId, CartEntity[] cartItems);
+    public CartEntity addToCart(Long memberId, Long productId, Long optionId, Integer quantity, Integer boxCnt);
 }

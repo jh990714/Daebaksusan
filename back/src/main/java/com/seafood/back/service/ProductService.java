@@ -13,12 +13,12 @@ public interface ProductService {
     public List<ProductDTO> findProductAll();
     public List<ProductDTO> findProductBest();
     public List<ProductDTO> findProductNew();
-    public List<OptionEntity> findOption(Integer productId);
+    public List<OptionEntity> findOption(Long productId);
     public List<ProductDTO> getProductsByCategoryAndSubcategories(Long categoryId);
     public List<ProductDTO> getProductsByCategorySub(Long categoryId);
     public List<ProductDTO> searchProducts(String query);
-    public ProductEntity getProductById(Integer productId);
-    public OptionEntity getOptionById(Integer optionId);
+    public ProductEntity getProductById(Long productId);
+    public OptionEntity getOptionById(Long optionId);
     public void updateProductQuantities(List<CartDTO> orderItems);
     public List<ProductDealsEntity> findProductDeal();
     public ProductDTO convertToProductDTO(ProductEntity product, List<ProductDealsEntity> dealProducts);

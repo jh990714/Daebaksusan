@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter @Setter
 public class ReviewCriteriaDTO {
-    private Integer productId;
-    private Integer optionId;
+    private Long productId;
+    private Long optionId;
     private String orderNumber;
 }

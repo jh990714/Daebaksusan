@@ -24,7 +24,7 @@ public class PaymentDetailsEntity {
     private String orderNumber;
 
     @Column(name = "member_id")
-    private String memberId;
+    private Long memberId;
 
     @Column(name = "imp_uid")
     private String impUid;

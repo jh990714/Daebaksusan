@@ -21,7 +21,7 @@ public class MemberPointsEntity {
     private Long pointId;
 
     @Column(name = "member_id")
-    private String memberId;
+    private Long memberId;
 
     @Column(name = "points")
     private BigDecimal points;

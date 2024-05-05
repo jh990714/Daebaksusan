@@ -38,8 +38,8 @@ public class CartServiceImple implements CartService{
     private final MemberRepository memberRepository;
 
     @Override
-    public List<CartDTO> getCartItemsForMember(String id) {
-        List<CartEntity> cartItems = cartRepository.findByMemberIdOrderByUpdatedAtDesc(id);
+    public List<CartDTO> getCartItemsForMember(Long memberId) {
+        List<CartEntity> cartItems = cartRepository.findByMember_memberIdOrderByUpdatedAtDesc(memberId);
         List<CartDTO> cartDTOs = new ArrayList<>();
         List<ProductDealsEntity> productDeals = productService.findProductDeal();
 
@@ -69,46 +69,45 @@ public class CartServiceImple implements CartService{
 
     @Override
     @Transactional
-    public void deleteSelectedCartItems(String id, List<Long> cartItemIdsToDelete) {
-        cartRepository.deleteByMemberIdAndCartIdIn(id, cartItemIdsToDelete);
+    public void deleteSelectedCartItems(Long memberId, List<Long> cartItemIdsToDelete) {
+        cartRepository.deleteByMember_memberIdAndCartIdIn(memberId, cartItemIdsToDelete);
     }
 
 
     @Override
-    public CartEntity addToCart(String id, Integer productId, Integer optionId, Integer quantity, Integer boxCnt) {
-        Optional<CartEntity> existingCartItemOptional = cartRepository.findByMemberIdAndProductIdAndOptionId(id,
+    public CartEntity addToCart(Long memberId, Long productId, Long optionId, Integer quantity, Integer boxCnt) {
+        CartEntity existingCartItemOptional = cartRepository.findByMember_memberIdAndProductIdAndOptionId(memberId,
                 productId, optionId);
 
-        Optional<ProductEntity> productOptional = productRepository.findById(productId);
+        ProductEntity productOptional = productRepository.findByProductId(productId);
 
-        if (existingCartItemOptional.isPresent()) {
+        if (existingCartItemOptional != null) {
             // 이미 장바구니에 해당 상품과 옵션을 가진 아이템이 존재하는 경우
-            CartEntity existingCartItem = existingCartItemOptional.get();
 
             
             // 기존 quantity와 새로운 quantity를 합산합니다.
-            int totalQuantity = existingCartItem.getQuantity() + quantity;
-            int newboxCnt = (int) Math.ceil((double) totalQuantity / productOptional.get().getMaxQuantityPerDelivery());
+            int totalQuantity = existingCartItemOptional.getQuantity() + quantity;
+            int newboxCnt = (int) Math.ceil((double) totalQuantity / productOptional.getMaxQuantityPerDelivery());
 
             // // 최대 수량을 초과하지 않는지 확인합니다.
             
-            if (totalQuantity > productOptional.get().getStockQuantity()) {
+            if (totalQuantity > productOptional.getStockQuantity()) {
                 // 최대 수량을 초과할 경우 에러 처리 또는 예외 처리를 할 수 있습니다.
                 throw new IllegalArgumentException("최대 수량을 초과했습니다.");
             }
 
-            existingCartItem.setQuantity(existingCartItem.getQuantity() + quantity); // 수량을 합산합니다.
-            existingCartItem.setBoxCnt(newboxCnt); // 박스 수량을 조정
-            existingCartItem.setUpdatedAt(LocalDateTime.now()); // 업데이트된 날짜로 갱신합니다.
-            CartEntity savedCartItem = cartRepository.save(existingCartItem); // 저장소에 업데이트된 아이템을 저장합니다.
+            existingCartItemOptional.setQuantity(existingCartItemOptional.getQuantity() + quantity); // 수량을 합산합니다.
+            existingCartItemOptional.setBoxCnt(newboxCnt); // 박스 수량을 조정
+            existingCartItemOptional.setUpdatedAt(LocalDateTime.now()); // 업데이트된 날짜로 갱신합니다.
+            CartEntity savedCartItem = cartRepository.save(existingCartItemOptional); // 저장소에 업데이트된 아이템을 저장합니다.
 
             return savedCartItem;
         } else {
-            if (quantity > productOptional.get().getStockQuantity()) {
+            if (quantity > productOptional.getStockQuantity()) {
                 // 최대 수량을 초과할 경우 에러 처리 또는 예외 처리를 할 수 있습니다.
                 throw new RuntimeException("최대 수량을 초과했습니다.");
             }
-            MemberEntity member = memberRepository.findById(id);
+            MemberEntity member = memberRepository.findByMemberId(memberId);
 
             // 장바구니에 해당 상품과 옵션을 가진 아이템이 존재하지 않는 경우
             CartEntity cart = new CartEntity();
@@ -127,10 +126,10 @@ public class CartServiceImple implements CartService{
     @Override
     
     @Transactional
-    public ResponseEntity<?> saveCartItems(String id, CartEntity[] cartItems) {
+    public ResponseEntity<?> saveCartItems(Long memberId, CartEntity[] cartItems) {
         try {
             for (CartEntity cartItem : cartItems) {
-               addToCart(id, cartItem.getProductId(), cartItem.getOptionId(), cartItem.getQuantity(), cartItem.getBoxCnt());
+               addToCart(memberId, cartItem.getProductId(), cartItem.getOptionId(), cartItem.getQuantity(), cartItem.getBoxCnt());
             }
 
             return ResponseEntity.ok().build(); // 성공 응답

@@ -14,6 +14,7 @@ import com.seafood.back.dto.CartDTO;
 import com.seafood.back.entity.CartEntity;
 import com.seafood.back.service.CartService;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -21,14 +22,14 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/cart")
+@RequiredArgsConstructor
 public class CartController {
-
-    @Autowired
-    private CartService cartService;
+    
+    private final CartService cartService;
 
     @GetMapping("/get")
     public List<CartDTO> getCartItemsForMember(Authentication authentication) {
-        String memberId = authentication.getName();
+        Long memberId = Long.parseLong(authentication.getName());
         
         return cartService.getCartItemsForMember(memberId);
     }
@@ -39,7 +40,8 @@ public class CartController {
             if (cartItemIdsToDelete == null) {
                 throw new IllegalArgumentException("cartItemIdsToDelete cannot be null");
             }
-            String memberId = authentication.getName();
+            
+            Long memberId = Long.parseLong(authentication.getName());
             cartService.deleteSelectedCartItems(memberId, cartItemIdsToDelete);
             return ResponseEntity.ok("Selected cart items deleted successfully.");
         } catch (Exception e) {
@@ -54,15 +56,15 @@ public class CartController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        String id = authentication.getName();
-        return  cartService.saveCartItems(id, cartItems);
+        Long memberId = Long.parseLong(authentication.getName());
+        return  cartService.saveCartItems(memberId, cartItems);
     }
 
     @PostMapping("/cartSave")
     public ResponseEntity<?> addToCart(@RequestBody CartEntity cart, Authentication authentication) {
         try {
-            String id = authentication.getName();
-            CartEntity saveCart = cartService.addToCart(id, cart.getProductId(), cart.getOptionId(), cart.getQuantity(), cart.getBoxCnt());
+            Long memberId = Long.parseLong(authentication.getName());
+            CartEntity saveCart = cartService.addToCart(memberId, cart.getProductId(), cart.getOptionId(), cart.getQuantity(), cart.getBoxCnt());
 
             if (saveCart != null) {
                 return ResponseEntity.ok().body(saveCart);

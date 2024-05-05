@@ -33,12 +33,12 @@ public class CouponServiceImple implements CouponService{
     private final MemberRepository memberRepository;
     
     @Override
-    public CouponAmountResult couponAmount(String id, CouponDTO coupon) {
-        if (id == null || coupon == null) {
+    public CouponAmountResult couponAmount(Long memberId, CouponDTO coupon) {
+        if (memberId == null || coupon == null) {
             return new CouponAmountResult(BigDecimal.ZERO, BigDecimal.ZERO);
         }
 
-        List<MemberCouponEntity> coupons = memberCouponRepository.findCouponsByMemberId(id);
+        List<MemberCouponEntity> coupons = memberCouponRepository.findCouponsByMember_memberId(memberId);
 
         CouponEntity sameCoupon = coupons.stream()
                 .filter(c -> c.getCoupon().getCouponId().equals(coupon.getCouponId())
@@ -54,14 +54,15 @@ public class CouponServiceImple implements CouponService{
     }
 
     @Override
-    public List<CouponDTO> mapCouponsToDTOs(String memberId) {
+    public List<CouponDTO> mapCouponsToDTOs(Long memberId) {
         // 회원이 가진 쿠폰 정보를 가져옴
-        List<MemberCouponEntity> coupons = memberCouponRepository.findCouponsByMemberId(memberId);
+        List<MemberCouponEntity> coupons = memberCouponRepository.findCouponsByMember_memberId(memberId);
         
         // 가져온 쿠폰 정보를 DTO에 매핑하여 반환
         return coupons.stream()
                       .map(coupon -> {
                           CouponDTO dto = new CouponDTO();
+                          dto.setId(coupon.getId());
                           dto.setCouponId(coupon.getCoupon().getCouponId());
                           dto.setCouponName(coupon.getCoupon().getCouponName());
                           dto.setDiscount(coupon.getCoupon().getDiscount());
@@ -75,10 +76,9 @@ public class CouponServiceImple implements CouponService{
 
     @Transactional
     @Override
-    public void removeCoupon(String id, Long couponId) {
+    public void removeCoupon(Long memberId, Long id) {
         try {
-            log.info(couponId.toString());
-            memberCouponRepository.deleteByCouponCouponIdAndMemberId(couponId, id);
+            memberCouponRepository.deleteByIdAndMember_memberId(id, memberId);
         } catch (Exception e) {
             throw e;
         }
@@ -87,9 +87,9 @@ public class CouponServiceImple implements CouponService{
 
     @Transactional
     @Override
-    public void returnCoupon(String memberId, CouponDTO coupon) {
+    public void returnCoupon(Long memberId, CouponDTO coupon) {
         if (coupon != null) {
-            MemberEntity member = memberRepository.findById(memberId);
+            MemberEntity member = memberRepository.findByMemberId(memberId);
             MemberCouponEntity memberCoupon = new MemberCouponEntity();
 
             memberCoupon.setMember(member);
@@ -103,7 +103,7 @@ public class CouponServiceImple implements CouponService{
     
     @Transactional
     @Override
-    public void createMemberCoupon(String memberId, Long couponId) {
+    public void createMemberCoupon(Long memberId, Long couponId) {
         // 쿠폰 ID로 해당 쿠폰을 조회합니다.
         CouponEntity coupon = couponRepository.findByCouponId(couponId);
         
@@ -111,7 +111,7 @@ public class CouponServiceImple implements CouponService{
             throw new IllegalArgumentException("해당 쿠폰을 찾을 수 없습니다. ");
         }
 
-        MemberEntity member = memberRepository.findById(memberId);
+        MemberEntity member = memberRepository.findByMemberId(memberId);
         MemberCouponEntity memberCoupon = new MemberCouponEntity();
             
         memberCoupon.setMember(member);

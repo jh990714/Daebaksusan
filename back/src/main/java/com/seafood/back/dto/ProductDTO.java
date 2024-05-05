@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class ProductDTO {
 
-    Integer productId;
+    Long productId;
     Integer category;
     String name;
     String imageUrl;

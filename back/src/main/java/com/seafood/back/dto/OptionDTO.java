@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OptionDTO {
-    private Integer optionId;
-    private Integer productId;
+    private Long optionId;
+    private Long productId;
     private String name;
     private BigDecimal addPrice;
     // 다른 필드들도 추가해야 함
