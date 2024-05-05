@@ -71,6 +71,9 @@ export const NavigationBar = () => {
             const currentScrollY = window.scrollY;
             setIsNavVisible(currentScrollY <= prevScrollY || currentScrollY === 0);
             setPrevScrollY(currentScrollY);
+            setIsMenuOpen(false);
+            setSearchResults([]);
+            setIsSearchOpen(false);
            
         };
 
@@ -180,13 +183,12 @@ export const NavigationBar = () => {
 
     const toggleSearch = (isOpen: boolean) => {
         setIsSearchOpen(isOpen);
-        setQuery('');
         setSearchResults([]);
     }
 
     return (
         <nav className={styles.navContainer} onMouseLeave={closeCategory} >
-            <div className={styles.navBar} style={{ display: isNavVisible ? 'flex' : 'none' }}>
+            <div className={`${styles.navBar} ${isNavVisible ? styles.open : styles.close}`} >
                 <div className={styles.navLeft}>
                     <Link to='' className={styles.logo}>
                         <img src={logo} alt="로고" width="130" height="auto"></img>
@@ -202,7 +204,7 @@ export const NavigationBar = () => {
 
 
                 </div>
-                <div className={`${styles.searchMobileContainer} ${styles.menuBar} ${isSearchOpen ? styles.open : ''}`}>
+                <div className={`${styles.searchMobileContainer} ${styles.menuBar} ${isSearchOpen ? styles.searchOpen : ''}`}>
                     <div className={styles.searchInput}>
                         <input
                             id='searchInput'
@@ -215,9 +217,7 @@ export const NavigationBar = () => {
                         />
                         <img src={searchIcon} alt='검색' className={styles.icon} style={{ width: 30, height: 30 }} onClick={handleSearch} />
 
-                    </div>
-                    {/* 검색 결과 리스트 */}
-                    <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsMobileRef}>
+                        <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsMobileRef}>
                         {searchResults && searchResults.map((result, index) =>
                             result && result.name && (
                                 <li
@@ -228,6 +228,9 @@ export const NavigationBar = () => {
                             )
                         )}
                     </ul>
+                    </div>
+                    {/* 검색 결과 리스트 */}
+                    
                 </div>
 
 
@@ -255,10 +258,7 @@ export const NavigationBar = () => {
                                     ref={inputRef}
                                 />
                                 <img src={searchIcon} alt='검색' className={styles.icon} style={{ width: 30, height: 30 }} onClick={handleSearch} />
-
-                            </div>
-                            {/* 검색 결과 리스트 */}
-                            <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsRef}>
+                                <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsRef}>
                                 {searchResults && searchResults.map((result, index) =>
                                     result && result.name && (
                                         <li
@@ -269,6 +269,9 @@ export const NavigationBar = () => {
                                     )
                                 )}
                             </ul>
+                            </div>
+                            {/* 검색 결과 리스트 */}
+                            
                         </div>
                         <div className={styles.userCategory}>
                             <ul>
@@ -286,7 +289,7 @@ export const NavigationBar = () => {
                 </div>
             </div>
 
-            <div className={`${styles.categories} ${isMenuOpen ? styles.show : ''} ${isCategoriesOpen ? styles.open : ''}`} onMouseLeave={closeCategory}>
+            <div className={`${styles.categories} ${isMenuOpen ? styles.show : ''} ${isCategoriesOpen ? styles.show : ''}`} onMouseLeave={closeCategory}>
                 {categories.map((category) => (
                     <div key={category.name} className={styles.categoryItem}>
                         <Link to={`/categoryProducts/${category.name}`} state={{ category: category }} className={styles.categoryLink}>
