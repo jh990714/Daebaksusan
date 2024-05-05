@@ -4,6 +4,7 @@
     background-color: whitesmoke;
     position: fixed;
     border-top: 3px solid #1d4ed8;
+    z-index: 10;
 }
 
 .quickOrderbutton, .quickCartbutton {

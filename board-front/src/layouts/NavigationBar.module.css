@@ -22,6 +22,7 @@
     background-color: white;
     opacity: 0.9;
     align-items: center;
+    max-height: 0;
 }
 
 .menuBar {
@@ -125,6 +126,7 @@
     height: 50px;
     display: flex;
     align-items: center;
+    position: relative;
     padding: 0 22px;
 }
 
@@ -179,8 +181,8 @@
 
 .categories {
     overflow: hidden; /* 내부 요소들이 넘치는 부분은 숨김 */
-    max-height: 0; /* 기본적으로 숨겨진 상태 */
-    transition: max-height 0.5s ease-out; /* 트랜지션 효과 설정 */
+    max-height: 0px; /* 기본적으로 숨겨진 상태 */
+    transition: max-height 0.5s ease-in-out; /* 트랜지션 효과 설정 */
     text-align: start;
     display: flex;
     justify-content: space-around;
@@ -192,9 +194,9 @@
     position: relative;
     background-color: white;
     z-index: 50;
-    transition: max-height 0.3s ease-in-out;
     max-height: 0;
     overflow: hidden;
+   
 }
 
 
@@ -245,9 +247,24 @@
 
 .open {
     max-height: 500px;
-    overflow:initial;
+    transition: max-height 1.5s ease-out;
 }
 
+.close {
+    transition: max-height 1.5s ease;
+    overflow: hidden;
+}
+
+.show {
+    display: flex;
+    max-height: 300px;
+    border-bottom: 1px solid #d9d9d9;
+}
+
+.searchOpen {
+    max-height: 500px;
+    overflow: inherit;
+}
 
 .mobileBottomNav {
     display: none;
@@ -297,6 +314,7 @@
         padding: 0;
         flex-direction: column;
         height: auto;
+        border-bottom: 2px solid #d9d9d9;
     }
 
     .navLeft {
@@ -315,18 +333,12 @@
     .navMenu {
        display: none;
     }
-
-    .show {
-        display: flex;
-        overflow: initial;
-        max-height: 500px;
-    }
     
     .categories {  
         flex-wrap: wrap; /* 요소들을 여러 줄에 걸쳐 표시 */
         flex-direction: row; /* 요소들을 가로로 배열 */
         overflow-y: auto;
-        border-bottom: 1px solid #d9d9d9;
+        
     }
 
     .categoryItem {
@@ -351,7 +363,7 @@
         bottom: 0;
         left: 0;
         width: 100%;
-        border-top: 3px solid #d9d9d9;
+        border-top: 2px solid #d9d9d9;
         background-color: white;
         z-index: 50;
     }
