@@ -55,6 +55,7 @@ import com.seafood.back.service.CouponService;
 import com.seafood.back.service.InfoService;
 import com.seafood.back.service.MemberService;
 import com.seafood.back.service.PointsTransactionService;
+import com.seafood.back.service.S3Service;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -68,9 +69,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class InfoServiceImple implements InfoService {
-    
+
     private final MemberService memberService;
     private final PointsTransactionService pointsTransactionService;
+    private final S3Service s3Service;
 
     private final MemberRepository memberRepository;
     private final PaymentDetailsRepository paymentDetailsRepository;
@@ -118,7 +120,8 @@ public class InfoServiceImple implements InfoService {
 
                 for (PaymentItemDTO item : orderItems) {
                     boolean isReview = reviewRepository.existsByProductIdAndOptionIdAndMember_memberIdAndOrderNumber(
-                            item.getCartItem().getProduct().getProductId(), item.getCartItem().getOption().getOptionId(), memberId,
+                            item.getCartItem().getProduct().getProductId(),
+                            item.getCartItem().getOption().getOptionId(), memberId,
                             paymentDetail.getOrderNumber());
 
                     item.setIsReview(isReview);
@@ -189,15 +192,13 @@ public class InfoServiceImple implements InfoService {
         List<PaymentItemDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
                 new TypeReference<List<PaymentItemDTO>>() {
                 });
-                
 
         return orderItems;
     }
 
-
-
     @Transactional
-    public void saveReview(Long memberId, String orderNumber, Long productId, Long optionId, String contents, Integer score,
+    public void saveReview(Long memberId, String orderNumber, Long productId, Long optionId, String contents,
+            Integer score,
             MultipartFile[] imageFiles) {
         MemberEntity member = memberRepository.findByMemberId(memberId);
 
@@ -212,16 +213,18 @@ public class InfoServiceImple implements InfoService {
         reviewEntity.setIsBest(false); // 기본값으로 false 설정
 
         ReviewEntity savedReviewEntity = reviewRepository.save(reviewEntity);
-        
+
         if (imageFiles != null) { // null 체크 추가
+            int index = 0;
             for (MultipartFile imageFile : imageFiles) {
                 if (imageFile != null && !imageFile.isEmpty()) { // null 및 비어있는지 체크
                     ReviewImageEntity reviewImageEntity = new ReviewImageEntity();
                     reviewImageEntity.setReviewId(savedReviewEntity.getReviewId());
-                    // 이미지 파일 저장 코드 추가
-                    String imageUrl;
                     try {
-                        imageUrl = saveImage(imageFile);
+                        String fileName = "review_" + savedReviewEntity.getReviewId() + "_" + index;
+                        String imageUrl = s3Service.saveImageToS3(imageFile, fileName);
+                        index++;
+
                         reviewImageEntity.setImageUrl(imageUrl);
                         reviewImageRepository.save(reviewImageEntity);
                     } catch (IOException e) {
@@ -238,43 +241,46 @@ public class InfoServiceImple implements InfoService {
         if (imageFiles == null) {
             description = "리뷰 작성";
             usageAmount = BigDecimal.valueOf(500);
-        }
-        else {
+        } else {
             description = "포토 리뷰 작성";
             usageAmount = BigDecimal.valueOf(1000);
         }
 
         BigDecimal subTotal = memberService.deductPoints(memberId, usageAmount.negate());
         pointsTransactionService.createTransaction(memberId, description, usageAmount, subTotal);
-        
+
     }
 
-    private String saveImage(MultipartFile imageFile) throws IOException {
-        String oriFileName = StringUtils.cleanPath(imageFile.getOriginalFilename());
+    // private String saveImage(MultipartFile imageFile, Long reviewId, int index)
+    // throws IOException {
+    // // String oriFileName =
+    // StringUtils.cleanPath(imageFile.getOriginalFilename());
 
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String fileName = oriFileName + "_" + timeStamp + ".jpg"; // 예시로 "image_20220419_123456.jpg" 형식으로 생성합니다.
-        Path uploadDir = Paths.get("C:\\Users\\jang\\Desktop\\Seafood_WebSite\\Jang\\board-front\\public\\review");
+    // // String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new
+    // Date());
+    // String fileName = reviewId + "_" + index + ".jpg";
+    // Path uploadDir = Paths.get("/home/ubuntu/build/review");
 
-        // 업로드 디렉토리가 존재하지 않으면 생성합니다.
-        if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir);
-        }
+    // // 업로드 디렉토리가 존재하지 않으면 생성합니다.
+    // if (!Files.exists(uploadDir)) {
+    // Files.createDirectories(uploadDir);
+    // }
 
-        // 파일을 업로드 디렉토리에 저장합니다.
-        try {
-            Path filePath = uploadDir.resolve(fileName);
-            Files.copy(imageFile.getInputStream(), filePath);
-            return fileName;
-        } catch (IOException ex) {
-            throw new IOException("이미지를 저장하는 중에 오류가 발생했습니다.", ex);
-        }
-    }
+    // // 파일을 업로드 디렉토리에 저장합니다.
+    // try {
+    // Path filePath = uploadDir.resolve(fileName);
+    // Files.copy(imageFile.getInputStream(), filePath);
+    // return fileName;
+    // } catch (IOException ex) {
+    // throw new IOException("이미지를 저장하는 중에 오류가 발생했습니다.", ex);
+    // }
+    // }
 
     @Override
     public ReviewDTO getReviews(Long memberId, ReviewCriteriaDTO reviewCriteriaDTO) {
         ReviewEntity reviewEntity = reviewRepository.findByProductIdAndOptionIdAndMember_memberIdAndOrderNumber(
-            reviewCriteriaDTO.getProductId(), reviewCriteriaDTO.getOptionId(), memberId, reviewCriteriaDTO.getOrderNumber());
+                reviewCriteriaDTO.getProductId(), reviewCriteriaDTO.getOptionId(), memberId,
+                reviewCriteriaDTO.getOrderNumber());
 
         ReviewDTO reviewDTO = new ReviewDTO();
 
@@ -299,8 +305,20 @@ public class InfoServiceImple implements InfoService {
 
         List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewId);
         List<String> imageUrls = new ArrayList<String>();
+
         for (ReviewImageEntity reviewImageEntity : reviewImageEntities) {
-            imageUrls.add(reviewImageEntity.getImageUrl());
+            // 이미지의 key를 가져옴
+            String imageKey = reviewImageEntity.getImageUrl();
+
+            try {
+                // S3에 저장된 이미지의 URL을 가져옴
+                String imageUrl = s3Service.getImageUrl(imageKey);
+                imageUrls.add(imageUrl);
+            } catch (IOException e) {
+                // 이미지 URL을 가져오는 중에 오류가 발생한 경우
+                e.printStackTrace();
+                // 처리할 방법에 따라 예외 처리를 추가하십시오.
+            }
         }
         reviewDTO.setImageUrls(imageUrls);
 

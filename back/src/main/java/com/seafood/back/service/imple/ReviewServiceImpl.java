@@ -1,5 +1,6 @@
 package com.seafood.back.service.imple;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import com.seafood.back.respository.ReviewImageRepository;
 import com.seafood.back.respository.ReviewRepository;
 import com.seafood.back.respository.ReviewResponseRepository;
 import com.seafood.back.service.ReviewService;
+import com.seafood.back.service.S3Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService{
+    private final S3Service s3Service;
+
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
     private final ProductRepository productRepository;
@@ -88,8 +92,20 @@ public class ReviewServiceImpl implements ReviewService{
 
             List<ReviewImageEntity> reviewImageEntities = reviewImageRepository.findByReviewId(reviewId);
             List<String> imageUrls = new ArrayList<String>();
-            for(ReviewImageEntity reviewImageEntity: reviewImageEntities){
-                imageUrls.add(reviewImageEntity.getImageUrl());
+            
+            for (ReviewImageEntity reviewImageEntity : reviewImageEntities) {
+                // 이미지의 key를 가져옴
+                String imageKey = reviewImageEntity.getImageUrl();
+
+                try {
+                    // S3에 저장된 이미지의 URL을 가져옴
+                    String imageUrl = s3Service.getImageUrl(imageKey);
+                    imageUrls.add(imageUrl);
+                } catch (IOException e) {
+                    // 이미지 URL을 가져오는 중에 오류가 발생한 경우
+                    e.printStackTrace();
+                    // 처리할 방법에 따라 예외 처리를 추가하십시오.
+                }
             }
             reviewDTO.setImageUrls(imageUrls);
 
