@@ -61,10 +61,10 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
             if (i < score) {
                 // 꽉 찬 별
                 stars.push(<AiFillStar key={i} />);
-              } else {
+            } else {
                 // 빈 별
                 stars.push(<AiOutlineStar key={i} />);
-              }
+            }
         }
         return stars;
     };
@@ -93,16 +93,8 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
             </div>
             {review.imageUrls.length > 0 && (
                 <div className="w-[200px] sm:w-[350px] md:w-[500px] lg:w-[700px] xl:w-[1000px] h-[230px]">
-                    {review.imageUrls.length > 0 ? (
+                    {review.imageUrls.length > 0 && (
                         <ImageGalleryComp items={review.imageUrls} />
-                    ) : (
-                        <div className="flex">
-                            {review.imageUrls.map((imageUrl, index) => (
-                                <div key={index} className="w-[250px] h-[200px] p-1">
-                                    <img src={`${process.env.PUBLIC_URL}/review/${imageUrl}`} alt={`Image ${index}`} className="w-full h-full object-cover rounded-md" />
-                                </div>
-                            ))}
-                        </div>
                     )}
                 </div>
             )}
@@ -110,7 +102,7 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
 
             <div className="m-2 text-start text-xs text-gray-500">{review.productName + review.optionName}</div>
             <div className="mt-4 m-2 text-start text-sm text-gray-600">{review.contents}</div>
-            
+
             {review.responses.map((response, index) => (
                 <div className="bg-gray-100 mt-4 p-2 text-sm rounded-md">
                     <div key={index}>
@@ -120,7 +112,7 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
                     </div>
                 </div>
             ))}
-                
+
         </div>
 
     )

@@ -80,7 +80,7 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", 
                     {Component ?(
                         <Component product={item} size={size} fontSize={fontSize} imgSize_w_per={60} imgSize_h_px={'250px'} border="1" shadow={true} />
                     ):(
-                        <img src={`${process.env.PUBLIC_URL}/review/${item}`} alt={`Review ${index}`} className="w-full h-full object-cover rounded-md" />
+                        <img src={`${item}`} alt={`Review ${index}`} className="w-full h-full object-cover rounded-md" />
                     )}
                 </div>
             ))}

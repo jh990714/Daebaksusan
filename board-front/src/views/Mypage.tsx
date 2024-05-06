@@ -6,11 +6,11 @@ import { useAuthContext } from 'hook/AuthProvider';
 import { MyPageMenu } from 'components/MyPage/MyPageMenu';
 import Member from 'types/interface/member.interface';
 import { MyPageInfo } from 'components/MyPage/MyPageInfo';
-import { PaymentDetails } from './PaymentDetails';
-import { MyCoupons } from './MyCoupons';
-import { MyPoints } from './MyPoints';
-import { UpdateInfo } from './UpdateInfo';
-import { MemberDelete } from './MemberDelete';
+import { PaymentDetails } from './MyPage/PaymentDetails';
+import { MyCoupons } from './MyPage/MyCoupons';
+import { MyPoints } from './MyPage/MyPoints';
+import { UpdateInfo } from './MyPage/UpdateInfo';
+import { MemberDelete } from './MyPage/MemberDelete';
 
 export const Mypage: React.FC = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();

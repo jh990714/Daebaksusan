@@ -26,8 +26,9 @@ export const QnAList: React.FC<QnAListProps> = ({ productId }) => {
     }, [page, productId]);
 
     const fetchData = async () => {
+        const url = `${process.env.REACT_APP_API_URL}/qna/getQna?productId=${productId}&page=${page}&pageSize=${pageSize}`
         try {
-            const response = await axios.get(`/qna/getQna?productId=${productId}&page=${page}&pageSize=${pageSize}`);
+            const response = await axios.get(url);
             console.log(response.data)
             setQnaList(response.data.content);
             setTotalPages(Math.ceil(response.data.totalElements / pageSize));
@@ -63,7 +64,7 @@ export const QnAList: React.FC<QnAListProps> = ({ productId }) => {
 
             fetchData();
         } catch (error) {
-            console.error('Error submitting question:', error);
+            alert('로그인 후 이용해주세요.')
         }
     };
 

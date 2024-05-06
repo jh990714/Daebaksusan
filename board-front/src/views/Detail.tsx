@@ -2,13 +2,15 @@ import { DetailTabComp } from 'components/DetailTabComp';
 import { useLocation, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 import { Cart, CartItem, Option } from 'types';
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
 import { CONNREFUSED } from 'dns';
 import Product from 'types/interface/product-item.interface';
 import { sendRequestWithToken } from 'apis/sendRequestWithToken';
 import { useCart } from 'hook/CartProvider';
 import { useAuthContext } from 'hook/AuthProvider';
+import ImageGalleryComp from 'components/ImageGallery/ImageGalleryComp';
+import { ProductListComp } from 'components/product/ProductListComp';
 
 // interface CartItem {
 //     product: Product;
@@ -33,7 +35,7 @@ export const Detail: React.FC = () => {
     const [boxCnt, setBoxCnt] = useState<number>(1);
 
     const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + ((product.shippingCost + optionPrice) * boxCnt))
-
+    const [products, setProducts] = useState<Product[]>([]);
     // 옵션 받아오기
     useEffect(() => {
         const fetchOptions = async () => {
@@ -56,6 +58,21 @@ export const Detail: React.FC = () => {
         window.scrollTo(0, 0);
         addToRecentProducts(product);
     }, [product]);
+
+    
+    useEffect(() => {
+        const fetchData = async () => {
+        try {
+            const response = await axios.get<Product[]>(`${process.env.REACT_APP_API_URL}/product/recommend`);
+            console.log(response);
+            setProducts(response.data);
+        } catch (error) {
+            console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
+        }
+        };
+
+        fetchData();
+    }, []);
 
     const addToRecentProducts = (product: Product) => {
         const maxRecentProducts = 7;
@@ -414,14 +431,8 @@ export const Detail: React.FC = () => {
 
                 <div className="my-8 w-full ">
                     <h2 className="text-2xl font-bold my-4">오늘의 <strong className='text-blue-700'>추천</strong> 상품 !</h2>
-                    <div className="flex overflow-x-auto gap-4">
-                        <div className=''>
-                            <div className="w-48 ">
-                                <img src="../upload/1.jpg" alt="오징어" className="w-full h-48 object-fill rounded shadow-lg" />
-                            </div>
-                            <div className="text-center">오징어 1KG</div>
-                            <div className="text-center">40,000 원</div>
-                        </div>
+                    <div className="gap-4">
+                        <ImageGalleryComp items={products} size="275px" fontSize="7px" component={ProductListComp}/>
                     </div>
                 </div>
 
