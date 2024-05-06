@@ -10,7 +10,10 @@ export default function OAuth() {
 
         if (!token) return;
         
-        localStorage.setItem('accessToken', token)
+        const tokens = token.split('&');
+        console.log(tokens);
+        localStorage.setItem('accessToken', tokens[0])
+        localStorage.setItem('refreshToken', tokens[1])
         navigate('/');
     }, [token]);
 

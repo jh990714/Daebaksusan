@@ -25,10 +25,15 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
     @Value("${jwt.secret}")
     private String accessSecretKey;
 
+    @Value("${jwt.refersh}")
+    private String refreshSecretKey;
+
     @Value("${frontend.url}")
     private String frontendUrl;
 
+
     private Long accessTokenExpiredMs = (long) (1000 * 60 * 30); // 액세스 토큰 만료 시간 (30분)
+    private Long refreshTokenExpiredMs = (long) (1000 * 60 * 60 * 24 * 7); // 리프레시 토큰 만료 시간 (7일)
 
 
     @Override
@@ -40,9 +45,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
         
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         
-        Long memberId = oAuth2User.getMemberId();
-        String token = JwtUtil.createJwt(memberId, accessSecretKey, accessTokenExpiredMs);
+        Long memberId = Long.parseLong(oAuth2User.getName());
 
-        response.sendRedirect(frontendUrl + "/auth/oauth-response/" + token);
+        String token = JwtUtil.createJwt(memberId, accessSecretKey, accessTokenExpiredMs);
+        String refreshToken = JwtUtil.createJwt(memberId, refreshSecretKey, refreshTokenExpiredMs);
+
+        response.sendRedirect(frontendUrl + "/auth/oauth-response/" + token + "&" + refreshToken);
     }
 }

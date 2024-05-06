@@ -1,7 +1,9 @@
 package com.seafood.back.service.imple;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -10,8 +12,13 @@ import org.springframework.stereotype.Service;
 
 import com.seafood.back.entity.CustomOAuth2User;
 import com.seafood.back.entity.MemberEntity;
+import com.seafood.back.entity.MemberPointsEntity;
+import com.seafood.back.respository.MemberPointsRepository;
 import com.seafood.back.respository.MemberRepository;
+import com.seafood.back.service.CouponService;
+import com.seafood.back.service.MemberService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,7 +26,10 @@ import lombok.RequiredArgsConstructor;
 public class OAuth2UserServiceImpl extends DefaultOAuth2UserService{
     
     private final MemberRepository memberRepository;
+    private final CouponService couponService;
+    private final MemberPointsRepository memberPointsRepository;
 
+    @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException{
 
@@ -58,12 +68,20 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService{
             memberEntity = new MemberEntity(id, "pass", name, phone, email, "naver");
         }
 
-        if (memberRepository.findById(id) == null) {
-            memberRepository.save(memberEntity);
+        MemberEntity member = memberRepository.findById(id);
+        if (member == null) {
+            member = memberRepository.save(memberEntity);
+
+                        // 회원 포인트 정보 생성 및 저장
+            MemberPointsEntity memberPoints = new MemberPointsEntity();
+            memberPoints.setMemberId(member.getMemberId());
+            memberPoints.setPoints(BigDecimal.ZERO); // 초기 포인트는 0으로 설정
+            memberPointsRepository.save(memberPoints);
+
+            couponService.createMemberCoupon(member.getMemberId(), (long) 3);
         }
+
         
-
-
-        return new CustomOAuth2User();
+        return new CustomOAuth2User(member.getMemberId());
     }
 }

@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @Slf4j
@@ -33,6 +36,11 @@ public class MemberController {
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
             MemberEntity member = memberService.authenticateMember(loginRequest.getId(), loginRequest.getPassword());
+
+            
+            if (member == null) {
+                new RuntimeException("해당하는 회원이 없습니다.");
+            }
 
             String accessToken = memberService.getAccessToken(member.getMemberId());
             String refreshToken = memberService.getRefreshToken(member.getMemberId());
@@ -54,6 +62,23 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/authenticate")
+    public ResponseEntity<?> authenticateMember(Authentication authentication, @RequestBody LoginRequest loginRequest) {
+        try {
+            log.info(authentication.getName());
+            Long memberId = Long.parseLong(authentication.getName());
+            MemberEntity member = memberService.authenticateMember(memberId, loginRequest.getPassword());
+            
+            if (member == null) {
+                new RuntimeException("해당하는 회원이 없습니다.");
+            }
+
+            return ResponseEntity.ok("true");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    
     @DeleteMapping("/withdraw")
     public ResponseEntity<?> withdrawMember(Authentication authentication, @RequestBody LoginRequest loginRequest) {
         try {

@@ -57,10 +57,6 @@ public class MemberServiceImple implements MemberService {
     public MemberEntity authenticateMember(Long memberId, String password) {
         MemberEntity member = memberRepository.findByMemberId(memberId);
 
-        if (member == null) {
-            new RuntimeException("해당하는 회원이 없습니다.");
-        }
-
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
@@ -72,9 +68,6 @@ public class MemberServiceImple implements MemberService {
     public MemberEntity authenticateMember(String id, String password) {
         MemberEntity member = memberRepository.findById(id);
 
-        if (member == null) {
-            new RuntimeException("해당하는 회원이 없습니다.");
-        }
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
@@ -111,7 +104,8 @@ public class MemberServiceImple implements MemberService {
             throw new RuntimeException("회원 가입 중 오류가 발생했습니다.", e);
         }
     }
-
+    
+    
     @Override
     public MemberDTO getMemberInfo(Long memberId) {
         MemberEntity member = memberRepository.findByMemberId(memberId);
@@ -207,6 +201,10 @@ public class MemberServiceImple implements MemberService {
     public void withdrawMember(Long memberId, String password) {
         // 회원 인증을 수행하고, 탈퇴 처리를 진행합니다.
         MemberEntity member = authenticateMember(memberId, password);
+
+        if (member == null) {
+            new RuntimeException("해당하는 회원이 없습니다.");
+        }
         
         // 회원 탈퇴 처리
         memberRepository.delete(member);

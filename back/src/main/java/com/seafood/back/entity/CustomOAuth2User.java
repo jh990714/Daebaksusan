@@ -31,7 +31,6 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getName'");
+        return String.valueOf(this.memberId);
     }
 }
