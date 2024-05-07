@@ -346,7 +346,7 @@ export const Detail: React.FC = () => {
                 <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
 
                     <div className="w-full lg:w-1/2 px-4">
-                        <img src={`../upload/${product.imageUrl}`} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded  " />
+                        <img src={product.imageUrl} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded  " />
                     </div>
                     <div className="w-full lg:w-1/2 border-t-2 border-b-2 border-blue-700">
 

@@ -28,7 +28,7 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
                     {product.recommended && (
                         <img src={bestProductIcon} alt="추천 아이콘" className={styles.bestProductIcon} />
                     )}
-                    <img src={process.env.PUBLIC_URL + `/upload/${product.imageUrl}`} alt={product.name}
+                    <img src={product.imageUrl} alt={product.name}
                         style={{
                             '--card-size': size,
                             '--card-height': size,

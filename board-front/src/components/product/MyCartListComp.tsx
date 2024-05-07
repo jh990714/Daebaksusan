@@ -77,7 +77,7 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
 
                         </td>
                         <td className={styles.orderImg} data-label="이미지">
-                            <img src={`./upload/${cartItem.cartItem.product.imageUrl}`} alt="사진" style={{ width: 140, height: 140 }}></img>
+                            <img src={cartItem.cartItem.product.imageUrl} alt="사진" style={{ width: 140, height: 140 }}></img>
                         </td>
                         <td className={styles.orderName} data-label="주문 상품 정보">
                             <p className={styles.title}>{cartItem.cartItem.product.name}</p>
@@ -122,7 +122,7 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
                 </div>
 
                 <div className={styles_m.orderImg}>
-                    <img src={`./upload/${cartItem.cartItem.product.imageUrl}`} alt="사진" style={{ width: 200, height: 200, borderRadius: 10 }} />
+                    <img src={cartItem.cartItem.product.imageUrl} alt="사진" style={{ width: 200, height: 200, borderRadius: 10 }} />
                 </div>
                 <div className={styles_m.orderInfo}>
                     <div className={styles_m.orderName}>

@@ -46,7 +46,7 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({ orderItem }) => {
                     <tr>
                         <td data-label="칼럼명"></td>
                         <td className={styles.orderImg} data-label="이미지">
-                            <img src={`./upload/${orderItem.cartItem.product.imageUrl}`} alt="사진" style={{ width: 140, height: 140 }} />
+                            <img src={orderItem.cartItem.product.imageUrl} alt="사진" style={{ width: 140, height: 140 }} />
                         </td>
                         <td className={styles.orderName} data-label="주문 상품 정보">{orderItem.cartItem.product.name}</td>
                         <td className={styles.orderPrice} data-label="상품가격">{(orderItem.cartItem.product.regularPrice - orderItem.cartItem.product.salePrice).toLocaleString()}원</td>
@@ -69,7 +69,7 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({ orderItem }) => {
             <div className={styles_m.mobileContainer}>
                 <div className="checkBox"></div>
                 <div>
-                    <img src={`./upload/${orderItem.cartItem.product.imageUrl}`} alt="사진" style={{ width: 100, height: 100, borderRadius: 10 }} />
+                    <img src={orderItem.cartItem.product.imageUrl} alt="사진" style={{ width: 100, height: 100, borderRadius: 10 }} />
                 </div>
                 <div className={styles_m.orderInfo}>
                     <div className={styles_m.orderName}>

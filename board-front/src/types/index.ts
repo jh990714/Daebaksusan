@@ -1,5 +1,4 @@
 import ResponseCode from "./enum/response-code.enum";
-import TestListItem from "./interface/test-item.interface";
 import SeafoodList from "./interface/seafood-item.interface";
 import AddressData from "./interface/address-item.interface";
 import AddressObj from "./interface/addressObject-item.interface";
@@ -21,10 +20,12 @@ import ReviewStats from "./interface/reviewStats.interface";
 import { PointsDetails } from "./interface/pointsDetail.interface";
 import Member from "./interface/member.interface";
 import { QnA } from "./interface/qna.interface";
+import CarouselItem from "./interface/carousel.interface";
+import VideoItem from "./interface/video.interface";
+
 
 export type{
     ResponseCode,
-    TestListItem,
     SeafoodList,
     Product,
     AddressObj,
@@ -46,4 +47,6 @@ export type{
     PointsDetails,
     Member,
     QnA,
+    CarouselItem,
+    VideoItem,
 }

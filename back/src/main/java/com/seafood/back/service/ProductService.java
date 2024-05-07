@@ -1,5 +1,6 @@
 package com.seafood.back.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.seafood.back.dto.CartDTO;
@@ -26,4 +27,5 @@ public interface ProductService {
     public List<ProductDTO> getTimeDealProducts();
     public List<ProductDTO> findProductRecommend();
     public void addProductQuantities(List<PaymentItemDTO> orderItems);
+    public String getProductInfoImage(Long productId) throws IOException;
 }

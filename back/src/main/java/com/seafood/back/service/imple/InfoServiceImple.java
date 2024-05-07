@@ -221,7 +221,7 @@ public class InfoServiceImple implements InfoService {
                     ReviewImageEntity reviewImageEntity = new ReviewImageEntity();
                     reviewImageEntity.setReviewId(savedReviewEntity.getReviewId());
                     try {
-                        String fileName = "review_" + savedReviewEntity.getReviewId() + "_" + index;
+                        String fileName = "review/" + savedReviewEntity.getReviewId() + "_" + index;
                         String imageUrl = s3Service.saveImageToS3(imageFile, fileName);
                         index++;
 

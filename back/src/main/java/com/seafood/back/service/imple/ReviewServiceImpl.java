@@ -102,9 +102,7 @@ public class ReviewServiceImpl implements ReviewService{
                     String imageUrl = s3Service.getImageUrl(imageKey);
                     imageUrls.add(imageUrl);
                 } catch (IOException e) {
-                    // 이미지 URL을 가져오는 중에 오류가 발생한 경우
                     e.printStackTrace();
-                    // 처리할 방법에 따라 예외 처리를 추가하십시오.
                 }
             }
             reviewDTO.setImageUrls(imageUrls);

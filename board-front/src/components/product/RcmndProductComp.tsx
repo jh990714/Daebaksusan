@@ -31,7 +31,7 @@ export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, img
 
                     } as React.CSSProperties}>
                     <img
-                        src={`${process.env.PUBLIC_URL}/upload/${product.imageUrl}`}
+                        src={product.imageUrl}
                         alt='추천 상품'
                         className={styles.rcmdImg}
                         style={{

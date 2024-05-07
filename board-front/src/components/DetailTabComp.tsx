@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ReviewTabComp from './DetailTab/ReviewTabComp';
 import { QnAList } from './DetailTab/QnAList';
+import { ProductInfoComp } from './DetailTab/ProductInfoComp';
 
 
 
@@ -35,7 +36,7 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
     const renderContent = () => {
         switch (activeTab) {
             case '상품정보':
-                return <img src="../detail/1.jpg" alt="상품정보" />;
+                return <ProductInfoComp productId={productId}/>;
             case '구매안내':
                 return <div>구매안내 내용입니다.</div>;
             case '후기':

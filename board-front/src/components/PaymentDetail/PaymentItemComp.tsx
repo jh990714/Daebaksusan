@@ -53,7 +53,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                 <>
                     <td className="py-4 px-6">
                         <div style={{ position: 'relative', width: 100, height: 100, margin: '0 auto' }}>
-                            <img src={process.env.PUBLIC_URL + `/upload/${orderItem.cartItem.product.imageUrl}`} alt={orderItem.cartItem.product.name} style={{ width: '100%', height: '100%' }} />
+                            <img src={orderItem.cartItem.product.imageUrl} alt={orderItem.cartItem.product.name} style={{ width: '100%', height: '100%' }} />
                             {isCancelled && <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(128, 128, 128, 0.6)', zIndex: 1 }}></div>}
                         </div>
 

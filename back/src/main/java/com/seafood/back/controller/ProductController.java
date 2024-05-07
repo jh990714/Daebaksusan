@@ -1,5 +1,6 @@
 package com.seafood.back.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -85,6 +86,20 @@ public class ProductController {
         List<ProductDTO> product = productService.getTimeDealProducts();
 
         return new ResponseEntity<>(product, HttpStatus.OK);
+
+    }
+
+    
+    @GetMapping("/productInfo")
+    public ResponseEntity<String> getProductInfoImage(@RequestParam Long productId) {
+        String productImgUrl = null;
+        try {
+            productImgUrl = productService.getProductInfoImage(productId);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(productImgUrl, HttpStatus.OK);
 
     }
     

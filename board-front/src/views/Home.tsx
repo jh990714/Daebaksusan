@@ -1,7 +1,6 @@
 import React from 'react';
 
 import CarouselComp from 'components/CarouselComp';
-import img from '../assets/testimg.jpg'
 import { BestProduct } from 'components/BestProduct';
 import { HomeBanner1 } from 'components/HomeBanner/HomeBanner1';
 import { useAnimateOnScroll } from 'hook/useAnimateOnScroll '
@@ -25,7 +24,7 @@ export const Home: React.FC = () => {
   return (
     <>
       <div className='carouselContainer'>
-        <CarouselComp img={img} />
+        <CarouselComp />
       </div>
       <div className='homeContainer'>
         <div ref={ref1}>
@@ -49,7 +48,7 @@ export const Home: React.FC = () => {
         </div>
 
         <div ref={ref6} className="HomeBanner">
-          <VideoPlayer videoUrl={process.env.PUBLIC_URL + `/video/1.mp4`} />
+          <VideoPlayer />
         </div>
 
         <div ref={ref7}>
