@@ -159,7 +159,7 @@ export const ReviewPopup: React.FC<ReviewPopupProps> = ({ onClose, orderNumber, 
                         </label>
                     </div>
 
-                    <button type="submit" className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-300 mt-4">작성 하기</button>
+                    <button type="submit" className="bg-blue-700 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-300 mt-4">작성 하기</button>
                 </form>
             </div>
         </div>
