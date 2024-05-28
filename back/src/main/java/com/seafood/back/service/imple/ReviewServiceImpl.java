@@ -94,16 +94,17 @@ public class ReviewServiceImpl implements ReviewService{
             List<String> imageUrls = new ArrayList<String>();
             
             for (ReviewImageEntity reviewImageEntity : reviewImageEntities) {
-                // 이미지의 key를 가져옴
-                String imageKey = reviewImageEntity.getImageUrl();
-
-                try {
-                    // S3에 저장된 이미지의 URL을 가져옴
-                    String imageUrl = s3Service.getImageUrl(imageKey);
-                    imageUrls.add(imageUrl);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                imageUrls.add(reviewImageEntity.getImageUrl());
+                // // 이미지의 key를 가져옴
+                // String imageKey = reviewImageEntity.getImageUrl();
+                // // imageUrls.add(imageKey);
+                // try {
+                //     // S3에 저장된 이미지의 URL을 가져옴
+                //     String imageUrl = s3Service.getImageUrl(imageKey);
+                //     imageUrls.add(imageUrl);
+                // } catch (IOException e) {
+                //     e.printStackTrace();
+                // }
             }
             reviewDTO.setImageUrls(imageUrls);
 

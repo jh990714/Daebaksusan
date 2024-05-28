@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styles from "./Mypage.module.css";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { sendRequestWithToken } from 'apis/sendRequestWithToken';
 import { useAuthContext } from 'hook/AuthProvider'; 
 import { MyPageMenu } from 'components/MyPage/MyPageMenu';
@@ -13,10 +13,13 @@ import { UpdateInfo } from './MyPage/UpdateInfo';
 import { MemberDelete } from './MyPage/MemberDelete';
 
 export const Mypage: React.FC = () => {
+    const { state } = useLocation();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState<Member>();
-    const [currentPage, setCurrentPage] = useState<string>('mypageInfo'); // 기본 페이지 설정
+    const [currentPage, setCurrentPage] = useState<string>(state?.page || 'mypageInfo'); // 기본 페이지 설정
+    const isSocialAuthenticated = state?.isSocialAuthenticated || false;
+    const token = state?.token || null;
 
     useEffect(() => {
         const url = '/info';
@@ -58,9 +61,9 @@ export const Mypage: React.FC = () => {
             case 'myPoints':
                 return <MyPoints />;
             case 'updateInfo':
-                return <UpdateInfo userInfo={userInfo}/>;
+                return <UpdateInfo userInfo={userInfo} isSocialAuthenticated={isSocialAuthenticated}/>;
             case 'memberDelete':
-                return <MemberDelete />;
+                return <MemberDelete userInfo={userInfo} isSocialAuthenticated={isSocialAuthenticated} socialToken={token}/>;
             default:
                 return null;
         }

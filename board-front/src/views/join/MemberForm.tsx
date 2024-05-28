@@ -60,12 +60,12 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
 
         // 회원 ID와 비밀번호 확인
         const idRegex = /^[a-zA-Z0-9]+$/;
-        if (!memberId.match(idRegex)) {
+        if (!userInfo && !memberId.match(idRegex)) {
             alert('아이디는 알파벳과 숫자만 포함해야 합니다.');
             return;
         }
 
-        if (memberId.length < 4) {
+        if (!userInfo && memberId.length < 4) {
             alert('아이디는 최소 4자 이상이어야 합니다.');
             return;
         }
@@ -114,7 +114,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
             return;
         }
 
-        if (!addressObj || !addressObj.address || addressObj.address.trim() === '') {
+        if (!userInfo && (!addressObj || !addressObj.address || addressObj.address.trim() === '')) {
             alert('배송지를 등록해주세요');
             return;
         }
@@ -138,6 +138,9 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
                 const response = await sendRequestWithToken(url, post, data, setIsLoggedIn);
 
                 alert('수정이 완료 되었습니다. 다시 로그인해 주세요.');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                setIsLoggedIn(false);
                 navigate('/login')
             } catch (error: any) {
                 alert(error.response.data);
@@ -225,7 +228,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
                     </div>
                 </div>
 
-                {userInfo &&
+                {userInfo && userInfo.type === 'sign' &&
                     <div className="grid grid-cols-6 border-b-2 border-gray-300">
                         <label htmlFor="password" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">현재 비밀번호</label>
                         <div className="col-span-5 flex">

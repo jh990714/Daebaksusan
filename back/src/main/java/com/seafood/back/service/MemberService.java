@@ -16,6 +16,7 @@ public interface MemberService {
     public BigDecimal getAvailablePoints(Long memberId);
     public BigDecimal deductPoints(Long memberId, BigDecimal points);
     public void updateMember(MemberUpdateDTO memberUpdateDTO);
-    public void withdrawMember(Long memberId, String password);
+    public void withdrawMember(Long memberId, String password, String token);
+    public Boolean matchUser(Long memberId, String token);
 }
 

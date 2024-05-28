@@ -1,14 +1,30 @@
 package com.seafood.back.service.imple;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.dto.MemberDTO;
 import com.seafood.back.dto.MemberUpdateDTO;
@@ -27,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImple implements MemberService {
+    private final RestTemplate restTemplate;
 
     private final CouponService couponService;
 
@@ -39,6 +56,12 @@ public class MemberServiceImple implements MemberService {
 
     @Value("${jwt.refersh}")
     private String refreshSecretKey;
+
+    @Value("${spring.security.oauth2.client.registration.naver.client-id}")
+    private String naverClientId;
+
+    @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
+    private String naverClientSecret;
 
     private Long accessTokenExpiredMs = (long) (1000 * 60 * 30); // 액세스 토큰 만료 시간 (30분)
     private Long refreshTokenExpiredMs = (long) (1000 * 60 * 60 * 24 * 7); // 리프레시 토큰 만료 시간 (7일)
@@ -68,7 +91,6 @@ public class MemberServiceImple implements MemberService {
     public MemberEntity authenticateMember(String id, String password) {
         MemberEntity member = memberRepository.findById(id);
 
-
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
@@ -93,7 +115,6 @@ public class MemberServiceImple implements MemberService {
             memberPointsRepository.save(memberPoints);
 
             couponService.createMemberCoupon(member.getMemberId(), (long) 3);
-            
 
             return savedMember;
         } catch (DataIntegrityViolationException e) {
@@ -104,8 +125,7 @@ public class MemberServiceImple implements MemberService {
             throw new RuntimeException("회원 가입 중 오류가 발생했습니다.", e);
         }
     }
-    
-    
+
     @Override
     public MemberDTO getMemberInfo(Long memberId) {
         MemberEntity member = memberRepository.findByMemberId(memberId);
@@ -119,6 +139,7 @@ public class MemberServiceImple implements MemberService {
         memberDto.setPostalCode(member.getPostalCode());
         memberDto.setAddress(member.getAddress());
         memberDto.setDetailAddress(member.getDetailAddress());
+        memberDto.setType(member.getType());
 
         MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(memberId);
         if (memberPoints != null) {
@@ -171,7 +192,7 @@ public class MemberServiceImple implements MemberService {
 
         if (memberUpdateDTO.getCurrentPassword() != null && !memberUpdateDTO.getCurrentPassword().isEmpty()) {
 
-            if (!passwordEncoder.matches(memberUpdateDTO.getCurrentPassword(), member.getPassword())){
+            if (!passwordEncoder.matches(memberUpdateDTO.getCurrentPassword(), member.getPassword())) {
                 throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
             }
         }
@@ -197,19 +218,146 @@ public class MemberServiceImple implements MemberService {
         memberRepository.save(member);
     }
 
+    @Transactional
     @Override
-    public void withdrawMember(Long memberId, String password) {
-        // 회원 인증을 수행하고, 탈퇴 처리를 진행합니다.
-        MemberEntity member = authenticateMember(memberId, password);
-
-        if (member == null) {
-            new RuntimeException("해당하는 회원이 없습니다.");
+    public void withdrawMember(Long memberId, String password, String token) {
+        MemberEntity memberEntity = memberRepository.findByMemberId(memberId);
+        if (memberEntity == null) {
+            throw new RuntimeException("해당하는 회원이 없습니다.");
         }
-        
-        // 회원 탈퇴 처리
-        memberRepository.delete(member);
+
+        if (memberEntity.getType().equals("sign")) {
+            MemberEntity member = authenticateMember(memberId, password);
+
+            if (member == null) {
+                throw new RuntimeException("해당하는 회원이 없습니다.");
+            }
+
+            memberRepository.delete(memberEntity);
+        } else {
+            if (token == null) {
+                throw new RuntimeException("로그인 인증이 필요합니다.");
+            }
+            if (!matchUser(memberId, token)) {
+                throw new RuntimeException("해당하는 회원이 없습니다.");
+            }
+            withdrawSocialUser(memberEntity.getType(), token);
+            memberRepository.delete(memberEntity);
+
+        }
+
     }
+
+    private void withdrawSocialUser(String type, String token) {
+
+        if (type.equals("kakao")) {
+            String url = "https://kapi.kakao.com/v1/user/unlink";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            headers.set("Authorization", "Bearer " + token);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
+
+            ResponseEntity<String> response = restTemplate.postForEntity(url, request, String.class);
+
+            // 응답 처리
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // 탈퇴 성공
+                System.out.println("사용자 탈퇴가 완료되었습니다.");
+            } else {
+                // 탈퇴 실패
+                System.out.println("사용자 탈퇴에 실패했습니다.");
+            }
+        } else if ((type.equals("naver"))) {
+            String url = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id={클라이언트ID}&client_secret={클라이언트시크릿}&access_token={액세스토큰}&service_provider=NAVER";
+
+            url = url.replace("{클라이언트ID}", naverClientId)
+                     .replace("{클라이언트시크릿}", naverClientSecret)
+                     .replace("{액세스토큰}", token);
     
-        
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
+    
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
+    
+            // 응답 처리
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // 탈퇴 성공
+                System.out.println("네이버 사용자 탈퇴가 완료되었습니다.");
+            } else {
+                // 탈퇴 실패
+                System.out.println("네이버 사용자 탈퇴에 실패했습니다.");
+            }
+        }
+    }
+
+    @Override
+    public Boolean matchUser(Long memberId, String token) {
+        MemberDTO memberDto = getMemberInfo(memberId);
+        String id = memberDto.getId();
+
+        String socialId = null;
+
+        if (memberDto.getType().equals("kakao")) {
+            socialId = getKakaoUserId(token);
+        } else if (memberDto.getType().equals("naver")) {
+            System.out.println("naver");
+            socialId = getNaverUserId(token);
+        }
+        System.out.println("socialId: " + socialId);
+        if (socialId == null) {
+            return false;
+        }
+
+        String strippedId = id.replaceFirst("^(kakao_|naver_)", "");
+
+        return strippedId.equals(socialId);
+    }
+
+    private String getKakaoUserId(String accessToken) {
+        String url = "https://kapi.kakao.com/v2/user/me";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        try {
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, request, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> responseMap = objectMapper.readValue(responseEntity.getBody(), Map.class);
+            return String.valueOf(responseMap.get("id"));
+        } catch (IOException | HttpClientErrorException ex) {
+            return null;
+        }
+    }
+
+   private String getNaverUserId(String accessToken) {
+    try {
+        String url = "https://openapi.naver.com/v1/nid/me";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken); // 액세스 토큰을 Authorization 헤더에 Bearer로 설정
+    
+        // HttpEntity 대신 RequestEntity를 사용하여 GET 요청에 맞게 수정
+        RequestEntity<Void> request = RequestEntity.get(new URI(url))
+                                                    .headers(headers)
+                                                    .build();
+    
+        ResponseEntity<String> responseEntity = restTemplate.exchange(request, String.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> responseMap = objectMapper.readValue(responseEntity.getBody(), Map.class);
+        Map<String, Object> response = (Map<String, Object>) responseMap.get("response");
+        return ((String) response.get("id")).substring(0, 14); // 사용자 ID 반환
+    } catch (IOException | HttpClientErrorException | URISyntaxException ex) {
+        return null; // 예외 발생 시 null 반환
+    }
+}
+
 
 }

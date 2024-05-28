@@ -3,6 +3,7 @@ package com.seafood.back.service.imple;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.seafood.back.dto.ProductDTO;
@@ -16,7 +17,9 @@ import com.seafood.back.service.ProductService;
 import com.seafood.back.service.S3Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class HomeServiceImple implements HomeService {
@@ -27,13 +30,14 @@ public class HomeServiceImple implements HomeService {
     private final CarouselsRepository carouselsRepository;
     private final VideoRepository videoRepository;
 
+    
     @Override
+    @Cacheable(value = "carouselCache")
     public List<CarouselEntity> getCarouselImageUrls() {
+        log.info("getCarsosel");
         List<CarouselEntity> carousels = carouselsRepository.findAll();
 
         carousels.forEach(carousel -> {
-
-
             try {
                 String imageUrl = s3Service.getImageUrl(carousel.getImageUrl());
                 carousel.setImageUrl(imageUrl);
@@ -41,8 +45,6 @@ public class HomeServiceImple implements HomeService {
         
                 e.printStackTrace();
             }
-           
-
         });
 
         return carousels;

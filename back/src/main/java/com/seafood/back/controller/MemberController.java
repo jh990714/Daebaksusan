@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.seafood.back.dto.LoginRequest;
+import com.seafood.back.dto.MemberDeleteRequest;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.service.MemberService;
 
@@ -80,11 +81,11 @@ public class MemberController {
     }
     
     @DeleteMapping("/withdraw")
-    public ResponseEntity<?> withdrawMember(Authentication authentication, @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> withdrawMember(Authentication authentication, @RequestBody MemberDeleteRequest request) {
         try {
             Long memberId = Long.parseLong(authentication.getName());
 
-            memberService.withdrawMember(memberId, loginRequest.getPassword());
+            memberService.withdrawMember(memberId, request.getPassword(), request.getToken());
             
             return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
         } catch (Exception e) {

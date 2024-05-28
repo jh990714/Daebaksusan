@@ -16,6 +16,7 @@ public class MemberDTO {
     private String postalCode;
     private String address;
     private String detailAddress;
+    private String type;
     private List<CouponDTO> coupons;
     private BigDecimal points;
 }

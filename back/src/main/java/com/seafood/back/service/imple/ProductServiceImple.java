@@ -203,7 +203,7 @@ public class ProductServiceImple implements ProductService {
 
     @Override
     public ProductDTO convertToProductDTO(ProductEntity product, List<ProductDealsEntity> dealProducts) {
-        try {
+        // try {
             ProductDTO productDTO = new ProductDTO();
             // ProductEntity의 필드 값을 ProductDTO로 복사
             productDTO.setProductId(product.getProductId());
@@ -219,8 +219,9 @@ public class ProductServiceImple implements ProductService {
             productDTO.setRecommended(product.getRecommended());
             productDTO.setMaxQuantityPerDelivery(product.getMaxQuantityPerDelivery());
 
-            String imageUrl = s3Service.getImageUrl(product.getImageUrl());
-            productDTO.setImageUrl(imageUrl);
+            // String imageUrl = s3Service.getImageUrl(product.getImageUrl());
+            // productDTO.setImageUrl(imageUrl);
+            productDTO.setImageUrl(product.getImageUrl());
 
             // 타임 특가가 적용된 경우에만 sale_price 변경
             for (ProductDealsEntity dealProduct : dealProducts) {
@@ -233,10 +234,10 @@ public class ProductServiceImple implements ProductService {
             }
 
             return productDTO;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        // } catch (IOException e) {
+        //     e.printStackTrace();
+        //     return null;
+        // }
     }
 
     @Override
@@ -298,8 +299,8 @@ public class ProductServiceImple implements ProductService {
             return null;
         }
 
-        String imageUrl = s3Service.getImageUrl(productDetail.getImageUrl());
-
+        // String imageUrl = s3Service.getImageUrl(productDetail.getImageUrl());
+        String imageUrl = productDetail.getImageUrl();
 
         // 조회된 상품 상세정보가 있으면 S3 URL 반환, 없으면 null 반환
         log.info(imageUrl);

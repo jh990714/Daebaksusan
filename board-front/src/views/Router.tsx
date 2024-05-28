@@ -15,6 +15,7 @@ import OAuth from './Authentication/OAuth'
 import { SuccessOrder } from './SuccessOrder'
 import GuestOrderSearch from './GuestOrderSearch'
 import { OrderRedirectPage } from './OrderRedirectPage'
+import { OAuthCallback } from './Authentication/OAuthCallback'
 
 
 export const Router:React.FC = () => {
@@ -26,7 +27,7 @@ export const Router:React.FC = () => {
       <Route path="/all" element={<CategoryProduct path='all'/>} />
       <Route path="/detail" element={<Detail />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/mypage" element={<Mypage />} />
+      <Route path="/mypage/*" element={<Mypage />} />
       <Route path="/joinStep1" element={<JoinStep1 />} />
       <Route path="/joinStep2" element={<JoinStep2 />} />
       <Route path="/joinStep3" element={<JoinStep3 />} />
@@ -37,6 +38,7 @@ export const Router:React.FC = () => {
       <Route path="/categoryProducts/:category/:sub" element={<CategoryProduct path='categoryProducts/category/sub'/>} />
       <Route path="/product/search" element={<CategoryProduct path='search'/>} />
       <Route path='/auth/oauth-response/:token' element={<OAuth/>} />
+      <Route path='/auth/callback' element={<OAuthCallback/>} />
       {/* <Route path='/successOrder' element={<SuccessOrder/>} /> */}
       <Route path='/guestOrderSearch' element={<GuestOrderSearch/>} />
       <Route path='/successOrder' element={<OrderRedirectPage/>} />

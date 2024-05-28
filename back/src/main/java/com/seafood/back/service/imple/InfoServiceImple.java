@@ -56,6 +56,7 @@ import com.seafood.back.service.InfoService;
 import com.seafood.back.service.MemberService;
 import com.seafood.back.service.PointsTransactionService;
 import com.seafood.back.service.S3Service;
+// import com.seafood.back.service.S3Service;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -215,21 +216,28 @@ public class InfoServiceImple implements InfoService {
         ReviewEntity savedReviewEntity = reviewRepository.save(reviewEntity);
 
         if (imageFiles != null) { // null 체크 추가
-            int index = 0;
             for (MultipartFile imageFile : imageFiles) {
                 if (imageFile != null && !imageFile.isEmpty()) { // null 및 비어있는지 체크
-                    ReviewImageEntity reviewImageEntity = new ReviewImageEntity();
-                    reviewImageEntity.setReviewId(savedReviewEntity.getReviewId());
-                    try {
-                        String fileName = "review/" + savedReviewEntity.getReviewId() + "_" + index;
-                        String imageUrl = s3Service.saveImageToS3(imageFile, fileName);
-                        index++;
+                    // try {
+                    //     String fileName = "review/" + savedReviewEntity.getReviewId() + "_" + index;
+                    //     String imageUrl = s3Service.saveImageToS3(imageFile, fileName);
+                    //     index++;
 
+                    //     reviewImageEntity.setImageUrl(imageUrl);
+                    //     reviewImageRepository.save(reviewImageEntity);
+                    // } catch (IOException e) {
+
+                    //     e.printStackTrace();
+                    // }
+                    try {
+                        ReviewImageEntity reviewImageEntity = new ReviewImageEntity();
+                        reviewImageEntity.setReviewId(savedReviewEntity.getReviewId());
+                        
+                        String imageUrl = s3Service.saveImageToS3(imageFile, "reivew/");
                         reviewImageEntity.setImageUrl(imageUrl);
                         reviewImageRepository.save(reviewImageEntity);
                     } catch (IOException e) {
 
-                        e.printStackTrace();
                     }
 
                 }
@@ -309,16 +317,16 @@ public class InfoServiceImple implements InfoService {
         for (ReviewImageEntity reviewImageEntity : reviewImageEntities) {
             // 이미지의 key를 가져옴
             String imageKey = reviewImageEntity.getImageUrl();
-
-            try {
-                // S3에 저장된 이미지의 URL을 가져옴
-                String imageUrl = s3Service.getImageUrl(imageKey);
-                imageUrls.add(imageUrl);
-            } catch (IOException e) {
-                // 이미지 URL을 가져오는 중에 오류가 발생한 경우
-                e.printStackTrace();
-                // 처리할 방법에 따라 예외 처리를 추가하십시오.
-            }
+            imageUrls.add(imageKey);
+            // try {
+            //     // S3에 저장된 이미지의 URL을 가져옴
+            //     String imageUrl = s3Service.getImageUrl(imageKey);
+            //     imageUrls.add(imageUrl);
+            // } catch (IOException e) {
+            //     // 이미지 URL을 가져오는 중에 오류가 발생한 경우
+            //     e.printStackTrace();
+            //     // 처리할 방법에 따라 예외 처리를 추가하십시오.
+            // }
         }
         reviewDTO.setImageUrls(imageUrls);
 
