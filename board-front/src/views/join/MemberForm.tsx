@@ -13,7 +13,7 @@ interface MemberFormProps {
 export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
     const navigate = useNavigate();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
-    
+
     const [memberId, setMemberId] = useState<string>('');
     const [currentPassword, setCurrentPassword] = useState<string>('');
     const [password, setPassword] = useState<string>('');
@@ -147,7 +147,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
             }
         } else {
             try {
-                
+
                 const response = await axios.post(`${process.env.REACT_APP_API_URL}/members/signUp`, {
                     id: memberId,
                     password: password,
@@ -228,7 +228,8 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
                     </div>
                 </div>
 
-                {userInfo && userInfo.type === 'sign' &&
+
+                {(!userInfo || (userInfo?.type === 'sign')) && (
                     <div className="grid grid-cols-6 border-b-2 border-gray-300">
                         <label htmlFor="password" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">현재 비밀번호</label>
                         <div className="col-span-5 flex">
@@ -237,27 +238,32 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
                                 placeholder="비밀번호 입력" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
                         </div>
                     </div>
-                }
+                )}
+                {userInfo && userInfo.type === 'sign' && (
+                    <>
+                        <div className="grid grid-cols-6 border-b-2 border-gray-300">
+                            <label htmlFor="password" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">비밀번호</label>
+                            <div className="col-span-5 flex">
+                                <input type="password" id="password" name="password" required minLength={8}
+                                    className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="비밀번호 입력" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                <div className="flex items-center text-xs">영문 + 숫자 8자리 이상</div>
+                            </div>
+                        </div>
 
-                <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                    <label htmlFor="password" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">비밀번호</label>
-                    <div className="col-span-5 flex">
-                        <input type="password" id="password" name="password" required minLength={8}
-                            className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="비밀번호 입력" value={password} onChange={(e) => setPassword(e.target.value)} />
-                        <div className="flex items-center text-xs">영문 + 숫자 8자리 이상</div>
-                    </div>
-                </div>
-                {/* 나머지 필드에 대해서도 동일한 방법으로 상태를 관리하고 입력 필드를 생성합니다. */}
-                <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                    <label htmlFor="passwordConfirm" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">비밀번호 확인</label>
-                    <div className="col-span-5 flex">
-                        <input type="password" id="passwordConfirm" name="passwordConfirm" required minLength={8}
-                            className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="비밀번호를 재입력" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
-                        <div className="flex items-center text-xs">일치하도록</div>
-                    </div>
-                </div>
+                        <div className="grid grid-cols-6 border-b-2 border-gray-300">
+                            <label htmlFor="passwordConfirm" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">비밀번호 확인</label>
+                            <div className="col-span-5 flex">
+                                <input type="password" id="passwordConfirm" name="passwordConfirm" required minLength={8}
+                                    className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    placeholder="비밀번호를 재입력" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
+                                <div className="flex items-center text-xs">일치하도록</div>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+
 
 
             </div>
