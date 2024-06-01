@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { RcmndProductComp } from 'components/product/RcmndProductComp';
 import { Product, VideoItem } from 'types';
+import { Link } from 'react-router-dom';
 
 export const VideoPlayer = () => {
     const [videoItem, setVideoItem] = useState<VideoItem>();
@@ -21,6 +22,8 @@ export const VideoPlayer = () => {
         fetchData();
     }, []);
 
+    const currentUrl = window.location.origin;
+
     return (
         <div className="">
             <div className="m-10 font-bold text-2xl">👀 대박수산 TV</div>
@@ -28,23 +31,43 @@ export const VideoPlayer = () => {
             <div className="rounded-lg grid grid-cols-10 gap-3 border-2">
                 <div className="col-span-10 xl:col-span-7">
                     {videoItem && (
-                        <ReactPlayer
-                            style={{ borderRadius: '10px 0 0 10px', overflow: 'hidden' }}
-                            loop={true}
-                            url={videoItem.videoUrl}
-                            width="100%"
-                            height="100%"
-                            playing={true}
-                            muted={true}
-                            controls={false}
-                            light={false}
-                            pip={false}
-                        />
+                        videoItem.link && videoItem.link.startsWith(currentUrl) ? (
+                            <Link to={videoItem.link.replace(currentUrl, '')}>
+                                <ReactPlayer
+                                    style={{ borderRadius: '10px 0 0 10px', overflow: 'hidden' }}
+                                    loop={true}
+                                    url={videoItem.videoUrl}
+                                    width="100%"
+                                    height="100%"
+                                    playing={true}
+                                    muted={true}
+                                    controls={false}
+                                    light={false}
+                                    pip={false}
+                                />
+                            </Link>
+                        ) : (
+                            <a href={videoItem.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                <ReactPlayer
+                                    style={{ borderRadius: '10px 0 0 10px', overflow: 'hidden' }}
+                                    loop={true}
+                                    url={videoItem.videoUrl}
+                                    width="100%"
+                                    height="100%"
+                                    playing={true}
+                                    muted={true}
+                                    controls={false}
+                                    light={false}
+                                    pip={false}
+                                />
+                            </a>
+                        )
                     )}
                 </div>
+
                 <div className="hidden xl:grid col-span-3 grid grid-rows-3">
                     {videoItem &&
-                        videoItem.products.slice(0, 3).map((product, index, array) => (
+                        videoItem.products.map((product, index, array) => (
                             <div
                                 key={index}
                                 className={index === array.length - 1 ? 'content-center' : 'border-b-2 content-center'}

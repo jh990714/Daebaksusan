@@ -67,16 +67,18 @@ public class QnAServiceImple implements QnAService {
             questionDTO.setName(name);
         }
 
-        AnswerDTO answerDTO = null;
-        if (questionEntity.getAnswer() != null) {
-            answerDTO = new AnswerDTO();
-            answerDTO.setAnswerId(questionEntity.getAnswer().getAnswerId());
-            answerDTO.setContent(questionEntity.getAnswer().getContent());
-            answerDTO.setCreatedAt(questionEntity.getAnswer().getCreatedAt());
-        }
+        List<AnswerDTO> answerDTOs = questionEntity.getAnswers().stream()
+                .map(answer -> {
+                    AnswerDTO answerDTO = new AnswerDTO();
+                    answerDTO.setAnswerId(answer.getAnswerId());
+                    answerDTO.setContent(answer.getContent());
+                    answerDTO.setCreatedAt(answer.getCreatedAt());
+                    return answerDTO;
+                })
+                .collect(Collectors.toList());
 
         qnaDTO.setQuestion(questionDTO);
-        qnaDTO.setAnswer(answerDTO);
+        qnaDTO.setAnswers(answerDTOs);
 
         return qnaDTO;
     }

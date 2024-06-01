@@ -17,7 +17,7 @@ export const ProductListComp: React.FC<ProductListCompProps> = ({ product, size,
     const discountRate = Math.round((product.salePrice / product.regularPrice) * 100);
 
     return (
-        <Link to={'/detail/'} state={{ product: product }} className={styles.detailLink}>
+        <Link to={`/detail/${product.productId}`} className={styles.detailLink}>
             <div style={{
                 '--card-size': size,
                 '--card-font-size': fontSize,

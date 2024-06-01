@@ -124,7 +124,7 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String savePaymentDetails(Long memberId, String impUid, String password){
+    public String savePaymentDetails(Long memberId, String impUid, String mid, String password){
         try {
             PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
@@ -157,6 +157,7 @@ public class PaymentServiceImple implements PaymentService {
 
             paymentDetails.setOrderNumber(orderNumber);
             paymentDetails.setImpUid(impUid);
+            paymentDetails.setMid(mid);
             paymentDetails.setIsCancel(true);
             paymentDetails.setPassword(passwordEncoder.encode(password));
             paymentDetails.setOrderDate(todayWithoutTime); // 주문날짜 설정
@@ -171,7 +172,7 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String processSuccessfulPayment(Long memberId, List<CartDTO> orderItems, String impUid, String password, CouponDTO coupon, BigDecimal points) {
+    public String processSuccessfulPayment(Long memberId, List<CartDTO> orderItems, String impUid, String mid, String password, CouponDTO coupon, BigDecimal points) {
         try {
             // 결제가 성공하면 상품 수량 변경
             productService.updateProductQuantities(orderItems);
@@ -192,7 +193,7 @@ public class PaymentServiceImple implements PaymentService {
                 }
             }
             // 결제 정보 저장
-            String orderNumber = savePaymentDetails(memberId, impUid, password);
+            String orderNumber = savePaymentDetails(memberId, impUid, mid, password);
 
             // 쿠폰 제거
             if (coupon != null) {
@@ -243,6 +244,7 @@ public class PaymentServiceImple implements PaymentService {
                 });
 
         BigDecimal paidAmount = iamportResponse.getResponse().getAmount();
+        System.out.println(iamportResponse.getResponse().getStatus());
         BigDecimal orderAmount = orderAmount(imp_uid, orderItems);
 
         CouponAmountResult couponAmountResult = couponService.couponAmount(memberId, coupon);
@@ -265,7 +267,8 @@ public class PaymentServiceImple implements PaymentService {
         BigDecimal expectedAmount = orderAmount.subtract(couponAmountResult.getCouponAmount()).subtract(pointsUsed);
 
         if (expectedAmount.compareTo(paidAmount) == 0) {
-            String orderNumber = processSuccessfulPayment(memberId, orderItems, imp_uid, password, coupon, pointsUsed);
+            String mid = iamportResponse.getResponse().getMerchantUid();
+            String orderNumber = processSuccessfulPayment(memberId, orderItems, imp_uid, mid, password, coupon, pointsUsed);
             Map<String, Object> response = new HashMap<>();
             response.put("orderNumber", orderNumber);
             response.put("iamportResponse", iamportResponse);

@@ -2,10 +2,10 @@ package com.seafood.back.respository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.seafood.back.entity.VideoEntity;
+import com.seafood.back.entity.PromotionalVideoEntity;
 
-public interface VideoRepository extends JpaRepository<VideoEntity, Long>{
+public interface VideoRepository extends JpaRepository<PromotionalVideoEntity, Long>{
 
-    VideoEntity findFirstByOrderByVideoId();
+    PromotionalVideoEntity findFirstByOrderByVideoId();
     
 }

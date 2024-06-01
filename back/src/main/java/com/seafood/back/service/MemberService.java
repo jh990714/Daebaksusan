@@ -18,5 +18,7 @@ public interface MemberService {
     public void updateMember(MemberUpdateDTO memberUpdateDTO);
     public void withdrawMember(Long memberId, String password, String token);
     public Boolean matchUser(Long memberId, String token);
+    public String findAccountId(String name, String email);
+    public String findAccountPassword(String name, String email, String id);
 }
 

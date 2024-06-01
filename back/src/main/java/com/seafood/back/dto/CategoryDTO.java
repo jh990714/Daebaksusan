@@ -9,6 +9,7 @@ import java.util.List;
 public class CategoryDTO {
     private Long id;
     private String name;
+    private String imageUrl;
     private List<SubcategoryDTO> subcategories;
 
     @Getter

@@ -14,12 +14,8 @@ interface RcmndProductCompProps {
 }
 
 export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, imgSize_w_per, imgSize_h_px, fontSize, radius = 3, shadow = false }) => {
-    if (!product.recommended) {
-        return null; // 추천 상품이 아닌 경우, 렌더링하지 않음
-    }
-
     return (
-        <Link to={`/detail/`} state={{ product: product }} className={styles.detailLink}>
+        <Link to={`/detail/${product.productId}`} className={styles.detailLink}>
             <div className={`${styles.container} ${shadow ? 'shadow-md' : ''}`}
                 style={{
                     '--border-radius': `${radius}%`
@@ -39,7 +35,9 @@ export const RcmndProductComp: React.FC<RcmndProductCompProps> = ({ product, img
                             '--h-size': `${imgSize_h_px}`,
                             '--border-radius': `${radius}%`
                         } as React.CSSProperties} />
-                    <img src={tag} alt='추천 상품' className={styles.rcmdTag} />
+                    {product.recommended &&
+                        <img src={tag} alt='추천 상품' className={styles.rcmdTag} />
+                    }
                 </div>
                 <div className={styles.rcmdInfo}
                     style={{

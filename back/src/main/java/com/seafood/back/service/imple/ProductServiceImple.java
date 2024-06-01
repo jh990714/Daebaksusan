@@ -17,11 +17,14 @@ import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductDetail;
 import com.seafood.back.entity.ProductEntity;
+import com.seafood.back.entity.PromotionalProductEntity;
+import com.seafood.back.entity.PromotionalVideoEntity;
 import com.seafood.back.respository.CategoryRepository;
 import com.seafood.back.respository.OptionRepository;
 import com.seafood.back.respository.ProductDealsRepository;
 import com.seafood.back.respository.ProductDetailRepository;
 import com.seafood.back.respository.ProductRepository;
+import com.seafood.back.respository.PromotionalProductRepository;
 import com.seafood.back.service.ProductService;
 import com.seafood.back.service.S3Service;
 
@@ -33,14 +36,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImple implements ProductService {
-
-    private final S3Service s3Service;
-
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final OptionRepository optionRepository;
     private final ProductDealsRepository productDealsRepository;
     private final ProductDetailRepository productDetailRepository;
+    private final PromotionalProductRepository promotionalProductRepository;
 
     @Override
     public List<ProductDTO> findProductAll() {
@@ -87,27 +88,23 @@ public class ProductServiceImple implements ProductService {
     public List<ProductDTO> getProductsByCategoryAndSubcategories(Long categoryId) {
         List<ProductEntity> products = new ArrayList<>();
 
-        if (categoryId == 1) {
-            // categoryId가 1이면 모든 제품을 반환
-            products.addAll(productRepository.findAll());
-        } else {
-            // 상위 카테고리 조회
-            Optional<CategoryEntity> categoryOptional = categoryRepository.findById(categoryId);
-            if (categoryOptional.isPresent()) {
-                CategoryEntity category = categoryOptional.get();
 
-                // 상위 카테고리의 하위 카테고리들 조회
-                List<CategoryEntity> subcategories = category.getSubcategories();
-                if (subcategories.isEmpty()) {
-                    // 하위 카테고리가 없으면 상위 카테고리의 제품들을 가져옴
-                    products.addAll(category.getProducts());
-                } else {
-                    // 하위 카테고리들에 속한 제품들을 모두 가져옴
-                    for (CategoryEntity subcategory : subcategories) {
-                        products.addAll(subcategory.getProducts());
-                    }
+        Optional<CategoryEntity> categoryOptional = categoryRepository.findById(categoryId);
+        if (categoryOptional.isPresent()) {
+            CategoryEntity category = categoryOptional.get();
+
+            // 상위 카테고리의 하위 카테고리들 조회
+            List<CategoryEntity> subcategories = category.getSubcategories();
+            if (subcategories.isEmpty()) {
+                // 하위 카테고리가 없으면 상위 카테고리의 제품들을 가져옴
+                products.addAll(category.getProducts());
+            } else {
+                // 하위 카테고리들에 속한 제품들을 모두 가져옴
+                for (CategoryEntity subcategory : subcategories) {
+                    products.addAll(subcategory.getProducts());
                 }
             }
+            
         }
 
         List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
@@ -306,4 +303,71 @@ public class ProductServiceImple implements ProductService {
         log.info(imageUrl);
         return imageUrl;
     }
+
+    @Override
+    public ProductDTO findProduct(Long productId) {
+        ProductEntity productEntity = productRepository.findByProductId(productId);
+        List<ProductDealsEntity> productDeals = findProductDeal();
+
+        ProductDTO productDTO = convertToProductDTO(productEntity, productDeals);
+
+        return productDTO;
+    }
+
+    @Override
+    public List<ProductDTO> getProductsByCategoryAndSubcategories(String categoryName) {
+        List<ProductEntity> products = new ArrayList<>();
+
+        CategoryEntity categoryEntity = categoryRepository.findByName(categoryName);
+        if (categoryEntity == null) {
+            throw new IllegalArgumentException("Category with name " + categoryName + " not found");
+        }
+        
+
+        List<CategoryEntity> subcategories = categoryEntity.getSubcategories();
+        if (subcategories.isEmpty()) {
+            // 하위 카테고리가 없으면 상위 카테고리의 제품들을 가져옴
+            products.addAll(categoryEntity.getProducts());
+        } else {
+            // 하위 카테고리들에 속한 제품들을 모두 가져옴
+            for (CategoryEntity subcategory : subcategories) {
+                products.addAll(subcategory.getProducts());
+            }
+        }
+    
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
+
+    }
+
+    @Override
+    public List<ProductDTO> getProductsByCategorySub(String categoryName) {
+        CategoryEntity categoryEntity = categoryRepository.findByName(categoryName);
+        if (categoryEntity == null) {
+            throw new IllegalArgumentException("Category with name " + categoryName + " not found");
+        }
+
+        List<ProductEntity> products = productRepository.findByCategory(categoryEntity.getCategoryId());
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
+    }
+
+    @Override
+    public List<ProductDTO> getPromotionalProducts(PromotionalVideoEntity video) {
+
+        List<PromotionalProductEntity> promotionalProducts = promotionalProductRepository.findByVideo(video);
+        
+        // PromotionalProductEntity 리스트를 ProductEntity 리스트로 변환
+        List<ProductEntity> productEntities = promotionalProducts.stream()
+                .map(PromotionalProductEntity::getProduct)
+                .collect(Collectors.toList());
+        
+        // ProductEntity 리스트를 ProductDTO 리스트로 변환
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(productEntities);
+        
+        return productDTOs;
+    }
+    
 }

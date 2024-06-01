@@ -24,19 +24,23 @@ public class CategoryServiceImple implements CategoryService {
         List<CategoryEntity> categoryEntities = categoryRepository.findAll();
         for (CategoryEntity categoryEntity : categoryEntities) {
             if (categoryEntity.getCategoryId() == 1 || !categoryEntity.getSubcategories().isEmpty()) {
-                CategoryDTO categoryDTO = new CategoryDTO();
-                categoryDTO.setId(categoryEntity.getCategoryId());
-                categoryDTO.setName(categoryEntity.getName());
+                CategoryDTO categoryDto = new CategoryDTO();
+                categoryDto.setId(categoryEntity.getCategoryId());
+                categoryDto.setName(categoryEntity.getName());
+                categoryDto.setImageUrl(categoryEntity.getImageUrl());
+                
                 List<SubcategoryDTO> subcategoryDTOs = new ArrayList<>();
-                for (CategoryEntity subcategoryEntity : categoryEntity.getSubcategories()) {
-                    SubcategoryDTO subcategoryDTO = new SubcategoryDTO();
-                    subcategoryDTO.setId(subcategoryEntity.getCategoryId());
-                    subcategoryDTO.setName(subcategoryEntity.getName());
-                    // 필요한 경우 SubcategoryDTO에 추가 정보를 설정합니다.
-                    subcategoryDTOs.add(subcategoryDTO);
+                List<CategoryEntity> subcategories = categoryEntity.getSubcategories();
+                if (subcategories != null) {
+                    for (CategoryEntity subcategoryEntity : categoryEntity.getSubcategories()) {
+                        SubcategoryDTO subcategoryDTO = new SubcategoryDTO();
+                        subcategoryDTO.setId(subcategoryEntity.getCategoryId());
+                        subcategoryDTO.setName(subcategoryEntity.getName());
+                        subcategoryDTOs.add(subcategoryDTO);
+                    }
                 }
-                categoryDTO.setSubcategories(subcategoryDTOs);
-                categoryDTOs.add(categoryDTO);
+                categoryDto.setSubcategories(subcategoryDTOs);
+                categoryDTOs.add(categoryDto);
             }
         }
         return categoryDTOs;

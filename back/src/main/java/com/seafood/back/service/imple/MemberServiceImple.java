@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.CouponDTO;
@@ -33,9 +37,12 @@ import com.seafood.back.entity.MemberPointsEntity;
 import com.seafood.back.respository.MemberPointsRepository;
 import com.seafood.back.respository.MemberRepository;
 import com.seafood.back.service.CouponService;
+import com.seafood.back.service.MailService;
 import com.seafood.back.service.MemberService;
 import com.seafood.back.utils.JwtUtil;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,6 +57,9 @@ public class MemberServiceImple implements MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberPointsRepository memberPointsRepository;
+
+    private final MailService mailService;
+    private final TemplateEngine templateEngine;
 
     @Value("${jwt.secret}")
     private String accessSecretKey;
@@ -273,16 +283,16 @@ public class MemberServiceImple implements MemberService {
             String url = "https://nid.naver.com/oauth2.0/token?grant_type=delete&client_id={클라이언트ID}&client_secret={클라이언트시크릿}&access_token={액세스토큰}&service_provider=NAVER";
 
             url = url.replace("{클라이언트ID}", naverClientId)
-                     .replace("{클라이언트시크릿}", naverClientSecret)
-                     .replace("{액세스토큰}", token);
-    
+                    .replace("{클라이언트시크릿}", naverClientSecret)
+                    .replace("{액세스토큰}", token);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    
+
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(headers);
-    
+
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, request, String.class);
-    
+
             // 응답 처리
             if (response.getStatusCode() == HttpStatus.OK) {
                 // 탈퇴 성공
@@ -336,28 +346,79 @@ public class MemberServiceImple implements MemberService {
         }
     }
 
-   private String getNaverUserId(String accessToken) {
-    try {
-        String url = "https://openapi.naver.com/v1/nid/me";
+    private String getNaverUserId(String accessToken) {
+        try {
+            String url = "https://openapi.naver.com/v1/nid/me";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken); // 액세스 토큰을 Authorization 헤더에 Bearer로 설정
-    
-        // HttpEntity 대신 RequestEntity를 사용하여 GET 요청에 맞게 수정
-        RequestEntity<Void> request = RequestEntity.get(new URI(url))
-                                                    .headers(headers)
-                                                    .build();
-    
-        ResponseEntity<String> responseEntity = restTemplate.exchange(request, String.class);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(accessToken); // 액세스 토큰을 Authorization 헤더에 Bearer로 설정
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> responseMap = objectMapper.readValue(responseEntity.getBody(), Map.class);
-        Map<String, Object> response = (Map<String, Object>) responseMap.get("response");
-        return ((String) response.get("id")).substring(0, 14); // 사용자 ID 반환
-    } catch (IOException | HttpClientErrorException | URISyntaxException ex) {
-        return null; // 예외 발생 시 null 반환
+            // HttpEntity 대신 RequestEntity를 사용하여 GET 요청에 맞게 수정
+            RequestEntity<Void> request = RequestEntity.get(new URI(url))
+                    .headers(headers)
+                    .build();
+
+            ResponseEntity<String> responseEntity = restTemplate.exchange(request, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> responseMap = objectMapper.readValue(responseEntity.getBody(), Map.class);
+            Map<String, Object> response = (Map<String, Object>) responseMap.get("response");
+            return ((String) response.get("id")).substring(0, 14); // 사용자 ID 반환
+        } catch (IOException | HttpClientErrorException | URISyntaxException ex) {
+            return null; // 예외 발생 시 null 반환
+        }
     }
-}
 
+    @Override
+    public String findAccountId(String name, String email) {
+        MemberEntity memberEntity = memberRepository.findByNameAndEmailAndType(name, email, "sign");
+    
+        if (memberEntity == null) {
+            throw new RuntimeException("해당하는 회원이 없습니다.");
+        }
+
+        return memberEntity.getId();
+    }
+
+    @Override
+    public String findAccountPassword(String name, String email, String id) {
+        // 사용자 계정 조회
+        MemberEntity memberEntity = memberRepository.findByNameAndEmailAndType(name, email, "sign");
+    
+        if (memberEntity == null || !memberEntity.getId().equals(id)) {
+            throw new RuntimeException("해당하는 회원이 없습니다.");
+        }
+
+        String tempPassword = generateTempPassword();
+        
+        memberEntity.setPassword(passwordEncoder.encode(tempPassword));
+        memberRepository.save(memberEntity);
+    
+        sendTempPasswordEmail(email, tempPassword);
+    
+        return "임시 비밀번호가 이메일로 전송되었습니다.";
+    }
+
+    private String generateTempPassword() {
+        int length = 10;
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder password = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            int index = (int) (Math.random() * chars.length());
+            password.append(chars.charAt(index));
+        }
+        return password.toString();
+    }
+
+    private void sendTempPasswordEmail(String email, String tempPassword) {
+        Context context = new Context();
+        context.setVariable("tempPassword", tempPassword);
+
+        String message = templateEngine.process("TempPasswordEmail.html", context);
+
+        mailService.sendMail(email, message, true);
+
+    }
+    
 
 }

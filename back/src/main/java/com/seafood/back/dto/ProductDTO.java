@@ -25,4 +25,6 @@ public class ProductDTO {
     Integer maxQuantityPerDelivery;
     Date startDate;
     Date endDate;
+
+    
 }

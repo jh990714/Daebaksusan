@@ -53,7 +53,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService{
             id = "kakao_" + oAuth2User.getAttributes().get("id");
             Map<String, String> reponseMap = (Map<String, String>) oAuth2User.getAttributes().get("kakao_account");
             name = reponseMap.get("name");
-            phone = reponseMap.get("phone_number");
+            phone = reponseMap.get("phone_number").replaceFirst("\\+82 ", "0");
             email = reponseMap.get("email");
         
 

@@ -3,6 +3,7 @@ package com.seafood.back.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.seafood.back.dto.FindAccountRequest;
 import com.seafood.back.dto.LoginRequest;
 import com.seafood.back.dto.MemberDeleteRequest;
 import com.seafood.back.entity.MemberEntity;
@@ -92,6 +93,32 @@ public class MemberController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    @PostMapping("/findId")
+    public ResponseEntity<?> findId(@RequestBody FindAccountRequest request) {
+        try {
+            System.out.println("request" + request.getEmail() + request.getName());
+            String id = memberService.findAccountId(request.getName(), request.getEmail());
+
+            return ResponseEntity.ok().body(id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+       
+    }
+
+    @PostMapping("/findPassword")
+    public ResponseEntity<?> findPassword(@RequestBody FindAccountRequest request) {
+        try {
+            String message = memberService.findAccountPassword(request.getName(), request.getEmail(), request.getId());
+            
+            return ResponseEntity.ok().body(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+       
+    }
+    
 
 }
 

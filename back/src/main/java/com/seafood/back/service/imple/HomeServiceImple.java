@@ -2,14 +2,16 @@ package com.seafood.back.service.imple;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.seafood.back.dto.CarouselDTO;
 import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.dto.VideoDTO;
 import com.seafood.back.entity.CarouselEntity;
-import com.seafood.back.entity.VideoEntity;
+import com.seafood.back.entity.PromotionalVideoEntity;
 import com.seafood.back.respository.CarouselsRepository;
 import com.seafood.back.respository.VideoRepository;
 import com.seafood.back.service.HomeService;
@@ -32,48 +34,37 @@ public class HomeServiceImple implements HomeService {
 
     
     @Override
-    @Cacheable(value = "carouselCache")
-    public List<CarouselEntity> getCarouselImageUrls() {
-        log.info("getCarsosel");
+    // @Cacheable(value = "carouselCache")
+    public List<CarouselDTO> getCarouselImageUrls() {
         List<CarouselEntity> carousels = carouselsRepository.findAll();
-
-        carousels.forEach(carousel -> {
-            try {
-                String imageUrl = s3Service.getImageUrl(carousel.getImageUrl());
-                carousel.setImageUrl(imageUrl);
-            } catch (IOException e) {
+        return carousels.stream()
+                .map(CarouselDTO::fromEntity)
+                .collect(Collectors.toList());
+        // carousels.forEach(carousel -> {
+        //     try {
+        //         String imageUrl = s3Service.getImageUrl(carousel.getImageUrl());
+        //         carousel.setImageUrl(imageUrl);
+        //     } catch (IOException e) {
         
-                e.printStackTrace();
-            }
-        });
+        //         e.printStackTrace();
+        //     }
+        // });
 
-        return carousels;
+        // return carousels;
     }
 
     @Override
     public VideoDTO getVideoPlayer() {
-        VideoEntity video = videoRepository.findFirstByOrderByVideoId();
-        List<ProductDTO> productDTOs = productService.findProductNew();
+        PromotionalVideoEntity video = videoRepository.findFirstByOrderByVideoId();
+        List<ProductDTO> productDTOs = productService.getPromotionalProducts(video);
 
         VideoDTO videoDTO = new VideoDTO();
 
-        if (video != null) {
-            String videoUrl;
-            try {
-                videoUrl = s3Service.getImageUrl(video.getVideoUrl());
-                videoDTO.setVideoId(video.getVideoId());
-                videoDTO.setVideoUrl(videoUrl);
-            } catch (IOException e) {
-            
-                e.printStackTrace();
-            }
 
-           
-        }
-
-        if (productDTOs != null) {
-            videoDTO.setProducts(productDTOs);
-        }
+        videoDTO.setVideoId(video.getVideoId());
+        videoDTO.setVideoUrl(video.getVideoUrl());
+        videoDTO.setLink(video.getLink());
+        videoDTO.setProducts(productDTOs);
 
         return videoDTO;
     }

@@ -124,11 +124,7 @@ export const NavigationBar = () => {
             return
         }
 
-        navigate(`/product/search?query=${debouncedQuery}`, {
-            state: {
-                category: debouncedQuery
-            }
-        });
+        navigate(`/product/search/${debouncedQuery}`);
 
         setQuery('');
         setSearchResults([]);
@@ -292,15 +288,22 @@ export const NavigationBar = () => {
             <div className={`${styles.categories} ${isMenuOpen ? styles.show : ''} ${isCategoriesOpen ? styles.show : ''}`} onMouseLeave={closeCategory}>
                 {categories.map((category) => (
                     <div key={category.name} className={styles.categoryItem}>
-                        <Link to={`/categoryProducts/${category.name}`} state={{ category: category }} className={styles.categoryLink}>
-                            <img src={process.env.PUBLIC_URL + `/category/${category.id}.png`} alt={category.name} width="40" />
-                            {/* <img src={process.env.PUBLIC_URL + `/category/`+category.name + `.png`} alt={category.name} /> */}
+                        <Link to={`/categoryProducts/${category.name}`} className={styles.categoryLink}>
+                            {category.imageUrl ? (
+                                <img src={category.imageUrl} alt={category.name} width="40" />
+                            ) : (
+                                <img
+                                src={`${process.env.PUBLIC_URL}/category/default.png`}
+                                alt={category.name}
+                                width="40"
+                                />
+                            )}
                             <p className={styles.categoryTitle}>{category.name}</p>
                         </Link>
 
                         <ul className={styles.subcategoryList}>
                             {category.subcategories.map((sub, index) => ( // 여기서 index를 사용하여 고유한 key prop을 생성합니다.
-                                <Link key={`${category.name}_${index}`} to={`/categoryProducts/${category.name}/${sub.name}`} state={{ category: sub }} className={styles.subcategoryLink}>
+                                <Link key={`${category.name}_${index}`} to={`/categoryProducts/${category.name}/${sub.name}`} className={styles.subcategoryLink}>
                                     <li className={styles.subcategoryItem}>{sub.name}</li>
                                 </Link>
                             ))}

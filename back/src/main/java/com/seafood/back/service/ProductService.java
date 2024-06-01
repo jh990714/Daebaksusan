@@ -9,6 +9,7 @@ import com.seafood.back.dto.ProductDTO;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
+import com.seafood.back.entity.PromotionalVideoEntity;
 
 public interface ProductService {
     public List<ProductDTO> findProductAll();
@@ -28,4 +29,8 @@ public interface ProductService {
     public List<ProductDTO> findProductRecommend();
     public void addProductQuantities(List<PaymentItemDTO> orderItems);
     public String getProductInfoImage(Long productId) throws IOException;
+    public ProductDTO findProduct(Long productId);
+    public List<ProductDTO> getProductsByCategoryAndSubcategories(String categoryName);
+    public List<ProductDTO> getProductsByCategorySub(String categoryName);
+    public List<ProductDTO> getPromotionalProducts(PromotionalVideoEntity video);
 }

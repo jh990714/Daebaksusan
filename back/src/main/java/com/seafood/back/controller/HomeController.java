@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.seafood.back.dto.CarouselDTO;
 import com.seafood.back.dto.VideoDTO;
-import com.seafood.back.entity.CarouselEntity;
-import com.seafood.back.entity.VideoEntity;
 import com.seafood.back.service.HomeService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,14 +25,14 @@ public class HomeController {
 
     
     @GetMapping("/getCarousel")
-    public ResponseEntity<List<CarouselEntity>> getCarouselImageUrls() {
-        List<CarouselEntity> carouselImages = homeService.getCarouselImageUrls();
+    public ResponseEntity<List<CarouselDTO>> getCarouselImageUrls() {
+        List<CarouselDTO> carouselImages = homeService.getCarouselImageUrls();
         
-        // 캐시 지시자 max-age를 사용하여 리소스를 1시간 동안 캐시
-        CacheControl cacheControl = CacheControl.maxAge(1, TimeUnit.HOURS);
+        // // 캐시 지시자 max-age를 사용하여 리소스를 1시간 동안 캐시
+        // CacheControl cacheControl = CacheControl.maxAge(1, TimeUnit.HOURS);
         
         return ResponseEntity.ok()
-                .cacheControl(cacheControl)
+                // .cacheControl(cacheControl)
                 .body(carouselImages);
     }
     

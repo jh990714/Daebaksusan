@@ -30,16 +30,16 @@ export const QnAItemComp: React.FC<QnAItemCompProps> = ({ qnaList }) => {
                         </div>
                     }
 
-                    {qna.answer &&
+                    {qna.answers.map((answer) =>
                         <div className={styles.answerContanier}>
                             <div className={styles.answerArrow}>⤷</div>
                             <div className={styles.answer}>
                                 <div className={styles.userInfo}>
                                     <span><span className={styles.answerLable}>답변</span> 대박수산</span>
-                                    <span>{new Date(qna.answer.createdAt).toLocaleString('ko-KR')}</span>
+                                    <span>{new Date(answer.createdAt).toLocaleString('ko-KR')}</span>
                                 </div>
                                 <div className={styles.answerContent}>
-                                    {qna.answer.content.split('\n').map((line, index) => (
+                                    {answer.content.split('\n').map((line, index) => (
                                         <React.Fragment key={index}>
                                             {line}
                                             <br />
@@ -49,7 +49,7 @@ export const QnAItemComp: React.FC<QnAItemCompProps> = ({ qnaList }) => {
 
                             </div>
                         </div>
-                    }
+                   )}
                 </li>
             ))}
 

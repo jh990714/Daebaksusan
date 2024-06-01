@@ -1,5 +1,5 @@
 import { DetailTabComp } from 'components/DetailTabComp';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
 import { Cart, CartItem, Option } from 'types';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -24,28 +24,43 @@ export const Detail: React.FC = () => {
     const navigate = useNavigate();
     const { cartItems, setCartItems } = useCart();
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
-    const product = useLocation().state.product;
+    const { productId } = useParams<{ productId: string }>();
 
+    const [product, setProduct] = useState<Product | null>(null);
     const [isSticky, setIsSticky] = useState(false);
     const [options, setOptions] = useState<Option[]>([]);
     const [quantity, setQuantity] = useState<number>(1);
-
-    const [option, setoption] = useState<Option | null>(null);
+    const [option, setOption] = useState<Option | null>(null);
     const [optionPrice, setOptionPrice] = useState<number>(0);
     const [boxCnt, setBoxCnt] = useState<number>(1);
-
-    const [totalPrice, setTotalPrice] = useState<number>((product.regularPrice - product.salePrice) * quantity + ((product.shippingCost + optionPrice) * boxCnt))
+    const [totalPrice, setTotalPrice] = useState<number>(0);
     const [products, setProducts] = useState<Product[]>([]);
-    // 옵션 받아오기
+
     useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/product/${productId}`);
+                const productData = response.data;
+                setProduct(productData);
+
+                setTotalPrice((productData.regularPrice - productData.salePrice) * 1 + (productData.shippingCost * 1));
+            } catch (error) {
+                console.error('Error fetching product:', error);
+            }
+        };
+
+        fetchProduct();
+    }, [productId]);
+
+    // Fetch options for the product
+    useEffect(() => {
+        if (!product) return;
+
         const fetchOptions = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/product/${product.productId}/options`);
-                console.log(response.data)
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/product/${product!.productId}/options`);
                 setOptions(response.data);
-                setoption(response.data[0]);
-                setQuantity(1);
-                setTotalPrice((product.regularPrice - product.salePrice) * 1 + (product.shippingCost * 1));
+                setOption(response.data[0]);
             } catch (error) {
                 console.error('Error fetching options:', error);
             }
@@ -55,30 +70,34 @@ export const Detail: React.FC = () => {
     }, [product]);
 
     useEffect(() => {
+        if (!product) return;
+
         window.scrollTo(0, 0);
         addToRecentProducts(product);
     }, [product]);
 
-    
     useEffect(() => {
         const fetchData = async () => {
-        try {
-            const response = await axios.get<Product[]>(`${process.env.REACT_APP_API_URL}/product/recommend`);
-            console.log(response);
-            setProducts(response.data);
-        } catch (error) {
-            console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
-        }
+            try {
+                const response = await axios.get<Product[]>(`${process.env.REACT_APP_API_URL}/product/recommend`);
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error fetching recommended products:', error);
+            }
         };
 
         fetchData();
     }, []);
 
+    if (!product) {
+        return <div>Loading...</div>;
+    }
+
     const addToRecentProducts = (product: Product) => {
         const maxRecentProducts = 7;
         const recentProducts = Cookies.get('recentProducts') ? JSON.parse(Cookies.get('recentProducts')!) : [];
 
-        const updatedRecentProducts = recentProducts.filter((p: Product) => p.productId !== product.productId);
+        const updatedRecentProducts = recentProducts.filter((p: Product) => p.productId !== product!.productId);
         updatedRecentProducts.unshift(product);
 
         if (updatedRecentProducts.length > maxRecentProducts) {
@@ -88,106 +107,109 @@ export const Detail: React.FC = () => {
         Cookies.set('recentProducts', JSON.stringify(updatedRecentProducts), { expires: 1 });
     };
 
-    // 스크롤 이벤트 핸들러
+    // Scroll event handler
     const handleScroll = () => {
         const scrollTop = window.scrollY;
         const sticky = scrollTop > 100; // 100px 이상 스크롤되었을 때 sticky 상태로 변경
         setIsSticky(sticky);
     };
 
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
+    // useEffect(() => {
+    //     window.addEventListener('scroll', handleScroll);
 
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
+    //     return () => {
+    //         window.removeEventListener('scroll', handleScroll);
+    //     };
+    // }, []);
 
     const handleQuantityChange = (value: number) => {
+        if (!product) return;
+
         const newQuantity = quantity + value;
         let q: number = 1;
         let boxCnt = 1;
-        if (newQuantity >= 1 && newQuantity <= product.stockQuantity) {
+        if (newQuantity >= 1 && newQuantity <= product!.stockQuantity) {
             q = newQuantity;
         } else if (newQuantity < 1) {
             q = 1; // 최소 수량은 1로 유지
         } else {
-            q = product.stockQuantity; // 재고 수량으로 수량 조정
+            q = product!.stockQuantity; // 재고 수량으로 수량 조정
         }
         setQuantity(q);
-        boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
-        setBoxCnt(boxCnt)
-        setTotalPrice((product.regularPrice - product.salePrice) * q + ((product.shippingCost + optionPrice) * boxCnt))
+        boxCnt = Math.ceil(q / product!.maxQuantityPerDelivery);
+        setBoxCnt(boxCnt);
+        setTotalPrice((product!.regularPrice - product!.salePrice) * q + ((product!.shippingCost + optionPrice) * boxCnt));
     };
 
-
     const handleQuantityInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!product) return;
 
         const value = event.target.value;
         let q: number = 1;
         let boxCnt = 1;
         if (value === "" || value === "0") {
             q = 1; // 빈 문자열 또는 0 입력 시 최소 수량 1로 설정
-
         } else {
             const newValue = parseInt(value);
-            if (!isNaN(newValue) && newValue >= 1 && newValue <= product.stockQuantity) {
+            if (!isNaN(newValue) && newValue >= 1 && newValue <= product!.stockQuantity) {
                 q = newValue;
-            } else if (newValue > product.stockQuantity) {
-                q = product.stockQuantity; // 재고 수량으로 수량 조정
+            } else if (newValue > product!.stockQuantity) {
+                q = product!.stockQuantity; // 재고 수량으로 수량 조정
             }
         }
         setQuantity(q);
-        boxCnt = (Math.ceil(q / product.maxQuantityPerDelivery));
-        setBoxCnt(boxCnt)
-        setTotalPrice((product.regularPrice - product.salePrice) * q + ((product.shippingCost + optionPrice) * boxCnt))
+        boxCnt = Math.ceil(q / product!.maxQuantityPerDelivery);
+        setBoxCnt(boxCnt);
+        setTotalPrice((product!.regularPrice - product!.salePrice) * q + ((product!.shippingCost + optionPrice) * boxCnt));
     };
 
     const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const optionId = Number(event.target.value);
-        const option = options.find(option => option.optionId === optionId);
+        const selectedOption = options.find(option => option.optionId === optionId);
 
         // 옵션 선택에 따른 추가 금액을 총 금액에 반영
-        if (option) {
-            setOptionPrice(option.addPrice);
-            setTotalPrice((product.regularPrice - product.salePrice) * quantity + ((product.shippingCost + option.addPrice) * boxCnt))
-            setoption(option);
+        if (selectedOption) {
+            setOptionPrice(selectedOption.addPrice);
+            setTotalPrice((product!.regularPrice - product!.salePrice) * quantity + ((product!.shippingCost + selectedOption.addPrice) * boxCnt));
+            setOption(selectedOption);
         } else {
-            setoption(null);
+            setOption(null);
         }
     };
-    
+
     const showList = (quantity: number, maxQuantityPerDelivery: number) => {
+        if (!product) return null;
+
         let arr = [];
-        const n = quantity / maxQuantityPerDelivery;
+        const n = Math.ceil(quantity / maxQuantityPerDelivery);
         let count = 0;
 
         for (let i = 0; i < n; i++) {
+            count = Math.min(maxQuantityPerDelivery, quantity - (i * maxQuantityPerDelivery));
             arr.push(
-                <div className=" border-gray-200 px-4 py-1 grid grid-cols-3 place-items-center">
+                <div key={i} className="border-gray-200 px-4 py-1 grid grid-cols-3 place-items-center">
                     <div>
-                        <div className="text-sm lg:text-base">{product.name}</div>
-                        <div className='text-sm text-gray-400'>- {option?.name}({option?.addPrice.toLocaleString()})  배송 비({product.shippingCost.toLocaleString()}) - </div>
+                        <div className="text-sm lg:text-base">{product!.name}</div>
+                        <div className='text-sm text-gray-400'>- {option?.name}({option?.addPrice.toLocaleString()}) 배송 비({product!.shippingCost.toLocaleString()}) - </div>
                     </div>
-                    <div className="">{count = Math.min(maxQuantityPerDelivery, quantity - (i * maxQuantityPerDelivery))}개</div>
-                    <div className="">{((product.regularPrice - product.salePrice) * count + optionPrice + product.shippingCost).toLocaleString()} 원</div>
+                    <div>{count}개</div>
+                    <div>{((product!.regularPrice - product!.salePrice) * count + optionPrice + product!.shippingCost).toLocaleString()} 원</div>
                 </div>
-            )
+            );
         }
-        return (arr);
-    }
+        return arr;
+    };
 
     const handleAddToCart = async () => {
         try {
 
-            if (quantity > product.stockQuantity) {
+            if (quantity > product!.stockQuantity) {
                 alert('재고가 초과되었습니다.');
                 return;
             }
 
             const cartInputItem = {
-                productId: product.productId,
+                productId: product!.productId,
                 optionId: option?.optionId,
                 quantity: quantity,
                 boxCnt: boxCnt
@@ -261,7 +283,7 @@ export const Detail: React.FC = () => {
 
             // 기존에 선택된 상품이 있는지 확인
             const existingItemIndex = existingCartCookie.findIndex((item: CartItem) => {
-                return item.product.productId === product.productId && item.option?.optionId === option?.optionId;
+                return item.product!.productId === product!.productId && item.option?.optionId === option?.optionId;
             });
 
             // 기존에 선택된 상품이 있을 경우, 쿠키에서 해당 아이템을 찾아 업데이트합니다.
@@ -270,11 +292,11 @@ export const Detail: React.FC = () => {
                 const existingItem = existingCartCookie[existingItemIndex];
                 const updatedQuantity = existingItem.quantity + quantity;
 
-                if (updatedQuantity > existingItem.product.stockQuantity) {
+                if (updatedQuantity > existingItem.product!.stockQuantity) {
                     alert('재고가 초과되었습니다.');
                     return;
                 }
-                const updatedBoxCnt = Math.ceil(updatedQuantity / existingItem.product.maxQuantityPerDelivery);
+                const updatedBoxCnt = Math.ceil(updatedQuantity / existingItem.product!.maxQuantityPerDelivery);
 
                 // 기존 아이템을 업데이트합니다.
                 existingCartCookie[existingItemIndex] = {
@@ -309,7 +331,7 @@ export const Detail: React.FC = () => {
     };
 
     const handleGoToOrder = () => {
-        if (quantity > product.stockQuantity) {
+        if (quantity > product!.stockQuantity) {
             alert('재고가 초과되었습니다.');
             return;
         }
@@ -337,7 +359,7 @@ export const Detail: React.FC = () => {
         });
     }
 
-    const isSoldOut = (product.stockQuantity === 0)
+    const isSoldOut = (product!.stockQuantity === 0)
 
     return (
         <div className='bg-white text-gray-700'>
@@ -346,18 +368,18 @@ export const Detail: React.FC = () => {
                 <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
 
                     <div className="w-full lg:w-1/2 px-4">
-                        <img src={product.imageUrl} alt={product.imageUrl} className="w-full h-96 object-cover m-auto rounded  " />
+                        <img src={product!.imageUrl} alt={product!.imageUrl} className="w-full h-96 object-cover m-auto rounded  " />
                     </div>
                     <div className="w-full lg:w-1/2 border-t-2 border-b-2 border-blue-700">
 
-                        <div className='text-2xl text-blue-700 font-bold p-3'>{product.name}</div>
-                        <h1 className="text-xl text-gray-500 font-bold border-gray-200 p-2">{product.description}</h1>
+                        <div className='text-2xl text-blue-700 font-bold p-3'>{product!.name}</div>
+                        <h1 className="text-xl text-gray-500 font-bold border-gray-200 p-2">{product!.description}</h1>
 
                         <div className="">
                             <div className="text-start border-b-2 border-gray-200 px-4 py-1">
                                 <div className="grid grid-cols-5">
                                     <div className="font-bold">판매가</div>
-                                    <div className="col-span-4 text-xl">{(product.regularPrice - product.salePrice).toLocaleString()}원</div>
+                                    <div className="col-span-4 text-xl">{(product!.regularPrice - product!.salePrice).toLocaleString()}원</div>
                                 </div>
                             </div>
                             <div className="grid grid-rows-3 text-start border-b-2 border-gray-200 px-4 py-1">
@@ -371,7 +393,7 @@ export const Detail: React.FC = () => {
                                 </div>
                                 <div className="grid grid-cols-5">
                                     <div className="font-bold">배송 비</div>
-                                    <div className="col-span-4">{product.shippingCost.toLocaleString()}원</div>
+                                    <div className="col-span-4">{product!.shippingCost.toLocaleString()}원</div>
                                 </div>
                             </div>
                         </div>
@@ -393,7 +415,7 @@ export const Detail: React.FC = () => {
                         </div>
 
                         <div className='rounded-lg shadow-md border-1 mx-4 my-3'>
-                            {showList(quantity, product.maxQuantityPerDelivery)}
+                            {showList(quantity, product!.maxQuantityPerDelivery)}
                         </div>
 
                         <div className="flex justify-center space-x-2 py-4">
@@ -437,7 +459,7 @@ export const Detail: React.FC = () => {
                 </div>
 
                 <div className={"my-8 w-full"}>
-                    <DetailTabComp productId={product.productId} />
+                    <DetailTabComp productId={product!.productId} />
                 </div>
             </main>
 

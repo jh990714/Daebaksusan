@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -40,6 +41,6 @@ public class QuestionEntity {
     @Column(name = "created_at")
     private Date createdAt;
 
-    @OneToOne(mappedBy = "question", cascade = CascadeType.ALL)
-    private AnswerEntity answer;
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    private List<AnswerEntity> answers;
 }

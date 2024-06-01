@@ -1,6 +1,6 @@
 export interface QnA {
     question: Question;
-    answer: Answer;
+    answers: Answer[];
 }
 
 export interface Question {

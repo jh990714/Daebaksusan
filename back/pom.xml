@@ -116,6 +116,12 @@
 			<version>1.11.563</version> <!-- 또는 최신 버전 -->
 		</dependency>
 
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+
 
 	</dependencies>
 
