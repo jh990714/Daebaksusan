@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/points")
+@RequestMapping("/api/v1/points")
 @RequiredArgsConstructor
 public class PointsTransactionController {
 

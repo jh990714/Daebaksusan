@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/qna")
+@RequestMapping("/api/v1/qna")
 public class QnAController {
 
     private final QnAService qnaService;

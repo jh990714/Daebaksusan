@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Slf4j
 @RestController
-@RequestMapping("/guest")
+@RequestMapping("/api/v1/guest")
 @RequiredArgsConstructor
 public class GuestController {
 

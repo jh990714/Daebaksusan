@@ -79,6 +79,7 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
         if (!userInfo || (!userInfo && password !== '') || (userInfo && password !== '' && passwordConfirm !== '')) {
             const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,15}$/;
             if (!password.match(passwordRegex)) {
+                console.log(password);
                 alert('비밀번호는 영문, 숫자, 특수문자가 각각 하나 이상 포함되어야 합니다.');
                 return;
             }
@@ -214,48 +215,48 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
     const buttonClassName = "text-white text-xs bg-blue-600 hover:bg-blue-400 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-2 m-2 text-center";
 
     return (
-        <div id="registrationForm" className="">
+        <div id="registrationForm">
             <div className="grid grid-rows-4 h-48 mb-5">
                 <div className="text-start text-blue-700 text-2xl font-semibold border-b-2 border-blue-700">01. 로그인 정보</div>
 
                 <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                    <label htmlFor="memberId" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">회원 ID</label>
-                    <div className="col-span-5 flex">
+                    <label htmlFor="memberId" className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">회원 ID</label>
+                    <div className="col-span-4 flex">
                         <input type="text" id="memberId" name="memberId" required minLength={4}
-                            className={`m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
+                            className={`m-2 w-20 sm:w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
                             readOnly={!!userInfo} placeholder="ID 입력" value={memberId} onChange={(e) => setMemberId(e.target.value)} />
                         <div className="flex items-center text-xs">4자리 이상 입력</div>
                     </div>
                 </div>
 
 
-                {(!userInfo || (userInfo?.type === 'sign')) && (
+                {(userInfo && (userInfo?.type === 'sign')) && (
                     <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                        <label htmlFor="password" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">현재 비밀번호</label>
-                        <div className="col-span-5 flex">
+                        <label htmlFor="password" className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">현재 비밀번호</label>
+                        <div className="col-span-4 flex">
                             <input type="password" id="password" name="password" required minLength={8}
-                                className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                className="m-2 w-20 sm:w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="비밀번호 입력" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
                         </div>
                     </div>
                 )}
-                {userInfo && userInfo.type === 'sign' && (
+                {(!userInfo || userInfo.type === 'sign') && (
                     <>
                         <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                            <label htmlFor="password" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">비밀번호</label>
-                            <div className="col-span-5 flex">
+                            <label htmlFor="password" className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">비밀번호</label>
+                            <div className="col-span-4 flex">
                                 <input type="password" id="password" name="password" required minLength={8}
-                                    className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="m-2 w-20 sm:w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     placeholder="비밀번호 입력" value={password} onChange={(e) => setPassword(e.target.value)} />
                                 <div className="flex items-center text-xs">영문 + 숫자 8자리 이상</div>
                             </div>
                         </div>
 
                         <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                            <label htmlFor="passwordConfirm" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">비밀번호 확인</label>
-                            <div className="col-span-5 flex">
+                            <label htmlFor="passwordConfirm" className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">비밀번호 확인</label>
+                            <div className="col-span-4 flex">
                                 <input type="password" id="passwordConfirm" name="passwordConfirm" required minLength={8}
-                                    className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                    className="m-2 w-20 sm:w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                     placeholder="비밀번호를 재입력" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} />
                                 <div className="flex items-center text-xs">일치하도록</div>
                             </div>
@@ -271,10 +272,10 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
                 <div className="text-start text-blue-700 text-2xl font-semibold border-b-2 border-blue-700"> 02. 개인 정보 </div>
 
                 <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                    <label htmlFor="name" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">이름</label>
-                    <div className="col-span-5 flex">
+                    <label htmlFor="name" className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">이름</label>
+                    <div className="flex">
                         <input type="text" id="name" name="name" required
-                            className={`m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
+                            className={`m-2 w-20 sm:w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
                             readOnly={!!userInfo} placeholder="이름 입력" value={name} onChange={(e) => setName(e.target.value)} />
                         <div className="flex items-center text-xs"></div>
                     </div>
@@ -282,31 +283,31 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
 
                 {/* 휴대폰 번호 입력 필드는 세 개로 나누어 관리합니다. */}
                 <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                    <label htmlFor="name" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">휴대폰 번호</label>
-                    <div className="col-span-5 flex">
+                    <label htmlFor="name" className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">휴대폰 번호</label>
+                    <div className="flex">
                         <input type="text" id="phone1" name="phone1" required maxLength={3}
-                            className={`m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
+                            className={`m-2 w-12 sm:w-20 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
                             readOnly={!!userInfo} placeholder="010" value={phone1} onChange={(e) => handlePhoneChange('phone1', e.target.value)} />
                         <div className="flex items-center text-xs">-</div>
                         <input type="text" id="phone2" name="phone2" required maxLength={4}
-                            className={`m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
+                            className={`m-2 w-12 sm:w-20 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
                             readOnly={!!userInfo} placeholder="1234" value={phone2} onChange={(e) => handlePhoneChange('phone2', e.target.value)} />
                         <div className="flex items-center text-xs">-</div>
                         <input type="text" id="phone3" name="phone3" required maxLength={4}
-                            className={`m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
+                            className={`m-2 w-12 sm:w-20 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 ${userInfo ? 'bg-gray-200' : ''}`}
                             readOnly={!!userInfo} placeholder="5678" value={phone3} onChange={(e) => handlePhoneChange('phone3', e.target.value)} />
                     </div>
                 </div>
 
                 <div className="grid grid-cols-6 border-b-2 border-gray-300">
-                    <label htmlFor="email" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">이메일</label>
-                    <div className="col-span-5 flex">
+                    <label htmlFor="email" className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">이메일</label>
+                    <div className="flex">
                         <input type="text" id="email" name="email" required
-                            className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            className={`m-2 w-20 sm:w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500`}
                             placeholder="이메일을 입력해주세요" value={email} onChange={(e) => setEmail(e.target.value)} />
                         <span className="flex items-center text-xs">@</span>
                         <input type="text" id="emailDomain" name="emailDomain" required
-                            className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                            className={`m-2 w-20 sm:w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500`}
                             placeholder="도메인" value={emailDomain} onChange={(e) => setEmailDomain(e.target.value)} />
                     </div>
                 </div>
@@ -316,23 +317,23 @@ export const MemberForm: React.FC<MemberFormProps> = ({ userInfo }) => {
                 <div className="text-start text-blue-700 text-2xl font-semibold border-b-2 border-blue-700"> 03. 기본 배송지 등록</div>
 
                 <div className="row-span-3 grid grid-cols-6 border-b-2 border-gray-300">
-                    <label htmlFor="address" className="text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">배송 주소</label>
+                    <label htmlFor="address" className="col-span-2 sm:col-span-1 text-sm font-medium text-gray-700 flex justify-center items-center bg-blue-100">배송 주소</label>
                     <div className="grid grid-rows-3">
-                        <div className="col-span-5 flex">
+                        <div className="flex">
                             <input type="text" id="postal_code" name="postal_code" required
-                                className="m-2 w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                className="m-2 w-20 sm:w-32 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="우편 번호" value={addressObj.zip} readOnly />
                             <AddressFinderButton onCompletePostcode={onCompletePostcode} className={buttonClassName} />
                             {/* <button className="text-white text-xs bg-blue-600 hover:bg-blue-400 focus:ring-4 focus:ring-blue-300 rounded-lg text-sm px-2 m-2 text-center">주소찾기</button> */}
                         </div>
-                        <div className="col-span-5 flex">
+                        <div className="flex">
                             <input type="text" id="address" name="address" required
-                                className="m-2 w-64 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                className="m-2 w-52 sm:w-64 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="주소" value={addressObj.address} readOnly />
                         </div>
-                        <div className="col-span-5 flex">
+                        <div className="flex">
                             <input type="text" id="detail_address" name="detail_address" required
-                                className="m-2 w-64 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                className="m-2 w-52 sm:w-64 text-xs border-1 border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                                 placeholder="상세 주소" value={addressObj.details} onChange={handleDetailAddressChange} />
                         </div>
                     </div>

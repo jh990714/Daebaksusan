@@ -40,4 +40,7 @@ public class PaymentDetailsEntity {
     
     @Column(name = "order_date")
     private Date orderDate;
+
+    @Column(name = "status")
+    private String status;
 }

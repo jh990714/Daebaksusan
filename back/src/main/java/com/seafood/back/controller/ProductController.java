@@ -22,7 +22,7 @@ import com.seafood.back.service.ProductService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/product")
+@RequestMapping("/api/v1/product")
 public class ProductController {
     private final ProductService productService;
 

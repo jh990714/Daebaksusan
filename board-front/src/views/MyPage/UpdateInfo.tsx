@@ -21,7 +21,7 @@ export const UpdateInfo: React.FC<UpdateInfoProps> = ({ userInfo, isSocialAuthen
     return (
         <div className='text-left'>
             <div className='mt-3 text-left text-2xl border-b font-semibold'> 정보 수정 </div>
-            <div className='mt-6 w-1/4'>
+            <div className='mt-6 w-3/4 sm:w-1/4'>
                 {isSocialUser && !isSocialAuthenticated && (
                     <SocialReAuthentication provider={userInfo?.type} redirectPath="updateInfo"/>
                 )}

@@ -33,33 +33,32 @@ public class AuthenticationConfig {
         return http
             .httpBasic(basic ->basic.disable())
             
-            // stateless한 rest api를 개발할 것이므로 csrf 공격에 대한 옵션은 꺼둔다.
- 	        .csrf(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
 
-	        // 특정 URL에 대한 권한 설정.
+            // 특정 URL에 대한 권한 설정.
             .authorizeHttpRequests((authorizeRequests) -> {
-                authorizeRequests.requestMatchers("/check", "/info/**", "/cart/**", "/points/**", "/members/withdraw", "/members/authenticate", "/qna/ask", "/social/**").authenticated();
-                authorizeRequests.requestMatchers("/manager/**")
+                authorizeRequests.requestMatchers("/api/v1/check", "/api/v1/info/**", "/api/v1/cart/**", "/api/v1/points/**", "/api/v1/members/withdraw", "/api/v1/members/authenticate", "/api/v1/qna/ask", "/api/v1/social/**").authenticated();
+                authorizeRequests.requestMatchers("/api/v1/manager/**")
                 
-            // ROLE_은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE_이 붙기 때문이다.
+                // ROLE_은 붙이면 안 된다. hasAnyRole()을 사용할 때 자동으로 ROLE_이 붙기 때문이다.
                 .hasAnyRole("ADMIN", "MANAGER");
 
-                authorizeRequests.requestMatchers("/admin/**")
+                authorizeRequests.requestMatchers("/api/v1/admin/**")
                 // ROLE_은 붙이면 안 된다. hasRole()을 사용할 때 자동으로 ROLE_이 붙기 때문이다.
                 .hasRole("ADMIN");
                             
-                authorizeRequests.requestMatchers("/members/**", "/product/**", "/refreshToken", "/categories", "/oauth2/**", "/payment/**", "/reviews/**", "/guest/**", "/qna/**", "/home/**", "/authorize/**", "/callback/**").permitAll();
+                authorizeRequests.requestMatchers("/api/v1/members/**", "/api/v1/product/**", "/api/v1/refreshToken", "/api/v1/categories", "/api/v1/oauth2/**", "/api/v1/payment/**", "/api/v1/reviews/**", "/api/v1/guest/**", "/api/v1/qna/**", "/api/v1/home/**", "/api/v1/authorize/**", "/api/v1/callback/**").permitAll();
             })
             
             .oauth2Login(oauth2 -> oauth2
                 .authorizationEndpoint(endpoint -> endpoint.baseUri("/api/v1/auth/oauth2"))
-                .redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/callback/*"))
+                .redirectionEndpoint(endpoint -> endpoint.baseUri("/api/v1/oauth2/callback/*"))
                 .userInfoEndpoint(endpoint -> endpoint.userService(oAuth2UserService))
                 .successHandler(oAuth2SuccessHandler)
             )
             // .formLogin((formLogin) -> {
             // /* 권한이 필요한 요청은 해당 url로 리다이렉트 */
-		    //     formLogin.loginPage("/login");
+            //     formLogin.loginPage("/api/v1/login");
             // })
             .addFilterBefore(new JwtFilter(secretKey), UsernamePasswordAuthenticationFilter.class)
             .build();

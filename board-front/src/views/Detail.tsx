@@ -48,6 +48,12 @@ export const Detail: React.FC = () => {
                 console.error('Error fetching product:', error);
             }
         };
+        setOptions([]);
+        setQuantity(1);
+        setOption(null);
+        setOptionPrice(0);
+        setBoxCnt(1);
+        setTotalPrice(0);
 
         fetchProduct();
     }, [productId]);

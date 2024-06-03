@@ -74,7 +74,7 @@ export const MemberDelete: React.FC<MemberDeleteProps> = ({ userInfo, isSocialAu
   return (
     <div className='text-left'>
       <div className='mt-3 text-left text-2xl border-b font-semibold'> 회원 탈퇴 </div>
-      <div className='mt-6 w-1/4'>
+      <div className='mt-6 w-3/4 sm:w-1/4'>
         {isSocialUser && !isSocialAuthenticated && (
           <SocialReAuthentication provider={userInfo?.type} redirectPath="memberDelete" />
         )}
@@ -96,7 +96,7 @@ export const MemberDelete: React.FC<MemberDeleteProps> = ({ userInfo, isSocialAu
       </div>
       {((isSocialUser && isSocialAuthenticated) || !isSocialUser) && (
         <>
-          <div className='mt-4 w-1/4'>
+          <div className='mt-6 w-3/4 sm:w-1/4'>
             <label htmlFor='confirmText' className='block font-medium mb-1'>
               탈퇴 확인 문구 입력
             </label>

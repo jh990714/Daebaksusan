@@ -1,5 +1,7 @@
 package com.seafood.back.entity;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -57,6 +59,9 @@ public class MemberEntity {
 
     @Column(name = "role")
     private String role;
+
+    @Column(name = "create_at")
+    private Date createAt;
 
     public MemberEntity(String id, String password, String name, String phone, String email, String type) {
         this.id = id;

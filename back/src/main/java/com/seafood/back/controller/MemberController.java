@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 public class MemberController {
     

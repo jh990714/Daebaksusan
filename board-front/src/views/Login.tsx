@@ -7,9 +7,8 @@ import { useAuthContext } from 'hook/AuthProvider';
 
 export const Login: React.FC = () => {
   const DOMAIN = `${process.env.REACT_APP_API_URL}`;
-  const API_DOMAIN = `${DOMAIN}/api/v1`;
 
-  const SNS_LOGIN_URL = (type: 'kakao' | 'naver') => `${API_DOMAIN}/auth/oauth2/${type}`;
+  const SNS_LOGIN_URL = (type: 'kakao' | 'naver') => `${DOMAIN}/auth/oauth2/${type}`;
 
   const { isLoggedIn, setIsLoggedIn } = useAuthContext();
   const [id, setId] = useState('');

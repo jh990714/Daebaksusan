@@ -124,7 +124,7 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String savePaymentDetails(Long memberId, String impUid, String mid, String password){
+    public String savePaymentDetails(Long memberId, String impUid, String mid, String password, String status){
         try {
             PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
@@ -161,6 +161,7 @@ public class PaymentServiceImple implements PaymentService {
             paymentDetails.setIsCancel(true);
             paymentDetails.setPassword(passwordEncoder.encode(password));
             paymentDetails.setOrderDate(todayWithoutTime); // 주문날짜 설정
+            paymentDetails.setStatus(status);
             paymentDetailsRepository.save(paymentDetails);
 
             return orderNumber;
@@ -172,7 +173,7 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String processSuccessfulPayment(Long memberId, List<CartDTO> orderItems, String impUid, String mid, String password, CouponDTO coupon, BigDecimal points) {
+    public String processSuccessfulPayment(Long memberId, List<CartDTO> orderItems, String impUid, String mid, String password, CouponDTO coupon, BigDecimal points, String status) {
         try {
             // 결제가 성공하면 상품 수량 변경
             productService.updateProductQuantities(orderItems);
@@ -193,7 +194,7 @@ public class PaymentServiceImple implements PaymentService {
                 }
             }
             // 결제 정보 저장
-            String orderNumber = savePaymentDetails(memberId, impUid, mid, password);
+            String orderNumber = savePaymentDetails(memberId, impUid, mid, password, status);
 
             // 쿠폰 제거
             if (coupon != null) {
@@ -268,7 +269,8 @@ public class PaymentServiceImple implements PaymentService {
 
         if (expectedAmount.compareTo(paidAmount) == 0) {
             String mid = iamportResponse.getResponse().getMerchantUid();
-            String orderNumber = processSuccessfulPayment(memberId, orderItems, imp_uid, mid, password, coupon, pointsUsed);
+            String status = iamportResponse.getResponse().getStatus();
+            String orderNumber = processSuccessfulPayment(memberId, orderItems, imp_uid, mid, password, coupon, pointsUsed, status);
             Map<String, Object> response = new HashMap<>();
             response.put("orderNumber", orderNumber);
             response.put("iamportResponse", iamportResponse);
@@ -287,7 +289,18 @@ public class PaymentServiceImple implements PaymentService {
         try {
             CancelData cancelData = new CancelData(imp_uid, true);
             IamportResponse<Payment> cancelResponse = iamportClient.cancelPaymentByImpUid(cancelData);
-            if (cancelResponse.getResponse().getStatus().equals("cancelled")) {
+
+            String status = cancelResponse.getResponse().getStatus();
+            if (status.equals("cancelled")) {
+                PaymentDetailsEntity paymentDetailsEntity = paymentDetailsRepository.findByImpUid(imp_uid); 
+
+                if (paymentDetailsEntity == null) {
+                    throw new IllegalArgumentException("Payment with imp_uid " + imp_uid + " not found");
+                }
+
+                paymentDetailsEntity.setStatus(status);
+                paymentDetailsRepository.save(paymentDetailsEntity);
+
                 return cancelResponse;
             } else {
                 throw new IllegalAccessError(cancelResponse.getResponse().getFailReason());

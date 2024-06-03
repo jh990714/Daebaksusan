@@ -16,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.support.SessionStatus;
@@ -34,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class SocialController {
 
@@ -49,24 +51,37 @@ public class SocialController {
     @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
     private String kakaoClientSecret;
 
+    @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
+    private String kakaoTokenUri;
+
+    @Value("${kakao.authorization.redirect-uri}")
+    private String kakaoRedirectUri;
+
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
     private String naverClientId;
 
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
 
+    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
+    private String naverRedirectUri;
+
+    @Value("${spring.security.oauth2.client.provider.naver.token-uri}")
+    private String naverTokenUri;
+
     @GetMapping("/authorize")
     public void handleAuthorize(@RequestParam("type") String type, @RequestParam("redirectPath") String redirectPath, HttpServletResponse response, WebRequest req) throws IOException {
-        log.info(type);
         req.setAttribute("redirectPath", redirectPath, WebRequest.SCOPE_SESSION);
+        
         String url = "";
+        String redirectUrl = "";
         if (type.equals("kakao")) {
             url = "https://kauth.kakao.com/oauth/authorize";
+            redirectUrl = kakaoRedirectUri;
         } else if (type.equals("naver")) {
             url = "https://nid.naver.com/oauth2.0/authorize";
+            redirectUrl = naverRedirectUri;
         }
-
-        String redirectUrl = "http://localhost:8080/callback/" + type;
 
         String authRedirectUrl = url + "?client_id=" + (type.equals("kakao") ? kakaoClientId : naverClientId) +
             "&redirect_uri=" + redirectUrl + "&response_type=code";
@@ -78,7 +93,7 @@ public class SocialController {
     public void handleKakaoCallback(@RequestParam("code") String code, HttpServletResponse response, WebRequest req, SessionStatus sessionStatus) throws IOException {
         log.info("code: " + code);
 
-        String url = "https://kauth.kakao.com/oauth/token";
+        String url = kakaoTokenUri;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -87,7 +102,7 @@ public class SocialController {
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoClientId);
         params.add("client_secret", kakaoClientSecret);
-        params.add("redirect_uri", "http://localhost:8080/callback/kakao");
+        params.add("redirect_uri", kakaoRedirectUri);
         params.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
@@ -114,7 +129,7 @@ public class SocialController {
     public void handleNaverCallback(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletResponse response,  WebRequest req, SessionStatus sessionStatus) throws IOException {
         log.info("code: " + code);
 
-        String url = "https://nid.naver.com/oauth2.0/token";
+        String url = naverRedirectUri;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -123,7 +138,7 @@ public class SocialController {
         params.add("grant_type", "authorization_code");
         params.add("client_id", naverClientId);
         params.add("client_secret", naverClientSecret);
-        params.add("redirect_uri", "http://localhost:8080/callback/naver");
+        params.add("redirect_uri", naverRedirectUri);
         params.add("code", code);
         params.add("state", state);
 

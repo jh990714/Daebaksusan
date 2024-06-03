@@ -23,7 +23,7 @@ export const JoinStep3: React.FC = () => {
                     </div>
                     <div className="mx-auto">
                         <div className="container mx-auto p-8">
-                            <div className="max-w-2xl mx-auto bg-white p-6">
+                            <div className="mx-auto bg-white p-6">
                                 <MemberForm />
                             </div>
                         </div>

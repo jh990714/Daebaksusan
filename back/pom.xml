@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.seafood</groupId>
 	<artifactId>back</artifactId>
-	<version>1.0.6</version>
+	<version>1.0.9</version>
 	<name>back</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>

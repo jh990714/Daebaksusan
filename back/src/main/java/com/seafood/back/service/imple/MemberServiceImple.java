@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -115,6 +116,7 @@ public class MemberServiceImple implements MemberService {
             member.setPassword(passwordEncoder.encode(member.getPassword()));
             member.setRole("ROLE_USER");
             member.setType("sign");
+            member.setCreateAt(new Date());
 
             MemberEntity savedMember = memberRepository.save(member);
 

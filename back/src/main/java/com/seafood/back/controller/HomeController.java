@@ -17,7 +17,7 @@ import com.seafood.back.service.HomeService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/home")
+@RequestMapping("/api/v1/home")
 @RequiredArgsConstructor
 public class HomeController {
 
