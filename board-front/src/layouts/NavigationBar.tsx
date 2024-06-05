@@ -255,16 +255,16 @@ export const NavigationBar = () => {
                                 />
                                 <img src={searchIcon} alt='검색' className={styles.icon} style={{ width: 30, height: 30 }} onClick={handleSearch} />
                                 <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsRef}>
-                                {searchResults && searchResults.map((result, index) =>
-                                    result && result.name && (
-                                        <li
-                                            className={index === selectedItemIndex ? styles.selectedItem : ''}
-                                            key={index} onClick={() => handleSearchItemClick(index)}>
-                                            {result.name}
-                                        </li>
-                                    )
-                                )}
-                            </ul>
+                                    {searchResults && searchResults.map((result, index) =>
+                                        result && result.name && (
+                                            <li
+                                                className={index === selectedItemIndex ? styles.selectedItem : ''}
+                                                key={index} onClick={() => handleSearchItemClick(index)}>
+                                                {result.name}
+                                            </li>
+                                        )
+                                    )}
+                                </ul>
                             </div>
                             {/* 검색 결과 리스트 */}
                             

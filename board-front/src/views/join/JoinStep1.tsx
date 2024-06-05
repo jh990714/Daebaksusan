@@ -36,13 +36,13 @@ export const JoinStep1: React.FC = () => {
     };
 
     return (
-        <div className="container mx-auto mt-10 p-5 rounded-lg">
+        <div className="container mt-10 py-5 rounded-lg">
             <div className="flex justify-between items-center border-b pb-4">
                 <h1 className="text-2xl text-blue-600 font-semibold">회원가입</h1>
             </div>
             <div className="py-2">
-                <div className="flex justify-between">
-                    <div className="w-1/5 border-r text-l font-semibold">
+                <div className="sm:flex sm:justify-between">
+                    <div className="sm:w-1/5 sm:border-r sm:text-l font-semibold">
                         <div className="space-y-6 mt-10">
                             <div className="">
                                 <JoinTimeLineComp currentStep={1} />
@@ -53,26 +53,24 @@ export const JoinStep1: React.FC = () => {
                         <div className="flex flex-col items-center">
                             <div className="text-2xl font-semibold mb-6">대박 수산에 오신 것을 환영합니다.</div>
                             {warning && <div className="text-red-500">회원 선택을 바랍니다.</div>}
-                            <div className="member-selection grid grid-cols-4 gap-4 mb-4">
-                                <div></div>
-                                <div className={`p-4 rounded-lg border-2 border-gray-500 hover:border-blue-300 ${memberType === 'individual' ? 'border-blue-500' : ''}`} onClick={() => handleMemberTypeChange('individual')}>
+                            <div className="sm:w-1/2 member-selection flex justify-center gap-4 mb-4">
+                                <div className={`p-4 rounded-lg border-2 border-gray-500 hover:cursor-pointer hover:border-blue-300 ${memberType === 'individual' ? 'border-blue-500' : ''}`} onClick={() => handleMemberTypeChange('individual')}>
                                     <img src="./individual.png" alt="Placeholder Image" className="mb-2" />
                                     <div className="text-center">개인 회원</div>
                                 </div>
-                                <div className={`p-4 rounded-lg border-2 border-gray-500 hover:border-blue-300 ${memberType === 'enterprise' ? 'border-blue-500' : ''}`} onClick={() => handleMemberTypeChange('enterprise')}>
+                                <div className={`p-4 rounded-lg border-2 border-gray-500 hover:cursor-pointer hover:border-blue-300 ${memberType === 'enterprise' ? 'border-blue-500' : ''}`} onClick={() => handleMemberTypeChange('enterprise')}>
                                     <img src="./Enterprise.png" alt="Placeholder Image" className="mb-2" />
                                     <div className="text-center">기업 회원</div>
                                 </div>
-                                <div></div>
                             </div>
                             {showBusinessNumber && (
                                 <div className="mb-4">
                                     <input type="text" placeholder="사업자 번호 입력" className="p-2 border rounded-lg" />
                                 </div>
                             )}
-                            <div className="w-full text-xs">계산서가 필요하신 회원은 기업 회원으로 가입 하시길 바랍니다.</div>
+                            <div className="text-xs">계산서가 필요하신 회원은 기업 회원으로 가입 하시길 바랍니다.</div>
                             <button className="mt-3 py-2 px-4 rounded-md bg-blue-700 text-sm font-medium text-white hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onClick={handleJoinClick}>회원 가입</button>
-                            {!showBusinessNumber && (
+                            {/* {!showBusinessNumber && (
                                 <div className="grid grid-rows-2">
                                     <div className="grid grid-cols-5 text-sm mt-4">
                                         <div className="border-b-2 border-blue-700 h-3"></div>
@@ -87,11 +85,11 @@ export const JoinStep1: React.FC = () => {
                                         <button className="mt-3 py-2 px-4 rounded-md bg-yellow-300 text-sm font-medium text-yellow-950 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-300">Kakao 간편 회원 가입</button>
                                     </div>
                                 </div>
-                            )}
+                            )} */}
                         </div>
                     </div>
                 </div>
-            </div>                  
+            </div>
         </div>
     );
 }

@@ -22,11 +22,11 @@ export const SocialReAuthentication: React.FC<SocialReAuthenticationProps> = ({ 
     return (
         <div>
             {provider === 'naver' && (
-                <img src={process.env.PUBLIC_URL + `/login/naver_login_btnG_complete.png`} className='mb-1 h-[45px] w-full'
+                <img src={process.env.PUBLIC_URL + `/login/naver_login_btnG_complete.png`} className='mb-1 h-[45px] w-full hover:cursor-pointer'
                 alt="네이버 로그인 버튼" onClick={handleLogin}/>
             )}
             {provider === 'kakao' && (
-                <img src={process.env.PUBLIC_URL + `/login/kakao_login_medium_wide.png`}
+                <img src={process.env.PUBLIC_URL + `/login/kakao_login_medium_wide.png`} className='hover:cursor-pointer'
                 alt="카카오 로그인 버튼" onClick={handleLogin}/>
             )}
             {/* <button onClick={handleLogin}>

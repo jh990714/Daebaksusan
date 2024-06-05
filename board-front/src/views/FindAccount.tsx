@@ -215,7 +215,7 @@ const FindPassword: React.FC = () => {
 
 export const FindAccount: React.FC = () => {
   return (
-    <div className="flex justify-center gap-10">
+    <div className="sm:flex justify-center gap-10">
       <FindId />
       <FindPassword />
     </div>
