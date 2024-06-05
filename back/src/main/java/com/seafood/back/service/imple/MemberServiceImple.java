@@ -142,7 +142,7 @@ public class MemberServiceImple implements MemberService {
     public MemberDTO getMemberInfo(Long memberId) {
         MemberEntity member = memberRepository.findByMemberId(memberId);
         MemberDTO memberDto = new MemberDTO();
-
+    
         memberDto.setMemberId(member.getMemberId());
         memberDto.setId(member.getId());
         memberDto.setName(member.getName());

@@ -19,4 +19,5 @@ public class MemberDTO {
     private String type;
     private List<CouponDTO> coupons;
     private BigDecimal points;
+    private PaymentStatusCountDTO paymentStatusCounts;
 }

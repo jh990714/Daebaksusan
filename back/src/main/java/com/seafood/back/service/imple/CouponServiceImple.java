@@ -2,6 +2,7 @@ package com.seafood.back.service.imple;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -53,26 +54,55 @@ public class CouponServiceImple implements CouponService{
         return new CouponAmountResult(couponAmount, minimumOrderAmount);
     }
 
+    @Transactional
     @Override
     public List<CouponDTO> mapCouponsToDTOs(Long memberId) {
+        // 현재 시간
+        Date now = new Date();
+    
         // 회원이 가진 쿠폰 정보를 가져옴
         List<MemberCouponEntity> coupons = memberCouponRepository.findCouponsByMember_memberId(memberId);
-        
+    
         // 가져온 쿠폰 정보를 DTO에 매핑하여 반환
-        return coupons.stream()
-                      .map(coupon -> {
-                          CouponDTO dto = new CouponDTO();
-                          dto.setId(coupon.getId());
-                          dto.setCouponId(coupon.getCoupon().getCouponId());
-                          dto.setCouponName(coupon.getCoupon().getCouponName());
-                          dto.setDiscount(coupon.getCoupon().getDiscount());
-                          dto.setMinimumOrderAmount(coupon.getCoupon().getMinimumOrderAmount());
-                          dto.setIssueDate(coupon.getIssueDate());
-                          dto.setValidUntil(coupon.getValidUntil());
-                          return dto;
-                      })
-                      .collect(Collectors.toList());
+        List<CouponDTO> validCoupons = coupons.stream()
+                .filter(coupon -> coupon.getValidUntil().after(now)) // 만료되지 않은 쿠폰만 필터링
+                .map(coupon -> {
+                    CouponDTO dto = new CouponDTO();
+                    dto.setId(coupon.getId());
+                    dto.setCouponId(coupon.getCoupon().getCouponId());
+                    dto.setCouponName(coupon.getCoupon().getCouponName());
+                    dto.setDiscount(coupon.getCoupon().getDiscount());
+                    dto.setMinimumOrderAmount(coupon.getCoupon().getMinimumOrderAmount());
+                    dto.setIssueDate(coupon.getIssueDate());
+                    dto.setValidUntil(coupon.getValidUntil());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    
+        // 만료된 쿠폰 삭제
+        List<Long> expiredCouponIds = coupons.stream()
+                .filter(coupon -> coupon.getValidUntil().before(now)) // 만료된 쿠폰만 필터링
+                .map(MemberCouponEntity::getId)
+                .collect(Collectors.toList());
+    
+        if (!expiredCouponIds.isEmpty()) {
+            memberCouponRepository.deleteByIdInAndMember_memberId(expiredCouponIds, memberId);
+        }
+    
+        return validCoupons;
     }
+
+    // @Override
+    // public void deleteExpiredCoupons() {
+    //     // 현재 시간
+    //     Date now = new Date();
+
+    //     // 만료된 쿠폰을 데이터베이스에서 가져옴
+    //     List<MemberCouponEntity> expiredCoupons = memberCouponRepository.findByValidUntilBefore(now);
+
+    //     // 만료된 쿠폰을 삭제
+    //     memberCouponRepository.deleteAll(expiredCoupons);
+    // }
 
     @Transactional
     @Override
