@@ -14,7 +14,7 @@ import com.seafood.back.dto.ReviewDTO;
 public interface InfoService {
     public MemberDTO getUserInfo(Long memberId);
 
-    public Page<PaymentDetailDTO> getOrdertDetails(Long memberId, int page, int size);
+    public Page<PaymentDetailDTO> getOrdertDetails(Long memberId, String status, int page, int size);
     public List<PaymentDetailDTO> getPaymentByOrderNumberAndPassword(String orderNumber, String password);
 
 

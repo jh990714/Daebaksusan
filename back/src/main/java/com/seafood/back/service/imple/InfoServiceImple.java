@@ -31,6 +31,7 @@ import com.seafood.back.dto.MemberDTO;
 import com.seafood.back.dto.MemberUpdateDTO;
 import com.seafood.back.dto.PaymentDetailDTO;
 import com.seafood.back.dto.PaymentItemDTO;
+import com.seafood.back.dto.PaymentStatusCountDTO;
 import com.seafood.back.dto.ReviewCriteriaDTO;
 import com.seafood.back.dto.ReviewDTO;
 
@@ -90,18 +91,27 @@ public class InfoServiceImple implements InfoService {
     @Override
     public MemberDTO getUserInfo(Long memberId) {
         MemberDTO memberDto = memberService.getMemberInfo(memberId);
+        
+        PaymentStatusCountDTO statusCounts = paymentDetailsRepository.countPaymentStatusByMemberId(memberId);
+
+        // Set paymentStatusCounts in MemberDTO
+        memberDto.setPaymentStatusCounts(statusCounts);
 
         return memberDto;
     }
 
     @Override
-    public Page<PaymentDetailDTO> getOrdertDetails(Long memberId, int page, int size) {
+    public Page<PaymentDetailDTO> getOrdertDetails(Long memberId, String status, int page, int size) {
+        System.out.println(status);
         // 페이지 번호를 0부터 시작하도록 수정
         Pageable pageable = PageRequest.of(page - 1, size);
 
-        // 페이지네이션된 데이터를 가져옴
-        Page<PaymentDetailsEntity> paymentDetailsPage = paymentDetailsRepository
-                .findByMemberIdOrderByPaymentDetailIdDesc(memberId, pageable);
+        Page<PaymentDetailsEntity> paymentDetailsPage;
+        if (status.equals("all")) {
+            paymentDetailsPage = paymentDetailsRepository.findByMemberIdOrderByPaymentDetailIdDesc(memberId, pageable);
+        } else {
+            paymentDetailsPage = paymentDetailsRepository.findByMemberIdAndStatusOrderByPaymentDetailIdDesc(memberId, status, pageable);
+        }
 
         // PaymentDetailDTO 리스트를 담을 리스트 생성
         List<PaymentDetailDTO> paymentDetailDTOs = new ArrayList<>();
@@ -112,6 +122,8 @@ public class InfoServiceImple implements InfoService {
                 PaymentDetailDTO paymentDetailDTO = new PaymentDetailDTO();
 
                 IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(paymentDetail.getImpUid());
+                paymentDetail.setStatus(iamportResponse.getResponse().getStatus());
+                paymentDetailsRepository.save(paymentDetail);
 
                 List<PaymentItemDTO> orderItems = extractOrderItems(iamportResponse);
 
@@ -130,9 +142,7 @@ public class InfoServiceImple implements InfoService {
 
                 paymentDetailDTO.setOrderNumber(paymentDetail.getOrderNumber());
                 paymentDetailDTO.setOrderItems(orderItems);
-                if (iamportResponse.getResponse().getStatus().equals("cancelled")) {
-                    paymentDetailDTO.setCancel(true);
-                }
+                paymentDetailDTO.setStatus(iamportResponse.getResponse().getStatus());
 
                 paymentDetailDTO.setOrderDate(paymentDetail.getOrderDate());
                 log.info(paymentDetailDTO.getOrderDate().toString());
@@ -166,9 +176,7 @@ public class InfoServiceImple implements InfoService {
 
             paymentDetailDTO.setOrderNumber(paymentDetail.getOrderNumber());
             paymentDetailDTO.setOrderItems(orderItems);
-            if (iamportResponse.getResponse().getStatus().equals("cancelled")) {
-                paymentDetailDTO.setCancel(true);
-            }
+            paymentDetailDTO.setStatus(iamportResponse.getResponse().getStatus());
 
             paymentDetailDTOs.add(paymentDetailDTO);
 

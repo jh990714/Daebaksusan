@@ -12,7 +12,7 @@ public class PaymentDetailDTO {
     private String orderNumber;
     private Date orderDate;
     private List<PaymentItemDTO> orderItems;
-    private boolean isCancel = false;
+    private String status;
     private CouponDTO coupon;
     private BigDecimal points;
 }

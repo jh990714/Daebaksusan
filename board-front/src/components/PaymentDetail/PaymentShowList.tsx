@@ -12,7 +12,7 @@ interface PaymentShowListProps {
 
 export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails, onPaymentDetailsChange }) => {
     const [isMobileView, setIsMobileView] = useState(false);
-    const [cancelStatus, setCancelStatus] = useState<boolean[]>([]);
+    const [cancelStatus, setCancelStatus] = useState<string[]>([]);
 
 
     useEffect(() => {
@@ -27,24 +27,24 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
     }, []);
 
     useEffect(() => {
-        const initialCancelStatus = paymentDetails.map(payment => payment.cancel);
+        const initialCancelStatus = paymentDetails.map(payment => payment.status);
         setCancelStatus(initialCancelStatus);
 
         console.log(initialCancelStatus)
     }, [paymentDetails]);
 
-    const handleCancelStatusChange = (index: number, newValue: boolean) => {
+    const handleCancelStatusChange = (index: number, newValue: string) => {
         const updatedPaymentDetails = paymentDetails.map((paymentDetail, i) => {
             if (i === index) {
                 return {
                     ...paymentDetail,
-                    cancel: newValue
+                    status: newValue
                 };
             }
             return paymentDetail;
         });
 
-        setCancelStatus(updatedPaymentDetails.map(paymentDetail => paymentDetail.cancel));
+        setCancelStatus(updatedPaymentDetails.map(paymentDetail => paymentDetail.status));
 
         if (onPaymentDetailsChange) {
             onPaymentDetailsChange(updatedPaymentDetails);
@@ -111,11 +111,11 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
                                     key={innerIndex}
                                     orderItem={orderItem}
                                     orderNumber={paymentDetail.orderNumber}
-                                    isCancelled={cancelStatus[index]}
+                                    status={cancelStatus[index]}
                                     isFirstItem={innerIndex === 0}
                                     rowspan={paymentDetail.orderItems.length}
                                     isMobileView={isMobileView}
-                                    onCancelStatusChange={(newValue: boolean) => handleCancelStatusChange(index, newValue)}
+                                    onCancelStatusChange={(newValue: string) => handleCancelStatusChange(index, newValue)}
                                     onReviewStatusChange={(newValue: boolean) => handleReviewStatusChange(index, innerIndex, newValue)}
                                 />
 

@@ -17,7 +17,7 @@ export const Mypage: React.FC = () => {
     const { isLoggedIn, setIsLoggedIn } = useAuthContext();
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState<Member>();
-    const [currentPage, setCurrentPage] = useState<string>(state?.page || 'mypageInfo'); // 기본 페이지 설정
+    const [currentPage, setCurrentPage] = useState<{ page: string, props?: string }>({ page: state?.page || 'mypageInfo' });
     const isSocialAuthenticated = state?.isSocialAuthenticated || false;
     const token = state?.token || null;
 
@@ -46,16 +46,16 @@ export const Mypage: React.FC = () => {
 
     }, [currentPage])
     
-    const handlePageChange = (page: string) => {
-        setCurrentPage(page);
+    const handlePageChange = (page: string, props?: string) => {
+        setCurrentPage({ page, props });
     };
 
     const renderContent = () => {
-        switch (currentPage) {
+        switch (currentPage.page) {
             case 'mypageInfo':
                 return <MyPageInfo userInfo={userInfo} handlePageChange={handlePageChange}/>;
             case 'paymentDetails':
-                return <PaymentDetails /> ;
+                return <PaymentDetails defaultSortBy={currentPage.props} /> ;
             case 'myCoupon':
                 return <MyCoupons coupons={userInfo?.coupons}/>;
             case 'myPoints':

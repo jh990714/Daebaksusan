@@ -9,8 +9,8 @@ import { ReviewShowPopup } from 'components/Review/ReviewShowPopup';
 interface PaymentItemCompProps {
     orderNumber: string;
     orderItem: PaymentItem;
-    isCancelled: boolean;
-    onCancelStatusChange: (newValue: boolean) => void;
+    status: string;
+    onCancelStatusChange: (newValue: string) => void;
     onReviewStatusChange: (newValue: boolean) => void;
     isFirstItem: boolean;
     isMobileView: boolean;
@@ -18,7 +18,7 @@ interface PaymentItemCompProps {
 }
 
 
-export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, orderItem, isCancelled, onCancelStatusChange, onReviewStatusChange, isFirstItem, isMobileView, rowspan }) => {
+export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, orderItem, status, onCancelStatusChange, onReviewStatusChange, isFirstItem, isMobileView, rowspan }) => {
     const [showPaymentInfo, setShowPaymentInfo] = useState(false);
     const [writeReviewPopup, setWriteReviewPopup] = useState(false); // 리뷰 작성 팝업 상태 추가
     const [showReviewPopup, setShowReviewPopup] = useState(false);
@@ -39,6 +39,17 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
         setShowReviewPopup(true); // 리뷰 작성 팝업 열기
     }
 
+    let paymentStatus;
+    switch (status) {
+        case "paid": paymentStatus = "결제 완료"; break;
+        case "ready": paymentStatus = "결제 예정"; break;
+        case "failed": paymentStatus = "결제 실패"; break;
+        case "cancelled": paymentStatus = "결제 취소"; break;
+        default:
+    }
+
+    const isCancelled = (status === 'cancelled' || status === 'failed');
+    const isReady = (status === 'ready');
     return (
         <tr style={{ backgroundColor: isCancelled ? '#F3F4F6' : 'transparent', borderBottom: '1px solid #E5E7EB' }}>
             {isFirstItem && (
@@ -84,11 +95,9 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                         <>
                             <td className="py-4 px-6 lg:py-2 lg:px-6 border-l" rowSpan={rowspan}>
                                 <div>
-                                    {isCancelled ? (
-                                        <p className="text-xs font-medium text-red-500">취소 완료</p>
-                                    ) : (
-                                        <p className="text-xs font-medium text-blue-700">결제 완료</p>
-                                    )}
+                                    <p className={`text-xs font-medium ${isCancelled ? 'text-red-500' :
+                                            isReady ? 'text-yellow-600' : 'text-blue-700'}`}
+                                    >{paymentStatus}</p>
 
                                     <button className="py-2 px-4 border-2 border-gray-300 rounded-md shadow-sm bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 whitespace-nowrap " onClick={handleShowInfo}>결제 정보</button>
                                 </div>
@@ -161,9 +170,9 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
 
 
             {/* 결제 정보 팝업 컴포넌트 */}
-            {showPaymentInfo && <PaymentInfoPopup onClose={() => setShowPaymentInfo(false)} orderNumber={orderNumber} onCancelStatusChange={onCancelStatusChange}/>}
+            {showPaymentInfo && <PaymentInfoPopup onClose={() => setShowPaymentInfo(false)} orderNumber={orderNumber} onCancelStatusChange={onCancelStatusChange} />}
             {/* 리뷰 작성 팝업 */}
-            {writeReviewPopup && <ReviewPopup onClose={() => setWriteReviewPopup(false)} orderNumber={orderNumber} product={orderItem.cartItem.product} option={orderItem.cartItem.option} onReviewStatusChange={onReviewStatusChange}/>}
+            {writeReviewPopup && <ReviewPopup onClose={() => setWriteReviewPopup(false)} orderNumber={orderNumber} product={orderItem.cartItem.product} option={orderItem.cartItem.option} onReviewStatusChange={onReviewStatusChange} />}
             {showReviewPopup && <ReviewShowPopup onClose={() => setShowReviewPopup(false)} orderNumber={orderNumber} product={orderItem.cartItem.product} option={orderItem.cartItem.option} />}
         </tr>
     );

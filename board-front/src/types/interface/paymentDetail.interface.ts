@@ -7,5 +7,5 @@ export default interface PaymentDetail {
     orderItems: PaymentItem[],
     coupon: Coupon,
     points: number,
-    cancel: boolean
+    status: string,
 }

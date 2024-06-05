@@ -401,6 +401,10 @@ public class PaymentServiceImple implements PaymentService {
                 paymentAndOrderInfo.setPaymentStatus("결제 취소");
             } else if (iamportResponse.getResponse().getStatus().equals("paid")) {
                 paymentAndOrderInfo.setPaymentStatus("결제 완료");
+            } else if (iamportResponse.getResponse().getStatus().equals("ready")) {
+                paymentAndOrderInfo.setPaymentStatus("결제 예정");
+            } else if (iamportResponse.getResponse().getStatus().equals("failed")) {
+                paymentAndOrderInfo.setPaymentStatus("결제 실패");
             }
 
             // PG사가 카카오페이인 경우

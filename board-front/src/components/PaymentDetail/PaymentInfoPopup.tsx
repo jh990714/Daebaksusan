@@ -6,7 +6,7 @@ import { PaymentAndOrderInfo } from 'types';
 
 interface PaymentInfoPopupProps {
     onClose: () => void;
-    onCancelStatusChange: (newValue: boolean) => void;
+    onCancelStatusChange: (newValue: string) => void;
     orderNumber: string;
 }
 
@@ -48,7 +48,7 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, onC
             if (response.statusCodeValue == 200) {
                 alert('결제가 취소되었습니다.');
                 onClose();
-                onCancelStatusChange(true);
+                onCancelStatusChange('cancelled');
             } else {
                 alert('취소실패: ' + response.body);
             }
@@ -203,7 +203,7 @@ export const PaymentInfoPopup: React.FC<PaymentInfoPopupProps> = ({ onClose, onC
                         </div>
                     )}
 
-                    {paymentInfo?.paymentStatus !== '결제 취소' && (
+                    {paymentInfo?.paymentStatus === '결제 완료' && (
                         <div className="flex justify-center whitespace-nowrap">
                             <button
                                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4"

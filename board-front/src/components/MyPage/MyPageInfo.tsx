@@ -3,7 +3,7 @@ import Member from 'types/interface/member.interface'
 
 interface MyPageInfoProps {
     userInfo?: Member
-    handlePageChange: (path: string) => void; // 수정된 부분
+    handlePageChange: (path: string, props?: string) => void; // 수정된 부분
 }
 export const MyPageInfo: React.FC<MyPageInfoProps> = ({ userInfo, handlePageChange }) => {
     return (
@@ -34,15 +34,15 @@ export const MyPageInfo: React.FC<MyPageInfoProps> = ({ userInfo, handlePageChan
                 <div className="grid grid-cols-3">
                     <div className="text-center border-dotted border-r-2 border-blue-700">
                         <div className="text-sm sm:text-lg whitespace-nowrap">결제 전</div>
-                        <div className="text-blue-600 text-2xl font-semibold mt-2">0</div>
+                        <div className="text-blue-600 text-2xl font-semibold mt-2 hover:cursor-pointer" onClick={() => handlePageChange('paymentDetails', 'ready')}>{userInfo?.paymentStatusCounts?.readyCount}</div>
                     </div>
                     <div className="text-center border-dotted border-r-2 border-blue-700">
                         <div className="text-sm sm:text-lg whitespace-nowrap">결제 완료</div>
-                        <div className="text-blue-600 text-2xl font-semibold mt-2">0</div>
+                        <div className="text-blue-600 text-2xl font-semibold mt-2 hover:cursor-pointer" onClick={() => handlePageChange('paymentDetails', 'paid')}>{userInfo?.paymentStatusCounts?.paidCount}</div>
                     </div>
                     <div className="text-center border-dotted border-blue-700">
-                        <div className="text-sm sm:text-lg whitespace-nowrap">상품 준비 중</div>
-                        <div className="text-blue-600 text-2xl font-semibold mt-2">0</div>
+                        <div className="text-sm sm:text-lg whitespace-nowrap">결제 취소</div>
+                        <div className="text-blue-600 text-2xl font-semibold mt-2 hover:cursor-pointer" onClick={() => handlePageChange('paymentDetails',  'cancelled')}>{userInfo?.paymentStatusCounts?.cancelledCount}</div>
                     </div>
                 </div>
             </div>

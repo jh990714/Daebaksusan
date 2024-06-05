@@ -40,10 +40,11 @@ public class InfoController {
     @GetMapping("/orderDetails")
     public ResponseEntity<?> getOrderDetails(Authentication authentication,
                                                @RequestParam(defaultValue = "1") int page,
-                                               @RequestParam(defaultValue = "10") int pageSize) {
+                                               @RequestParam(defaultValue = "10") int pageSize,
+                                               @RequestParam String status) {
         try {
             Long memberId = Long.parseLong(authentication.getName());
-            Page<PaymentDetailDTO> paymentDetails = infoService.getOrdertDetails(memberId, page, pageSize);
+            Page<PaymentDetailDTO> paymentDetails = infoService.getOrdertDetails(memberId, status, page, pageSize);
             return ResponseEntity.ok().body(paymentDetails);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

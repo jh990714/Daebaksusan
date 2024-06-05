@@ -14,4 +14,12 @@ export default interface Member {
     role: string,
     coupons: Coupon[],
     points: number,
+    paymentStatusCounts?: PaymentStatusCounts;
 };
+
+export interface PaymentStatusCounts {
+    paidCount: number;
+    readyCount: number;
+    failedCount: number;
+    cancelledCount: number;
+}

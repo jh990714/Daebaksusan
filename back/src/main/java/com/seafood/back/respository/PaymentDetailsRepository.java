@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.seafood.back.dto.PaymentStatusCountDTO;
 import com.seafood.back.entity.PaymentDetailsEntity;
 
 @Repository
@@ -25,6 +26,17 @@ public interface PaymentDetailsRepository extends JpaRepository<PaymentDetailsEn
 
     @Query("SELECT COUNT(*) FROM PaymentDetailsEntity p WHERE p.orderDate = :date")
     int getOrderCountForDate(@Param("date") Date date);
+    Page<PaymentDetailsEntity> findByMemberIdAndStatusOrderByPaymentDetailIdDesc(Long memberId, String status,
+            Pageable pageable);
+
+
+    @Query("SELECT new com.seafood.back.dto.PaymentStatusCountDTO(" +
+            "SUM(CASE WHEN p.status = 'paid' THEN 1 ELSE 0 END)," +
+            "SUM(CASE WHEN p.status = 'ready' THEN 1 ELSE 0 END)," +
+            "SUM(CASE WHEN p.status = 'failed' THEN 1 ELSE 0 END)," +
+            "SUM(CASE WHEN p.status = 'cancelled' THEN 1 ELSE 0 END)) " +
+            "FROM PaymentDetailsEntity p WHERE p.memberId = :memberId")
+    PaymentStatusCountDTO countPaymentStatusByMemberId(@Param("memberId") Long memberId);
     
     
 }
