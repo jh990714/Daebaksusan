@@ -3,6 +3,8 @@ package com.seafood.back.controller;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -25,11 +27,12 @@ import com.seafood.back.service.ProductService;
 @RequestMapping("/api/v1/product")
 public class ProductController {
     private final ProductService productService;
+     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @GetMapping("/all")
     public ResponseEntity<List<ProductDTO>> getAllProduct() {
         List<ProductDTO> product = productService.findProductAll();
-    
+        logger.info("testProductController");
         return new ResponseEntity<>(product, HttpStatus.OK);
     }
 

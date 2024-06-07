@@ -23,7 +23,7 @@ public class AuthenticationConfig {
 
     // private final MemberService memberService;
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret.token}")
     private String secretKey;
     private final DefaultOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;

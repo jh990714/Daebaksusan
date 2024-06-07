@@ -47,7 +47,7 @@ public class MemberController {
             String accessToken = memberService.getAccessToken(member.getMemberId());
             String refreshToken = memberService.getRefreshToken(member.getMemberId());
             TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
-            
+        
             return ResponseEntity.ok(tokenResponse);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

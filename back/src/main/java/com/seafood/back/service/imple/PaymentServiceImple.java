@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seafood.back.controller.MemberController;
 import com.seafood.back.dto.CartDTO;
 import com.seafood.back.dto.CouponAmountResult;
 import com.seafood.back.dto.CouponDTO;
@@ -58,6 +61,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImple implements PaymentService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PaymentServiceImple.class);
 
     private final ProductService productService;
     private final CartService cartService;
@@ -271,6 +276,32 @@ public class PaymentServiceImple implements PaymentService {
             String mid = iamportResponse.getResponse().getMerchantUid();
             String status = iamportResponse.getResponse().getStatus();
             String orderNumber = processSuccessfulPayment(memberId, orderItems, imp_uid, mid, password, coupon, pointsUsed, status);
+            
+            for (CartDTO item : orderItems) {
+                int quantity = item.getCartItem().getQuantity();
+                BigDecimal regularPrice = item.getCartItem().getProduct().getRegularPrice();
+                BigDecimal salePrice = item.getCartItem().getProduct().getSalePrice();
+                BigDecimal optionPrice = item.getCartItem().getOption().getAddPrice();
+                BigDecimal shippingCost = item.getCartItem().getProduct().getShippingCost();
+            
+                BigDecimal pricePerUnit = regularPrice.subtract(salePrice);
+                BigDecimal totalPricePerUnit = pricePerUnit.add(optionPrice);
+                BigDecimal totalAmount = totalPricePerUnit.multiply(BigDecimal.valueOf(quantity));
+            
+                int boxCnt = item.getCartItem().getBoxCnt();
+            
+                BigDecimal optionTotalPrice = optionPrice.multiply(BigDecimal.valueOf(boxCnt));
+                BigDecimal shippingTotalCost = shippingCost.multiply(BigDecimal.valueOf(boxCnt));
+            
+                totalAmount = totalAmount.add(optionTotalPrice).add(shippingTotalCost);
+            
+                logger.info("Order Item - ID: {}, Name: {}, Quantity: {}, Amount: {}",
+                            item.getCartItem().getProduct().getProductId(),
+                            item.getCartItem().getProduct().getName(),
+                            quantity,
+                            totalAmount);
+            }
+            
             Map<String, Object> response = new HashMap<>();
             response.put("orderNumber", orderNumber);
             response.put("iamportResponse", iamportResponse);

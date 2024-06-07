@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpEntity;
@@ -30,6 +32,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.seafood.back.controller.MemberController;
 import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.dto.MemberDTO;
 import com.seafood.back.dto.MemberUpdateDTO;
@@ -51,6 +54,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImple implements MemberService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
+
     private final RestTemplate restTemplate;
 
     private final CouponService couponService;
@@ -62,20 +68,23 @@ public class MemberServiceImple implements MemberService {
     private final MailService mailService;
     private final TemplateEngine templateEngine;
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret.token}")
     private String accessSecretKey;
 
-    @Value("${jwt.refersh}")
+    @Value("${jwt.refresh.token}")
     private String refreshSecretKey;
+    
+    @Value("${jwt.refresh.expired.ms}")
+    private long refreshTokenExpiredMs;
+
+    @Value("${jwt.secret.expired.ms}")
+    private long accessTokenExpiredMs;
 
     @Value("${spring.security.oauth2.client.registration.naver.client-id}")
     private String naverClientId;
 
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
-
-    private Long accessTokenExpiredMs = (long) (1000 * 60 * 30); // 액세스 토큰 만료 시간 (30분)
-    private Long refreshTokenExpiredMs = (long) (1000 * 60 * 60 * 24 * 7); // 리프레시 토큰 만료 시간 (7일)
 
     @Override
     public String getAccessToken(Long memberId) {
@@ -95,6 +104,7 @@ public class MemberServiceImple implements MemberService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
+        logger.info("Login Success - ID: {}, type: {}", memberId, member.getType());
         return member;
     }
 
@@ -128,6 +138,7 @@ public class MemberServiceImple implements MemberService {
 
             couponService.createMemberCoupon(member.getMemberId(), (long) 3);
 
+            logger.info("Registration Success - ID: {}, type: {}", savedMember.getId(), member.getType());
             return savedMember;
         } catch (DataIntegrityViolationException e) {
             // 중복된 아이디가 있을 경우에 대한 예외 처리

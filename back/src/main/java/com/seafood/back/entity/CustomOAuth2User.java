@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 public class CustomOAuth2User implements OAuth2User {
 
     private Long memberId;
-
+    private String loginType;
+    
     @Override
     public Map<String, Object> getAttributes() {
         return null;
@@ -27,6 +28,11 @@ public class CustomOAuth2User implements OAuth2User {
 
     public Long getMemberId() {
         return this.memberId;
+    }
+
+    
+    public String getLoginType() { // 로그인 유형을 반환하는 메서드 추가
+        return this.loginType;
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.seafood.back.handler;
 import java.io.IOException;
 
 import org.hibernate.annotations.Comment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -19,22 +21,24 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
-    
+    private static final Logger logger = LoggerFactory.getLogger(OAuth2SuccessHandler.class);
     // private final JwtUtil jwtUtil;
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret.token}")
     private String accessSecretKey;
 
-    @Value("${jwt.refersh}")
+    @Value("${jwt.refresh.token}")
     private String refreshSecretKey;
 
     @Value("${frontend.url}")
     private String frontendUrl;
 
 
-    private Long accessTokenExpiredMs = (long) (1000 * 60 * 30); // 액세스 토큰 만료 시간 (30분)
-    private Long refreshTokenExpiredMs = (long) (1000 * 60 * 60 * 24 * 7); // 리프레시 토큰 만료 시간 (7일)
+    @Value("${jwt.refresh.expired.ms}")
+    private long refreshTokenExpiredMs;
 
+    @Value("${jwt.secret.expired.ms}")
+    private long accessTokenExpiredMs;
 
     @Override
     public void onAuthenticationSuccess(
@@ -51,5 +55,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
         String refreshToken = JwtUtil.createJwt(memberId, refreshSecretKey, refreshTokenExpiredMs);
 
         response.sendRedirect(frontendUrl + "/auth/oauth-response/" + token + "&" + refreshToken);
+        logger.info("Login Success - ID: {}, type: {}", memberId, oAuth2User.getLoginType());
     }
 }

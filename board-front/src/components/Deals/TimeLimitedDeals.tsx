@@ -25,6 +25,10 @@ const TimeLimitedDeals: React.FC = () => {
         fetchData();
     }, []);
 
+    if (products.length === 0) {
+        return <></>;
+    }
+
     return (
         <div className="w-full my-20 p-3">
             <p className='text-2xl font-bold md:text-4xl'>💣 타임특가 </p>

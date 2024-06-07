@@ -122,6 +122,12 @@
 			<version>1.6.2</version>
 		</dependency>
 
+		<!-- spring boot logging -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</dependency>
+
 
 	</dependencies>
 

@@ -1,12 +1,15 @@
 package com.seafood.back.service.imple;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.seafood.back.dto.CartDTO;
@@ -36,6 +39,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImple implements ProductService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final OptionRepository optionRepository;
@@ -88,7 +94,6 @@ public class ProductServiceImple implements ProductService {
     public List<ProductDTO> getProductsByCategoryAndSubcategories(Long categoryId) {
         List<ProductEntity> products = new ArrayList<>();
 
-
         Optional<CategoryEntity> categoryOptional = categoryRepository.findById(categoryId);
         if (categoryOptional.isPresent()) {
             CategoryEntity category = categoryOptional.get();
@@ -104,7 +109,7 @@ public class ProductServiceImple implements ProductService {
                     products.addAll(subcategory.getProducts());
                 }
             }
-            
+
         }
 
         List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
@@ -201,39 +206,39 @@ public class ProductServiceImple implements ProductService {
     @Override
     public ProductDTO convertToProductDTO(ProductEntity product, List<ProductDealsEntity> dealProducts) {
         // try {
-            ProductDTO productDTO = new ProductDTO();
-            // ProductEntity의 필드 값을 ProductDTO로 복사
-            productDTO.setProductId(product.getProductId());
-            productDTO.setCategory(product.getCategory());
-            productDTO.setName(product.getName());
-            productDTO.setImageUrl(product.getImageUrl());
-            productDTO.setStockQuantity(product.getStockQuantity());
-            productDTO.setRegularPrice(product.getRegularPrice());
-            productDTO.setSalePrice(product.getSalePrice());
-            productDTO.setShippingCost(product.getShippingCost());
-            productDTO.setDescription(product.getDescription());
-            productDTO.setArrivalDate(product.getArrivalDate());
-            productDTO.setRecommended(product.getRecommended());
-            productDTO.setMaxQuantityPerDelivery(product.getMaxQuantityPerDelivery());
+        ProductDTO productDTO = new ProductDTO();
+        // ProductEntity의 필드 값을 ProductDTO로 복사
+        productDTO.setProductId(product.getProductId());
+        productDTO.setCategory(product.getCategory());
+        productDTO.setName(product.getName());
+        productDTO.setImageUrl(product.getImageUrl());
+        productDTO.setStockQuantity(product.getStockQuantity());
+        productDTO.setRegularPrice(product.getRegularPrice());
+        productDTO.setSalePrice(product.getSalePrice());
+        productDTO.setShippingCost(product.getShippingCost());
+        productDTO.setDescription(product.getDescription());
+        productDTO.setArrivalDate(product.getArrivalDate());
+        productDTO.setRecommended(product.getRecommended());
+        productDTO.setMaxQuantityPerDelivery(product.getMaxQuantityPerDelivery());
 
-            // String imageUrl = s3Service.getImageUrl(product.getImageUrl());
-            // productDTO.setImageUrl(imageUrl);
-            productDTO.setImageUrl(product.getImageUrl());
+        // String imageUrl = s3Service.getImageUrl(product.getImageUrl());
+        // productDTO.setImageUrl(imageUrl);
+        productDTO.setImageUrl(product.getImageUrl());
 
-            // 타임 특가가 적용된 경우에만 sale_price 변경
-            for (ProductDealsEntity dealProduct : dealProducts) {
-                if (product.getProductId().equals(dealProduct.getProductId())) {
-                    productDTO.setSalePrice(productDTO.getSalePrice().add(dealProduct.getDealPrice()));
-                    productDTO.setStartDate(dealProduct.getStartDate());
-                    productDTO.setEndDate(dealProduct.getEndDate());
-                    break;
-                }
+        // 타임 특가가 적용된 경우에만 sale_price 변경
+        for (ProductDealsEntity dealProduct : dealProducts) {
+            if (product.getProductId().equals(dealProduct.getProductId())) {
+                productDTO.setSalePrice(productDTO.getSalePrice().add(dealProduct.getDealPrice()));
+                productDTO.setStartDate(dealProduct.getStartDate());
+                productDTO.setEndDate(dealProduct.getEndDate());
+                break;
             }
+        }
 
-            return productDTO;
+        return productDTO;
         // } catch (IOException e) {
-        //     e.printStackTrace();
-        //     return null;
+        // e.printStackTrace();
+        // return null;
         // }
     }
 
@@ -278,15 +283,42 @@ public class ProductServiceImple implements ProductService {
             if (productOptional.isPresent()) {
                 ProductEntity product = productOptional.get();
                 int currentStock = product.getStockQuantity();
-                product.setStockQuantity(currentStock + orderItem.getCartItem().getQuantity());
+                int orderedQuantity = orderItem.getCartItem().getQuantity();
+                product.setStockQuantity(currentStock + orderedQuantity);
 
                 productRepository.save(product);
+
+                // 주문 항목의 총 금액 계산
+                int quantity = orderItem.getCartItem().getQuantity();
+
+                BigDecimal regularPrice = orderItem.getCartItem().getProduct().getRegularPrice();
+                BigDecimal salePrice = orderItem.getCartItem().getProduct().getSalePrice();
+                BigDecimal optionPrice = orderItem.getCartItem().getOption().getAddPrice();
+                BigDecimal shippingCost = orderItem.getCartItem().getProduct().getShippingCost();
+
+                BigDecimal pricePerUnit = regularPrice.subtract(salePrice);
+                BigDecimal totalPricePerUnit = pricePerUnit.add(optionPrice);
+                BigDecimal totalAmount = totalPricePerUnit.multiply(BigDecimal.valueOf(quantity));
+
+                int boxCnt = orderItem.getCartItem().getBoxCnt();
+            
+                BigDecimal optionTotalPrice = optionPrice.multiply(BigDecimal.valueOf(boxCnt));
+                BigDecimal shippingTotalCost = shippingCost.multiply(BigDecimal.valueOf(boxCnt));
+
+                totalAmount = totalAmount.add(optionTotalPrice).add(shippingTotalCost);
+                
+                logger.info("Cancel Item - ID: {}, Name: {}, Quantity: {}, Amount: {}",
+                        productId,
+                        orderItem.getCartItem().getProduct().getName(),
+                        quantity,
+                        totalAmount);
             } else {
                 // 상품을 찾을 수 없는 경우의 예외 처리를 수행합니다.
                 throw new RuntimeException("상품을 찾을 수 없습니다.");
             }
         }
     }
+
     @Override
     public String getProductInfoImage(Long productId) throws IOException {
         // 상품 상세정보를 조회
@@ -322,7 +354,6 @@ public class ProductServiceImple implements ProductService {
         if (categoryEntity == null) {
             throw new IllegalArgumentException("Category with name " + categoryName + " not found");
         }
-        
 
         List<CategoryEntity> subcategories = categoryEntity.getSubcategories();
         if (subcategories.isEmpty()) {
@@ -334,7 +365,7 @@ public class ProductServiceImple implements ProductService {
                 products.addAll(subcategory.getProducts());
             }
         }
-    
+
         List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
 
         return productDTOs;
@@ -358,16 +389,16 @@ public class ProductServiceImple implements ProductService {
     public List<ProductDTO> getPromotionalProducts(PromotionalVideoEntity video) {
 
         List<PromotionalProductEntity> promotionalProducts = promotionalProductRepository.findByVideo(video);
-        
+
         // PromotionalProductEntity 리스트를 ProductEntity 리스트로 변환
         List<ProductEntity> productEntities = promotionalProducts.stream()
                 .map(PromotionalProductEntity::getProduct)
                 .collect(Collectors.toList());
-        
+
         // ProductEntity 리스트를 ProductDTO 리스트로 변환
         List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(productEntities);
-        
+
         return productDTOs;
     }
-    
+
 }

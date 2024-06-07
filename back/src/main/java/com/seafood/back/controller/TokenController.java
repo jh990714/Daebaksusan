@@ -17,13 +17,14 @@ import com.seafood.back.utils.JwtUtil;
 @RequestMapping("/api/v1")
 public class TokenController {
 
-    @Value("${jwt.refersh}")
+    @Value("${jwt.refresh.token}")
     private String refreshSecretKey;
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret.token}")
     private String accessSecretKey;
 
-    private Long expiredMs = (long) (1000 * 60 * 30); // 리프레시 토큰 만료 시간 (30분)
+    @Value("${jwt.secret.expired.ms}")
+    private long expiredMs;
 
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(@RequestBody Map<String, String> refreshTokenMap) {
