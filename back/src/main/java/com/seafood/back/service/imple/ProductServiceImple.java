@@ -276,7 +276,7 @@ public class ProductServiceImple implements ProductService {
 
     @Override
     @Transactional
-    public void addProductQuantities(List<PaymentItemDTO> orderItems) {
+    public void addProductQuantities(String orderNumber, List<PaymentItemDTO> orderItems) {
         for (PaymentItemDTO orderItem : orderItems) {
             Long productId = orderItem.getCartItem().getProduct().getProductId();
             Optional<ProductEntity> productOptional = productRepository.findById(productId);
@@ -307,11 +307,13 @@ public class ProductServiceImple implements ProductService {
 
                 totalAmount = totalAmount.add(optionTotalPrice).add(shippingTotalCost);
                 
-                logger.info("Cancel Item - ID: {}, Name: {}, Quantity: {}, Amount: {}",
-                        productId,
-                        orderItem.getCartItem().getProduct().getName(),
-                        quantity,
-                        totalAmount);
+                logger.info("Cancel Item - Message: {}, OrderNumber: {}, ProductId: {}, ProductName: {}, Quantity: {}, Amount: {}",
+                            "취소 항목 처리",
+                            orderNumber,
+                            orderItem.getCartItem().getProduct().getProductId(),
+                            orderItem.getCartItem().getProduct().getName(),
+                            quantity,
+                            totalAmount );
             } else {
                 // 상품을 찾을 수 없는 경우의 예외 처리를 수행합니다.
                 throw new RuntimeException("상품을 찾을 수 없습니다.");

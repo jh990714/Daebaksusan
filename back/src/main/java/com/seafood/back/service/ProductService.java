@@ -27,7 +27,7 @@ public interface ProductService {
     public List<ProductDTO> convertProductEntitiesToDTOs(List<ProductEntity> products);
     public List<ProductDTO> getTimeDealProducts();
     public List<ProductDTO> findProductRecommend();
-    public void addProductQuantities(List<PaymentItemDTO> orderItems);
+    public void addProductQuantities(String orderNumber, List<PaymentItemDTO> orderItems);
     public String getProductInfoImage(Long productId) throws IOException;
     public ProductDTO findProduct(Long productId);
     public List<ProductDTO> getProductsByCategoryAndSubcategories(String categoryName);

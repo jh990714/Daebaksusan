@@ -55,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MemberServiceImple implements MemberService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MemberController.class);
+    private static final Logger logger = LoggerFactory.getLogger(MemberServiceImple.class);
 
     private final RestTemplate restTemplate;
 
@@ -104,7 +104,6 @@ public class MemberServiceImple implements MemberService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        logger.info("Login Success - ID: {}, type: {}", memberId, member.getType());
         return member;
     }
 
@@ -112,10 +111,16 @@ public class MemberServiceImple implements MemberService {
     public MemberEntity authenticateMember(String id, String password) {
         MemberEntity member = memberRepository.findById(id);
 
+        if (member == null) {
+            logger.error("Login - Message: {}, MemberId: {}, ID: {}, Type: {}", "아이디 불일치", null, id, "sign");
+            throw new RuntimeException("해당 아이디가 존재하지 않습니다.");
+        }
         if (!passwordEncoder.matches(password, member.getPassword())) {
+            logger.error("Login - Message: {}, MemberId: {}, ID: {}, Type: {}", "비밀번호 불일치", member.getMemberId(), member.getId(), member.getType());
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
+        logger.info("Login - Message: {}, MemberId: {}, ID: {}, Type: {}",  "로그인 성공", member.getMemberId(), member.getId(), member.getType());
         return member;
     }
 
@@ -138,13 +143,15 @@ public class MemberServiceImple implements MemberService {
 
             couponService.createMemberCoupon(member.getMemberId(), (long) 3);
 
-            logger.info("Registration Success - ID: {}, type: {}", savedMember.getId(), member.getType());
+            logger.info("Register - Message: {}, MemberId: {}, ID: {}, Type: {}",  "회원가입 성공", savedMember.getMemberId(), savedMember.getId(), savedMember.getType());
             return savedMember;
         } catch (DataIntegrityViolationException e) {
             // 중복된 아이디가 있을 경우에 대한 예외 처리
+            logger.error("Register - Message: {}, ID: {}, Type: {}",  "중복된 아이디", member.getId(), member.getType());
             throw new DataIntegrityViolationException("중복된 아이디입니다.");
         } catch (Exception e) {
             // 그 외 예외에 대한 예외 처리
+            logger.error("Register - Message: {}, ID: {}, Type: {}",  "회원가입 오류"+ e, member.getId(), member.getType());
             throw new RuntimeException("회원 가입 중 오류가 발생했습니다.", e);
         }
     }
@@ -187,20 +194,49 @@ public class MemberServiceImple implements MemberService {
     @Override
     public BigDecimal deductPoints(Long memberId, BigDecimal points) {
         // 회원의 포인트 정보 조회
+        MemberEntity member = memberRepository.findByMemberId(memberId);
+        if (member == null) {
+            throw new IllegalArgumentException("해당 회원 정보가 없습니다.");
+        }
         MemberPointsEntity memberPoints = memberPointsRepository.findByMemberId(memberId);
+
 
         if (memberPoints != null) {
             BigDecimal currentPoints = memberPoints.getPoints();
             BigDecimal updatedPoints = currentPoints.subtract(points);
             if (updatedPoints.compareTo(BigDecimal.ZERO) < 0) {
+                logger.error("Point - Message: {}, Deduction Amount: {}, Current Points: {}, Member ID: {}, Id: {}",
+                        "차감할 포인트보다 회원의 보유 포인트가 적습니다.",
+                        points,
+                        currentPoints,
+                        member.getMemberId(),
+                        member.getId());
                 throw new IllegalArgumentException("차감할 포인트보다 회원의 보유 포인트가 적습니다.");
             }
 
             memberPoints.setPoints(updatedPoints);
-            memberPointsRepository.save(memberPoints);
+            MemberPointsEntity savedMemberPointsEntity = memberPointsRepository.save(memberPoints);
 
+            String message;
+            if (points.compareTo(BigDecimal.ZERO) > 0) {
+                message = "포인트가 차감되었습니다.";
+            } else {
+                message = "포인트가 추가되었습니다.";
+            }
+            logger.info("Point - Message: {}, Deduction Amount: {}, Current Points: {}, Updated Points: {}, Member ID: {}, Id: {}",
+                        message,
+                        points,
+                        currentPoints,
+                        savedMemberPointsEntity.getPoints(),
+                        member.getMemberId(),
+                        member.getId());
             return memberPoints.getPoints();
         } else {
+            logger.error("Point - Message: {}, Deduction Amount: {}, Current Points: {}, Member ID: {}, Id: {}",
+                        points,
+                        null,
+                        member.getMemberId(),
+                        member.getId());
             throw new IllegalArgumentException("해당 회원의 포인트 정보가 없습니다.");
         }
     }
@@ -208,7 +244,7 @@ public class MemberServiceImple implements MemberService {
     @Override
     public void updateMember(MemberUpdateDTO memberUpdateDTO) {
         MemberEntity member = memberRepository.findByMemberId(memberUpdateDTO.getMemberId());
-
+        
         if (member == null) {
             throw new IllegalArgumentException("해당 ID를 가진 회원이 없습니다.");
         }

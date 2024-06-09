@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CustomOAuth2User implements OAuth2User {
 
+    private String id;
     private Long memberId;
     private String loginType;
     
@@ -26,8 +27,8 @@ public class CustomOAuth2User implements OAuth2User {
         return null;
     }
 
-    public Long getMemberId() {
-        return this.memberId;
+    public String getId() {
+        return this.id;
     }
 
     

@@ -55,6 +55,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
         String refreshToken = JwtUtil.createJwt(memberId, refreshSecretKey, refreshTokenExpiredMs);
 
         response.sendRedirect(frontendUrl + "/auth/oauth-response/" + token + "&" + refreshToken);
-        logger.info("Login Success - ID: {}, type: {}", memberId, oAuth2User.getLoginType());
+        
+        logger.info("Login - Message: {}, MemberId: {}, ID: {}, Type: {}",  "로그인 성공", memberId, oAuth2User.getId(), oAuth2User.getLoginType());
     }
 }

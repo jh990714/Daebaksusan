@@ -44,7 +44,6 @@ public class PaymentController {
             ResponseEntity<?> response = paymentService.refundIamport(memberId, orderNumber);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            log.error("결제 취소 중 오류 발생: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("결제 취소 중 오류가 발생했습니다.");
         }
     }

@@ -11,9 +11,11 @@ import java.util.List;
 public interface MemberCouponRepository extends JpaRepository<MemberCouponEntity, Long> {
     List<MemberCouponEntity> findCouponsByMember_memberId(Long memberId);
 
-    void deleteByIdAndMember_memberId(Long id, Long memberId);
+    MemberCouponEntity deleteByIdAndMember_memberId(Long id, Long memberId);
 
     List<MemberCouponEntity> findByValidUntilBefore(Date now);
 
     void deleteByIdInAndMember_memberId(List<Long> expiredCouponIds, Long memberId);
+
+    MemberCouponEntity findByIdAndMember_memberId(Long id, Long memberId);
 }

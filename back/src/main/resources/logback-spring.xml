@@ -10,9 +10,8 @@
     <!-- INFO 레벨 로그 파일 설정 -->
     <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/info/info.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/info/info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize> <!-- 파일 크기가 10MB 이상이 되면 롤링 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/info/info.%d{yyyy-MM-dd-HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>100GB</totalSizeCap> <!-- 전체 로그 파일 크기 제한 -->
         </rollingPolicy>
@@ -27,12 +26,10 @@
     </appender>
 
     <!-- ERROR 레벨 로그 파일 설정 -->
-    <!-- ERROR_FILE와 WARN_FILE의 설정 역시 동일하게 변경해야 합니다. -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/error/error.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/error/error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/error/error.%d{yyyy-MM-dd-HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>100GB</totalSizeCap>
         </rollingPolicy>
@@ -49,9 +46,8 @@
     <!-- WARN 레벨 로그 파일 설정 -->
     <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/warn/warn.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>logs/warn/warn.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <maxFileSize>10MB</maxFileSize>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/warn/warn.%d{yyyy-MM-dd-HH}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>100GB</totalSizeCap>
         </rollingPolicy>

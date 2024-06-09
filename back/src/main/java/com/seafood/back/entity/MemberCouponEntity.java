@@ -28,11 +28,9 @@ public class MemberCouponEntity {
     // @Column(name = "member_id", nullable = false)
     // private String memberId;
 
-    @Column(name = "coupon_id", nullable = false) // 쿠폰 ID 추가
-    private Long couponId; // 쿠폰 ID 필드 추가
 
     @ManyToOne
-    @JoinColumn(name = "coupon_id", insertable = false, updatable = false)
+    @JoinColumn(name = "coupon_id", referencedColumnName = "coupon_id")
     private CouponEntity coupon;
 
     @Column(name = "issue_date", nullable = false)
