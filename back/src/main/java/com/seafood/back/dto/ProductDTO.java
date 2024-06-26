@@ -1,7 +1,6 @@
 package com.seafood.back.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import lombok.Getter;
@@ -22,6 +21,7 @@ public class ProductDTO {
     String description;
     Date arrivalDate;
     Boolean recommended;
+    Boolean popularity;
     Integer maxQuantityPerDelivery;
     Date startDate;
     Date endDate;

@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ProductServiceImple implements ProductService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductServiceImple.class);
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
@@ -61,8 +61,11 @@ public class ProductServiceImple implements ProductService {
 
     @Override
     public List<ProductDTO> findProductBest() {
+        List<ProductEntity> products = productRepository.findByPopularity(true);
 
-        return null;
+        List<ProductDTO> productDTOs = convertProductEntitiesToDTOs(products);
+
+        return productDTOs;
     }
 
     @Override
@@ -219,6 +222,7 @@ public class ProductServiceImple implements ProductService {
         productDTO.setDescription(product.getDescription());
         productDTO.setArrivalDate(product.getArrivalDate());
         productDTO.setRecommended(product.getRecommended());
+        productDTO.setPopularity(product.getPopularity());
         productDTO.setMaxQuantityPerDelivery(product.getMaxQuantityPerDelivery());
 
         // String imageUrl = s3Service.getImageUrl(product.getImageUrl());
@@ -334,17 +338,27 @@ public class ProductServiceImple implements ProductService {
         String imageUrl = productDetail.getImageUrl();
 
         // 조회된 상품 상세정보가 있으면 S3 URL 반환, 없으면 null 반환
-        log.info(imageUrl);
         return imageUrl;
     }
 
     @Override
     public ProductDTO findProduct(Long productId) {
         ProductEntity productEntity = productRepository.findByProductId(productId);
+        if (productEntity == null) {
+            logger.error("Product - Message: {}, Product Id: {}",
+                    "존재하지 않는 상품",
+                    productId);
+
+            throw new IllegalArgumentException("Product not found with id: " + productId);
+        }
         List<ProductDealsEntity> productDeals = findProductDeal();
 
         ProductDTO productDTO = convertToProductDTO(productEntity, productDeals);
 
+        logger.info("Product - Message: {}, Product Id: {}, Product Name: {}",
+                    "상품 클릭",
+                    productDTO.getProductId(),
+                    productDTO.getName());
         return productDTO;
     }
 

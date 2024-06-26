@@ -23,9 +23,11 @@ export const Router:React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/best" element={<CategoryProduct path='new'/>} />
+      <Route path="/best" element={<CategoryProduct path='best'/>} />
       <Route path="/new" element={<CategoryProduct path='new'/>} />
       <Route path="/all" element={<CategoryProduct path='all'/>} />
+      <Route path="/timeDeal" element={<CategoryProduct path='timeDeal'/>} />
+      <Route path="/recommend" element={<CategoryProduct path='recommend'/>} />
       <Route path="/detail/:productId" element={<Detail />} />
       <Route path="/login" element={<Login />} />
       <Route path="/mypage/*" element={<Mypage />} />

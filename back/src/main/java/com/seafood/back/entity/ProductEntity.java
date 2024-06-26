@@ -53,6 +53,9 @@ public class ProductEntity {
     @Column(name = "recommended")
     private Boolean recommended;
 
+    @Column(name = "popularity")
+    private Boolean popularity;
+
     @Column(name = "max_quantity_per_delivery")
     private Integer maxQuantityPerDelivery;
     

@@ -27,8 +27,11 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
         case 'new':
             pageTitle = '최신 상품';
             break;
-        case 'recommendedProducts':
+        case 'recommend':
             pageTitle = '추천 상품';
+            break;
+        case 'timeDeal':
+            pageTitle = '특가 상품';
             break;
         case 'all':
             pageTitle = '모든 상품';

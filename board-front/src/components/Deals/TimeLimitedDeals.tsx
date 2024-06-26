@@ -6,6 +6,7 @@ import time from 'assets/time.png'
 import hotDeal from 'assets/hotDeal.png'
 import ImageGalleryComp from 'components/ImageGallery/ImageGalleryComp';
 import { TimeDealProductComp } from 'components/product/TimeDealProductComp';
+import { Link } from 'react-router-dom';
 
 const TimeLimitedDeals: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -31,7 +32,7 @@ const TimeLimitedDeals: React.FC = () => {
 
     return (
         <div className="w-full my-20 p-3">
-            <p className='text-2xl font-bold md:text-4xl'>💣 타임특가 </p>
+            <Link to={"timeDeal"} className='text-2xl font-bold md:text-4xl no-underline text-black dark:text-white'>💣 타임특가 </Link>
             <ImageGalleryComp items={products} size='255px' fontSize='7px' component={TimeDealProductComp}/>
         </div>
     );

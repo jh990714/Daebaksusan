@@ -363,16 +363,13 @@ public class MemberServiceImple implements MemberService {
         if (memberDto.getType().equals("kakao")) {
             socialId = getKakaoUserId(token);
         } else if (memberDto.getType().equals("naver")) {
-            System.out.println("naver");
             socialId = getNaverUserId(token);
         }
-        System.out.println("socialId: " + socialId);
         if (socialId == null) {
             return false;
         }
 
         String strippedId = id.replaceFirst("^(kakao_|naver_)", "");
-
         return strippedId.equals(socialId);
     }
 

@@ -1,8 +1,8 @@
 package com.seafood.back.config;
 
 import java.io.IOException;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,14 +19,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
-    
-    // private final MemberService userService;
     private final String secretKey;
 
     @Override
@@ -35,35 +31,48 @@ public class JwtFilter extends OncePerRequestFilter {
         
         final String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         log.info("authorization : {}", authorization);
-        
-        // 토큰이 없을때
+
+        // 토큰이 없거나 "Bearer "로 시작하지 않을 때
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            log.error("authorization 이 없습니다.");
-            log.error(request.toString());
+            log.error("Authorization header is missing or invalid");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Token꺼내기
-        String token = authorization.split(" ")[1];
-
-        if ( JwtUtil.isExpired(token, secretKey) ) {
-            log.error("Token이 만료 되었습니다.");
-            filterChain.doFilter(request, response);
-            return;
-        }
+        // Token 꺼내기
+        String token = authorization.split(" ")[1].trim();
         
-        // UserName Token에서 꺼내기
-        Long id = JwtUtil.getId(token, secretKey);
-        log.info("userName:{}", id);
+        // Bearer null 처리
+        if ("null".equals(token) || token.isEmpty()) {
+            log.error("Token is null or empty");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("Token is null or empty");
+            return;
+        }
 
-        // 권한 부여
-        UsernamePasswordAuthenticationToken authenticationToken =
+        try {
+            if (JwtUtil.isExpired(token, secretKey)) {
+                log.error("Token is expired");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.getWriter().write("Token is expired");
+                return;
+            }
+
+            // UserName Token에서 꺼내기
+            Long id = JwtUtil.getId(token, secretKey);
+            log.info("User ID: {}", id);
+
+            // 권한 부여
+            UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(id, null, List.of(new SimpleGrantedAuthority("USER")));
-        
-        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        } catch (Exception e) {
+            log.error("JWT token processing failed: {}", e.getMessage());
+            // Handle token validation error
+        }
+
         filterChain.doFilter(request, response);
     }
-
 }

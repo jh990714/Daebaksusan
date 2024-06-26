@@ -3,7 +3,6 @@ package com.seafood.back.controller;
 import java.io.IOException;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,7 +26,6 @@ import org.springframework.web.context.request.WebRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seafood.back.dto.TokenDTO;
 import com.seafood.back.service.MemberService;
-import com.seafood.back.service.SocialService;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,16 +61,16 @@ public class SocialController {
     @Value("${spring.security.oauth2.client.registration.naver.client-secret}")
     private String naverClientSecret;
 
-    @Value("${spring.security.oauth2.client.registration.kakao.client-secret}")
-    private String naverRedirectUri;
-
     @Value("${spring.security.oauth2.client.provider.naver.token-uri}")
     private String naverTokenUri;
+
+    @Value("${naver.authorization.redirect-uri}")
+    private String naverRedirectUri;
 
     @GetMapping("/authorize")
     public void handleAuthorize(@RequestParam("type") String type, @RequestParam("redirectPath") String redirectPath, HttpServletResponse response, WebRequest req) throws IOException {
         req.setAttribute("redirectPath", redirectPath, WebRequest.SCOPE_SESSION);
-        
+
         String url = "";
         String redirectUrl = "";
         if (type.equals("kakao")) {
@@ -126,10 +124,10 @@ public class SocialController {
     }
 
     @GetMapping("/callback/naver")
-    public void handleNaverCallback(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletResponse response,  WebRequest req, SessionStatus sessionStatus) throws IOException {
+    public void handleNaverCallback(@RequestParam("code") String code, @RequestParam("state") String state, HttpServletResponse response, WebRequest req, SessionStatus sessionStatus) throws IOException {
         log.info("code: " + code);
 
-        String url = naverRedirectUri;
+        String url = naverTokenUri;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -168,13 +166,13 @@ public class SocialController {
             Long memberId = Long.parseLong(authentication.getName());
             System.out.println("memberId: " + memberId);
             Boolean match = memberService.matchUser(memberId, token.getToken());
-            
+
             return ResponseEntity.ok().body(match);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     private String extractAccessToken(String responseBody) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -185,6 +183,4 @@ public class SocialController {
             return null;
         }
     }
-
-
 }

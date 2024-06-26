@@ -18,6 +18,7 @@ export default interface Product {
     description: string;
     arrivalDate: Date;
     recommended: boolean;
+    popularity: boolean;
     maxQuantityPerDelivery: number;
     startDate: Date;
     endDate: Date;

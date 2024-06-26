@@ -21,7 +21,7 @@ public class CategoryServiceImple implements CategoryService {
     @Override
     public List<CategoryDTO> getAllCategories() {
         List<CategoryDTO> categoryDTOs = new ArrayList<>();
-        List<CategoryEntity> categoryEntities = categoryRepository.findAll();
+        List<CategoryEntity> categoryEntities = categoryRepository.findAllWithSubcategories();
         for (CategoryEntity categoryEntity : categoryEntities) {
             if (categoryEntity.getCategoryId() == 1 || !categoryEntity.getSubcategories().isEmpty()) {
                 CategoryDTO categoryDto = new CategoryDTO();

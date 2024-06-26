@@ -51,17 +51,21 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDTO> getProduct(@PathVariable Long productId) {
-        ProductDTO product = productService.findProduct(productId);
+    public ResponseEntity<?> getProduct(@PathVariable Long productId) {
+        try {
+            ProductDTO product = productService.findProduct(productId);
     
-        return new ResponseEntity<>(product, HttpStatus.OK);
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/recommend")
     public ResponseEntity<List<ProductDTO>> getRecommendProduct() {
         List<ProductDTO> product = productService.findProductRecommend();
     
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        return ResponseEntity.ok().body(product);
     }
 
     @GetMapping("/{productId}/options")
@@ -72,22 +76,49 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryName}")
-    public ResponseEntity<List<ProductDTO>> getProductsByCategoryAndSubcategories(@PathVariable String categoryName) {
-        List<ProductDTO> products = productService.getProductsByCategoryAndSubcategories(categoryName);
-        return new ResponseEntity<>(products, HttpStatus.OK);
+    public ResponseEntity<?> getProductsByCategoryAndSubcategories(@PathVariable String categoryName) {
+        try {
+            List<ProductDTO> products = productService.getProductsByCategoryAndSubcategories(categoryName);
+            
+            logger.info("Category - Message: {}, Search: {}",
+                "검색 카테고리",
+                categoryName);
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @GetMapping("/category/sub/{categoryName}")
-    public ResponseEntity<List<ProductDTO>> getProductsByCategorySub(@PathVariable String categoryName) {
-        List<ProductDTO> product = productService.getProductsByCategorySub(categoryName);
+    public ResponseEntity<?> getProductsByCategorySub(@PathVariable String categoryName) {
+        try {
+            List<ProductDTO> products = productService.getProductsByCategorySub(categoryName);
 
+            logger.info("Category - Message: {}, Search: {}",
+                "검색 카테고리",
+                categoryName);
+
+            return new ResponseEntity<>(products, HttpStatus.OK);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/search/sub")
+    public  ResponseEntity<List<ProductDTO>> subSearchProducts(@RequestParam String query) {
+        List<ProductDTO> product = productService.searchProducts(query);
+        
         return new ResponseEntity<>(product, HttpStatus.OK);
+        
     }
 
     @GetMapping("/search")
     public  ResponseEntity<List<ProductDTO>> searchProducts(@RequestParam String query) {
         List<ProductDTO> product = productService.searchProducts(query);
         
+        logger.info("Search - Message: {}, Search: {}",
+            "검색 단어",
+            query);
         return new ResponseEntity<>(product, HttpStatus.OK);
         
     }

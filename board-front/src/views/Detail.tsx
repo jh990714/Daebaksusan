@@ -11,6 +11,7 @@ import { useCart } from 'hook/CartProvider';
 import { useAuthContext } from 'hook/AuthProvider';
 import ImageGalleryComp from 'components/ImageGallery/ImageGalleryComp';
 import { ProductListComp } from 'components/product/ProductListComp';
+import { Loading } from 'components/Loading/Loading';
 
 // interface CartItem {
 //     product: Product;
@@ -96,7 +97,7 @@ export const Detail: React.FC = () => {
     }, []);
 
     if (!product) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     const addToRecentProducts = (product: Product) => {

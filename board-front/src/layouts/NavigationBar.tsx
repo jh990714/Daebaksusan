@@ -91,7 +91,7 @@ export const NavigationBar = () => {
                 return;
             }
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/product/search?query=${debouncedQuery}`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/product/search/sub?query=${debouncedQuery}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch search results');
                 }
