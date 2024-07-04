@@ -201,7 +201,7 @@ export const Order: React.FC = () => {
 
         // requestPay();
         var IMP = window.IMP;
-        IMP.init('imp02022068'); // iamport 가맹점 식별코드
+        IMP.init(process.env.REACT_APP_IAMPORT_MERCHANT_CODE); // iamport 가맹점 식별코드
         console.log(pg, paymentMethod)
         const paymentData = {
             pg: pg,
