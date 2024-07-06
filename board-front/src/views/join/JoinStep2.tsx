@@ -1,29 +1,31 @@
 import React, { useState } from 'react';
 import TermsOfServiceComp from 'components/TermsOfServiceComp';
 import JoinTimeLineComp from 'components/JoinTimeLineComp';
+import { useNavigate } from 'react-router-dom';
 
 export const JoinStep2: React.FC = () => {
     const [agreement1, setAgreement1] = useState<boolean | null>(null);
     const [agreement2, setAgreement2] = useState<boolean | null>(null);
     const [agreement3, setAgreement3] = useState<boolean | null>(null);
+    const navigate = useNavigate();
 
     const handleTermsSubmit = () => {
         if (agreement1 !== null && agreement2 !== null && agreement3 !== null) {
 
-          window.location.href = "/joinStep3";
+            navigate('/joinStep3');
         } else {
           alert('약관에 동의하거나 동의하지 않음을 선택해주세요.');
         }
     };
 
     return (
-        <div className="container mx-auto mt-10 p-5 rounded-lg">
+        <div className="container mt-10 py-5 rounded-lg">
             <div className="flex justify-between items-center border-b pb-4">
                 <h1 className="text-2xl text-blue-600 font-semibold">회원가입</h1>
             </div>
             <div className="py-2">
-                <div className="flex justify-between">
-                    <div className="w-1/5 border-r text-l font-semibold relative">
+                <div className="sm:flex sm:justify-between">
+                    <div className="sm:w-1/5 sm:border-r sm:text-l font-semibold">
                         <div className="space-y-6 mt-10">
                             <div className="">
                                 <JoinTimeLineComp currentStep={2} />

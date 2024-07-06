@@ -1,193 +1,196 @@
-import React, { useEffect, useState } from 'react'
-import styles from './QuickCart.module.css'
-import topArrow from '../assets/topArrow.png'
-import bottomArrow from '../assets/bottomArrow.png'
-import leftArrow from '../assets/leftArrow.png'
-import rightArrow from '../assets/rightArrow.png'
-import { ProductListComp } from 'components/ProductListComp'
-import axios from 'axios'
-import { ProductList } from 'types'
-import { Link } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import styles from './QuickCart.module.css';
 
+import topArrow from '../assets/topArrow.png';
+import bottomArrow from '../assets/bottomArrow.png';
+import leftArrow from '../assets/leftArrow.png';
+import rightArrow from '../assets/rightArrow.png';
+import cartBlueIcon from '../assets/cartBlue.png'
 
-interface CartItem {
-  product: ProductList;
-  isSelected: boolean; // 체크박스 선택 상태
-  quantity: number;
-}
+import { ProductListComp } from 'components/product/ProductListComp';
+import { Cart, CartItem } from 'types';
+import { Link } from 'react-router-dom';
+import { fetchCartItemsDelete, fetchCartItems } from 'utils/cartUtils';
+import { useCart } from 'hook/CartProvider';
+import { useAuthContext } from 'hook/AuthProvider';
 
 export const QuickCart = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [buttonImage, setButtonImage] = useState(topArrow);
-  const [startIndex, setStartIndex] = useState(0);
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
+    const { cartItems, setCartItems } = useCart();
+    const { isLoggedIn, setIsLoggedIn } = useAuthContext();
+    const [isVisible, setIsVisible] = useState(false);
+    const [buttonImage, setButtonImage] = useState(topArrow);
+    const [startIndex, setStartIndex] = useState(0);
+    const location = useLocation();
+    // const [cartItems, setCartItems] = useState<Cart[]>([]);
 
-  const filteredCartItems = cartItems.filter(item => item.isSelected === true);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<ProductList[]>('http://175.215.44.128:8080/product');
-        const cartItems = response.data.map(product => ({
-          product,
-          isSelected: true,
-          quantity: 1,
-        }));
-        setCartItems(cartItems);
+    const filteredCartItems = cartItems.filter(item => item.isSelected === true);
 
-      } catch (error) {
-        console.error('데이터를 가져오는 중 오류가 발생했습니다:', error);
-      }
+    useEffect(() => {
+        // 페이지 이동 시 QuickCart를 닫습니다.
+        setIsVisible(false);
+        setButtonImage(topArrow);
+    }, [location]);
+
+
+    useEffect(() => {
+        fetchCartItems(setCartItems, setIsLoggedIn);
+    }, [isLoggedIn]);
+
+
+    const handelClick = () => {
+        setIsVisible(!isVisible);
+        setButtonImage(isVisible ? topArrow : bottomArrow);
     };
-  
-    fetchData();
-  }, []);
 
-  
-  const handelClick = () => {
-    setIsVisible(!isVisible);
-    setButtonImage(isVisible ? topArrow : bottomArrow );
-
-  }
-
-  const handlePrev = () => {
-    if (startIndex > 0) {
-      setStartIndex(prevIndex => prevIndex - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (startIndex < cartItems.length - 4) { // 다음 아이템이 있을 경우에만 인덱스 증가
-      setStartIndex(prevIndex => prevIndex + 1);
-    }
-  };
-
-  const handleSelectChange = (id: number) => {
-    
-    const updatedItems = cartItems.map(item => {
-        if (item.product.productId === id) {
-            return { ...item, isSelected: !item.isSelected };
-        } else {
-          return item;
+    const handlePrev = () => {
+        if (startIndex > 0) {
+            setStartIndex(prevIndex => prevIndex - 1);
         }
-    });
-    setCartItems(updatedItems);
-  };
+    };
 
-  const calculateTotal = () => {
-    return cartItems
-      .filter(item => item.isSelected)
-      .reduce((total, item) => total + (item.product.productDiscount * item.quantity), 0).toLocaleString();
-  };
-  
-  const handleQuantityChange = (id: number, delta: number) => {
-    const updatedItems = cartItems.map(item => {
-      if (item.product.productId === id) {
-        const newQuantity = item.quantity + delta;
-        return { ...item, quantity: newQuantity >= 1 ? newQuantity : 1 }; // 수량은 최소 1 이상
-      } else {
-        return item;
-      }
-    });
-    setCartItems(updatedItems);
-  };
-  
-  const selectAll = () => {
-    const areAllSelected = cartItems.every(item => item.isSelected);
-    const updatedItems = cartItems.map(item => ({
-      ...item,
-      isSelected: !areAllSelected,
-    }));
-    setCartItems(updatedItems);
-    setStartIndex(0);
-  };
+    const handleNext = () => {
+        if (startIndex < cartItems.length - 5) {
+            setStartIndex(prevIndex => prevIndex + 1);
+        }
+    };
 
-  const selectDelete = () => {
-    const remainingItems = cartItems.filter(item => !item.isSelected);
-    // 남은 항목들로 cartItems 상태를 업데이트합니다.
-    // isSelected 상태를 재설정할 필요가 없으므로, 이 부분을 제거합니다.
-    setCartItems(remainingItems);
-    setStartIndex(0)
-  };
+    const handleSelectChange = (id: number) => {
+        const updatedItems = cartItems.map(item => {
+            if (item.cartId === id) {
+                return { ...item, isSelected: !item.isSelected };
+            } else {
+                return item;
+            }
+        });
+        setCartItems(updatedItems);
+    };
 
-  const renderListItems = () => {
-    return cartItems.slice(startIndex, startIndex + 4).map((item, index) => (
-      <div className={styles.cartItemContainer}>
-        <li key={item.product.productId}>
-          <ProductListComp product={item.product} />
-        </li>
+    const calculateTotal = () => {
+        return cartItems
+            .filter(item => item.isSelected)
+            .reduce((total, item) => {
 
-        <div className={styles.quantityContainer}>
-          <div>
-            <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.product.productId, -1)}>-</button>
-            {item.quantity}
-            <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.product.productId, 1)}>+</button>
-          </div>
+                const optionPrice = item.cartItem.boxCnt * item.cartItem.option!.addPrice
 
-          <div className={styles.checkboxContainer}>
-            <input
-              id={`checkbox-${item.product.productId}`}
-              type="checkbox"
-              className={styles.customCheckbox}
-              checked={item.isSelected}
-              onChange={() => handleSelectChange(item.product.productId)}
-            />
-            <label htmlFor={`checkbox-${item.product.productId}`} className={styles.checkboxLabel}></label>
-          </div>
-        </div>
-      </div>
-    ));
-  };
+                const itemTotal = (item.cartItem.product.regularPrice - item.cartItem.product.salePrice) * item.cartItem.quantity;
+
+                const shippingCost = item.cartItem.boxCnt * item.cartItem.product.shippingCost;
+                return total + itemTotal + shippingCost + optionPrice;
+            }, 0)
+            .toLocaleString();
+    };
+
+    const handleQuantityChange = (id: number, delta: number) => {
+        const updatedItems = cartItems.map(item => {
+            if (item.cartId === id) {
+                const newQuantity = Math.min(Math.max(1, item.cartItem.quantity + delta), item.cartItem.product.stockQuantity);
+                const newBoxcnt = Math.ceil(newQuantity / item.cartItem.product.maxQuantityPerDelivery);
+                console.log(Math.ceil(newQuantity / item.cartItem.product.maxQuantityPerDelivery))
+
+                return { ...item, cartItem: { ...item.cartItem, quantity: newQuantity >= 1 ? newQuantity : 1, boxCnt: newBoxcnt } };
+            } else {
+                return item;
+            }
+        });
+        setCartItems(updatedItems);
+    };
+
+    const selectAll = () => {
+        const areAllSelected = cartItems.every(item => item.isSelected);
+        const updatedItems = cartItems.map(item => ({
+            ...item,
+            isSelected: !areAllSelected,
+        }));
+        setCartItems(updatedItems);
+        setStartIndex(0);
+    };
+
+    const selectDelete = async () => {
+
+        fetchCartItemsDelete(cartItems, setCartItems, setIsLoggedIn)
+        setStartIndex(0);
+    };
 
 
-  return (
-    <div className={styles.quickCartBar}>
-      <img className={styles.btnQuickCart} onClick={handelClick} src={buttonImage} alt="버튼 이미지" width="60" height="60" />
-        <div className={`${styles.quickCartContainer} ${isVisible ? styles.show : ''}`}>
-          <div className={`${styles.quickCartOff} ${!isVisible ? styles.show : styles.hidden}`}>
-            간편 장바구니
-          </div>
-          <div className={styles.quickCartOn}>
-            {cartItems.length > 0 ? (
-              <div className={styles.cartListContainer}>
-                <div className={styles.moveButton}>
-                  <img width="35" height="35" src={leftArrow} onClick={handlePrev}/>
-                </div>
-
-                <div className={styles.cartList}>
-                  <ul className={styles.productList}>
-                    {renderListItems()}
-                  </ul>
-                  
-                </div>
-                <div className={styles.moveButton}>
-                  <img width="35" height="35" src={rightArrow} onClick={handleNext}/>
-                </div>
-              </div>
-            ) : (
-              <div className={styles.emptyCartMessage}>
-                장바구니에 상품이 없습니다
-              </div>
-            )}
-
-
-            <div className={styles.totalPriceContainer}>
-              <div className={styles.totalPriceTitle}>장바구니 총 주문 금액</div>
-              <div className={styles.totalPrice}>{calculateTotal()}원 </div>
-              <div className={styles.quickCartBtns}>
-                <Link to='/order' state={{ cartItems: filteredCartItems }} style={{textDecoration: 'none'}}>
-                  <div className={styles.quickOrderbutton}> 구매하러 가기</div>
-                </Link>
+    const renderListItems = () => {
+        return cartItems.slice(startIndex, startIndex + 5).map((item, index) => (
+            <div className={styles.cartItemContainer}>
+                <span className={styles.checkboxContainer}>
+                    <input
+                        id={`checkbox-${item.cartId}`}
+                        type="checkbox"
+                        className={styles.customCheckbox}
+                        checked={item.isSelected}
+                        onChange={() => handleSelectChange(item.cartId)}
+                    />
+                </span>
                 <div>
-                  <div className={styles.quickCartbutton} onClick={selectAll}> 모두 선택 / 해제 </div>
-                </div>
-                <div>
-                  <div className={styles.quickCartbutton} onClick={selectDelete}> 선택 상품 삭제 </div>
-                </div>
+                    <li key={item.cartId}>
+                        <ProductListComp product={item.cartItem.product} size='110px' fontSize='4px' />
+                    </li>
+                    <div className={styles.option}> - {item.cartItem.option!.name} + {item.cartItem.option!.addPrice}</div>
+                    <div className={styles.quantityContainer}>
+                        <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.cartId, -1)}>-</button>
+                        {item.cartItem.quantity}
+                        <button className={styles.quantityButton} onClick={() => handleQuantityChange(item.cartId, 1)}>+</button>
+                    </div>
                 </div>
             </div>
-            
-          </div>
+        ));
+    };
+
+    return (
+        <div className={styles.quickCartBar}>
+            <img className={styles.btnQuickCart} onClick={handelClick} src={buttonImage} alt="버튼 이미지" />
+            <div className={`${styles.quickCartContainer} ${isVisible ? styles.show : ''}`}>
+                <div className={`${styles.quickCartOff} ${!isVisible ? styles.show : styles.hidden}`}>
+                    <img className="scale-125" src={cartBlueIcon} alt='' style={{ width: 35, height: 'auto'}}/>
+                    <div className='ml-2'>간편 장바구니</div>
+                </div>
+                <div className={styles.quickCartOn}>
+                    {cartItems.length > 0 ? (
+                        <div className={styles.cartListContainer}>
+                            <div className={styles.moveButton}>
+                                <img width="35" height="35" src={leftArrow} onClick={handlePrev} />
+                            </div>
+                            <div className={styles.cartList}>
+                                <ul className={styles.productList}>
+                                    {renderListItems()}
+                                </ul>
+                            </div>
+                            <div className={styles.moveButton}>
+                                <img width="35" height="35" src={rightArrow} onClick={handleNext} />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.emptyCartMessage}>
+                            장바구니에 상품이 없습니다
+                        </div>
+                    )}
+                    <div className={styles.totalPriceContainer}>
+                        <div className={styles.totalPriceTitle}>장바구니 총 주문 금액</div>
+                        <div className={styles.totalPrice}>{calculateTotal()}원 </div>
+                        <div className={styles.quickCartBtns}>
+                            {filteredCartItems.length > 0 ? (
+                                <Link to='/order' state={{ cartItems: filteredCartItems }} style={{ textDecoration: 'none' }}>
+                                    <div className={styles.quickOrderbutton}> 구매하러 가기</div>
+                                </Link>
+                            ) : (
+                                <div className={styles.quickOrderbutton}>
+                                    구매하러 가기
+                                </div>
+                            )}
+                            <div>
+                                <div className={styles.quickCartbutton} onClick={selectAll}> 모두 선택 / 해제 </div>
+                            </div>
+                            <div>
+                                <div className={styles.quickCartbutton} onClick={selectDelete}> 선택 상품 삭제 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-  );
+    );
 };

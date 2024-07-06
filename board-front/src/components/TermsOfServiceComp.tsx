@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React  from 'react';
 
 interface TermsProps {
   agreement: boolean | null;
@@ -21,11 +21,11 @@ const TermsOfServiceComp: React.FC<TermsProps> = ({ agreement, onSubmit, content
 
         <div>
           <label className="inline-flex items-center mr-4">
-            <input type="radio" name="agreement" value="agree" className="form-radio" checked={agreement === true} onChange={() => onSubmit(true)}></input>
+            <input type="radio" name="agreement" value="agree" className="hover:cursor-pointer form-radio" checked={agreement === true} onChange={() => onSubmit(true)}></input>
             <span className="ml-2">동의함</span>
           </label>
           <label className="inline-flex items-center">
-            <input type="radio" name="agreement" value="disagree" className="form-radio" checked={agreement === false} onChange={() => onSubmit(false)}></input>
+            <input type="radio" name="agreement" value="disagree" className="hover:cursor-pointer form-radio" checked={agreement === false} onChange={() => onSubmit(false)}></input>
             <span className="ml-2">동의안함</span>
           </label>
         </div>

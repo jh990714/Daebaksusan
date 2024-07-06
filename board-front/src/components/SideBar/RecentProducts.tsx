@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Cookies from 'js-cookie';
-import { ProductList } from 'types';
+import { Product } from 'types';
 import styles from './RecentProducts.module.css'; // 스타일링에 맞게 css 파일을 생성해주세요.
 import { Link } from 'react-router-dom';
 
 const RecentProducts: React.FC = () => {
-    const [recentProducts, setRecentProducts] = useState<ProductList[]>([]);
+    const [recentProducts, setRecentProducts] = useState<Product[]>([]);
     const productListRef = useRef<HTMLUListElement>(null);
 
     useEffect(() => {
@@ -13,8 +13,7 @@ const RecentProducts: React.FC = () => {
         if (products) {
             setRecentProducts(JSON.parse(products));
         }
-
-    }, []);
+    }, [Cookies.get('recentProducts')]);
 
     
     const scrollProductList = (direction: 'up' | 'down') => {
@@ -28,12 +27,12 @@ const RecentProducts: React.FC = () => {
     
     return (
         <div className={styles.recentProductsContainer}>
-            <p className={styles.title}>최근 본 상품</p>
+            <div className={styles.title}>최근 본 상품</div>
             <div>
                 <ul ref={productListRef}>
                     {recentProducts.map(product => (
                         <li key={product.productId}>
-                            <Link to='/detail' > <img src={`./upload/${product.productImgPath}`} alt="사진" className={styles.recentProductImg}/> </Link>
+                            <Link to={`/detail/${product.productId}`} > <img src={product.imageUrl} alt="사진" className={styles.recentProductImg}/> </Link>
                         </li>
                     ))}
                 </ul>

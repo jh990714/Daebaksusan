@@ -46,19 +46,34 @@
 }
 
 .Router {
-  margin-top: 180px;
+  margin-top: 120px;
 }
 
 .Footer {
-  margin-bottom: 50px;
+  margin-bottom: 35px;
 }
 
 @media screen and (max-width: 900px) {
   .Router {
-    margin: 0;
+    margin-top: 60px;
   }
 
   .Footer {
-    margin: 0;
+    margin-bottom: 50px;
   }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animateSlideUp {
+  animation: slideUp 1.5s ease-out forwards;
 }
