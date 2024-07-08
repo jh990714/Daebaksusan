@@ -20,10 +20,16 @@
 ![NGINX](https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=nginx&logoColor=white)
 
 <br><br>
-
 ## 프로젝트 구현 결과
 
 
 - 대박수산 https://daebaksusan.shop/
+
+- 시스템 아키텍처
+  ![시스템 아키텍처](https://github.com/jh990714/Daebaksusan/assets/144774186/77ef3271-ed49-473c-896b-305efdb326d2)
+
+- ERD
+  ![daebaksusan_ERD](https://github.com/jh990714/Daebaksusan/assets/144774186/12e768f3-af94-4b6b-99c5-d4042fff8d10)
+  
 
 <br><br>
