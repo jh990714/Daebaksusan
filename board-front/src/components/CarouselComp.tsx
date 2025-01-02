@@ -27,27 +27,28 @@ const CarouselComp = () => {
 
   return (
     <Carousel>
-      {carouselItems.map((carouselItem, index) => (
-        <Carousel.Item key={index}>
-          {carouselItem.link && carouselItem.link.startsWith(currentUrl) ? (
-            <Link to={carouselItem.link.replace(currentUrl, '')}>
-              <img
-                src={carouselItem.imageUrl}
-                className={styles.mainVisual}
-                alt={`Carousel Image ${index + 1}`}
-              />
-            </Link>
-          ) : (
-            <a href={carouselItem.link} target="_blank" rel="noopener noreferrer">
-              <img
-                src={carouselItem.imageUrl}
-                className={styles.mainVisual}
-                alt={`Carousel Image ${index + 1}`}
-              />
-            </a>
-          )}
-        </Carousel.Item>
-      ))}
+      {carouselItems &&
+        carouselItems.map((carouselItem, index) => (
+          <Carousel.Item key={index}>
+            {carouselItem.link && carouselItem.link.startsWith(currentUrl) ? (
+              <Link to={carouselItem.link.replace(currentUrl, '')}>
+                <img
+                  src={carouselItem.imageUrl}
+                  className={styles.mainVisual}
+                  alt={`Carousel Image ${index + 1}`}
+                />
+              </Link>
+            ) : (
+              <a href={carouselItem.link} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={carouselItem.imageUrl}
+                  className={styles.mainVisual}
+                  alt={`Carousel Image ${index + 1}`}
+                />
+              </a>
+            )}
+          </Carousel.Item>
+        ))}
     </Carousel>
   );
 };
