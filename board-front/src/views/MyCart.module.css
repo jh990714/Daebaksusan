@@ -1,5 +1,3 @@
-
-
 .myCartContainer {
     width: 80%;
     margin: 5rem auto;
@@ -114,12 +112,20 @@
 }
 
 @media (max-width: 780px) {
-    .myCartContainer {
-        width: 100%;
-        padding: 0 3rem;
+    .priceTitle {
+        font-size: 16px;
     }
-    
-    .cartItemList li {
-        margin: 0;
+
+    .price {
+        font-size: 18px;
+    }
+
+    .op {
+        font-size: 24px;
+    }
+
+    .orderBtn {
+        font-size: 14px;
+        padding: 10px 16px;
     }
 }
