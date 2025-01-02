@@ -1,6 +1,6 @@
 import { DetailTabComp } from 'components/DetailTabComp';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Cart, CartItem, Option } from 'types';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import Cookies from 'js-cookie';
@@ -36,6 +36,8 @@ export const Detail: React.FC = () => {
     const [boxCnt, setBoxCnt] = useState<number>(1);
     const [totalPrice, setTotalPrice] = useState<number>(0);
     const [products, setProducts] = useState<Product[]>([]);
+
+    const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -96,6 +98,13 @@ export const Detail: React.FC = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }, [quantity]);
+
     if (!product) {
         return <Loading />;
     }
@@ -147,29 +156,38 @@ export const Detail: React.FC = () => {
         setBoxCnt(boxCnt);
         setTotalPrice((product!.regularPrice - product!.salePrice) * q + ((product!.shippingCost + optionPrice) * boxCnt));
     };
-
+    
     const handleQuantityInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!product) return;
-
+    
         const value = event.target.value;
         let q: number = 1;
         let boxCnt = 1;
+    
+        // 빈 문자열일 경우 1로 설정
         if (value === "" || value === "0") {
             q = 1; // 빈 문자열 또는 0 입력 시 최소 수량 1로 설정
         } else {
+            // 숫자만 처리하고, 유효하지 않으면 1로 설정
             const newValue = parseInt(value);
-            if (!isNaN(newValue) && newValue >= 1 && newValue <= product!.stockQuantity) {
-                q = newValue;
-            } else if (newValue > product!.stockQuantity) {
-                q = product!.stockQuantity; // 재고 수량으로 수량 조정
+            if (!isNaN(newValue)) {
+                if (newValue >= 1 && newValue <= product!.stockQuantity) {
+                    q = newValue;
+                } else if (newValue > product!.stockQuantity) {
+                    q = product!.stockQuantity; // 재고 수량으로 수량 조정
+                }
             }
         }
+    
+        // 수량과 박스 수 업데이트
         setQuantity(q);
         boxCnt = Math.ceil(q / product!.maxQuantityPerDelivery);
         setBoxCnt(boxCnt);
+    
+        // 총 가격 계산
         setTotalPrice((product!.regularPrice - product!.salePrice) * q + ((product!.shippingCost + optionPrice) * boxCnt));
     };
-
+    
     const handleOptionSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const optionId = Number(event.target.value);
         const selectedOption = options.find(option => option.optionId === optionId);
@@ -194,16 +212,24 @@ export const Detail: React.FC = () => {
         for (let i = 0; i < n; i++) {
             count = Math.min(maxQuantityPerDelivery, quantity - (i * maxQuantityPerDelivery));
             arr.push(
-                <div key={i} className="border-gray-200 px-4 py-1 grid grid-cols-3 place-items-center">
-                    <div>
-                        <div className="text-sm lg:text-base">{product!.name}</div>
-                        <div className='text-sm text-gray-400'>- {option?.name}({option?.addPrice.toLocaleString()}) 배송 비({product!.shippingCost.toLocaleString()}) - </div>
+                <div key={i} className="border-b-2 border-gray-200 px-4 py-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div className="flex-1 mb-2 sm:mb-0 overflow-hidden max-w-full">
+                        <div className="text-sm sm:text-base font-bold text-left overflow-hidden text-ellipsis whitespace-nowrap">
+                            {i+1}. {product!.name}
+                        </div>
+                        <div className="text-xs sm:text-sm text-gray-500 text-left ml-3">
+                            <div>+ {option?.name} ({option?.addPrice.toLocaleString()}원)</div>
+                            <div>+ 배송 비 ({product!.shippingCost.toLocaleString()}원)</div>
+                        </div>
                     </div>
-                    <div>{count}개</div>
-                    <div>{((product!.regularPrice - product!.salePrice) * count + optionPrice + product!.shippingCost).toLocaleString()} 원</div>
+                    <div className="text-sm sm:text-base w-full sm:w-1/6 text-center mb-2 sm:mb-0">{count}개</div>
+                    <div className="text-sm sm:text-base font-bold text-blue-700 w-full sm:w-1/4">
+                        {((product!.regularPrice - product!.salePrice) * count + optionPrice + product!.shippingCost).toLocaleString()} 원
+                    </div>
                 </div>
             );
-        }
+        }            
+
         return arr;
     };
 
@@ -367,110 +393,153 @@ export const Detail: React.FC = () => {
     }
 
     const isSoldOut = (product!.stockQuantity === 0)
-
     return (
-        <div className='bg-white text-gray-700'>
-
-            <main className="container mx-auto my-8 p-4">
-                <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
-
-                    <div className="w-full lg:w-1/2 px-4">
-                        <img src={product!.imageUrl} alt={product!.imageUrl} className="w-full h-96 object-cover m-auto rounded  " />
+        <div className="bg-white text-gray-700">
+          <main className="container mx-auto my-4 p-4">
+            <div className="flex flex-wrap md:flex-nowrap items-stretch relative">
+              {/* 이미지 영역 */}
+              <div className="w-1/2 mx-auto px-2 md:px-4 mb-3">
+                <img
+                  src={product!.imageUrl}
+                  alt={product!.imageUrl}
+                  className="w-full h-auto sm:h-60 md:h-72 lg:h-96 object-contain rounded"
+                />
+              </div>
+      
+              {/* 상세 정보 영역 */}
+              <div className="w-full lg:w-1/2 border-t-2 border-b-2 border-blue-700 px-2 md:px-4">
+                <div className="text-xl sm:text-2xl text-blue-700 font-bold p-3">{product!.name}</div>
+                <h1 className="text-sm sm:text-lg text-gray-500 font-bold border-gray-200 p-2">
+                  {product!.description}
+                </h1>
+      
+                <div className="">
+                  <div className="text-start border-b-2 border-gray-200 px-4 py-2">
+                    <div className="grid grid-cols-5 gap-1">
+                      <div className="font-bold text-sm sm:text-base">판매가</div>
+                      <div className="col-span-4 text-base sm:text-lg">
+                        {(product!.regularPrice - product!.salePrice).toLocaleString()}원
+                      </div>
                     </div>
-                    <div className="w-full lg:w-1/2 border-t-2 border-b-2 border-blue-700">
-
-                        <div className='text-2xl text-blue-700 font-bold p-3'>{product!.name}</div>
-                        <h1 className="text-xl text-gray-500 font-bold border-gray-200 p-2">{product!.description}</h1>
-
-                        <div className="">
-                            <div className="text-start border-b-2 border-gray-200 px-4 py-1">
-                                <div className="grid grid-cols-5">
-                                    <div className="font-bold">판매가</div>
-                                    <div className="col-span-4 text-xl">{(product!.regularPrice - product!.salePrice).toLocaleString()}원</div>
-                                </div>
-                            </div>
-                            <div className="grid grid-rows-3 text-start border-b-2 border-gray-200 px-4 py-1">
-                                <div className="grid grid-cols-5">
-                                    <div className="font-bold">원산지</div>
-                                    <div className="col-span-4">완도군</div>
-                                </div>
-                                <div className="grid grid-cols-5">
-                                    <div className="font-bold">배송</div>
-                                    <div className="col-span-4">택배</div>
-                                </div>
-                                <div className="grid grid-cols-5">
-                                    <div className="font-bold">배송 비</div>
-                                    <div className="col-span-4">{product!.shippingCost.toLocaleString()}원</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="px-4 py-2">
-                            <label htmlFor="option-select" className="mb-2"><strong className="text-blue-700">[필수]</strong> 옵션 선택 </label>
-                            <select
-                                id="option-select"
-                                className="w-full border-2 border-blue-700 rounded p-2 focus:ring-1 focus:ring-blue-700"
-                                onChange={handleOptionSelect}
-                                disabled={isSoldOut}
-                            >
-                                {options.map((option: Option) => (
-                                    <option key={option.optionId} value={option.optionId}>
-                                        <div> {option.name}</div>
-                                        <div> +{(option.addPrice).toLocaleString()}원</div>
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className='rounded-lg shadow-md border-1 mx-4 my-3'>
-                            {showList(quantity, product!.maxQuantityPerDelivery)}
-                        </div>
-
-                        <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-sm text-white font-bold px-4 py-2 rounded" onClick={() => handleQuantityChange(-1)} disabled={isSoldOut}>-</button>
-                            <input
-                                type="text"
-                                value={quantity.toLocaleString()}
-                                onChange={handleQuantityInputChange}
-                                className="w-16 text-center text-sm border border-gray-300 rounded"
-                                disabled={isSoldOut}
-                            />
-                            <button className="bg-blue-700 text-sm text-white font-bold px-4 py-2 rounded" onClick={() => handleQuantityChange(1)} disabled={isSoldOut}>+</button>
-                        </div>
-                        <div className="flex justify-between  border-2 border-blue-700 rounded">
-                            <div className="text-2xl p-4 font-bold text-white bg-blue-700">최종 금액</div>
-                            <div className='text-2xl p-4 font-bold text-blue-700 text-end'>{totalPrice.toLocaleString()} 원</div>
-                        </div>
-                        <div className="flex justify-center space-x-2 py-4">
-                            <button className="bg-blue-700 text-white font-bold px-4 py-2 rounded" disabled={isSoldOut} onClick={handleGoToOrder}>구매하기</button>
-                            <button className="bg-blue-700 text-white font-bold px-4 py-2 rounded" disabled={isSoldOut} onClick={handleAddToCart}>장바구니</button>
-
-                        </div>
-
-
+                  </div>
+                  <div className="grid grid-rows-3 text-start border-b-2 border-gray-200 px-4 py-2">
+                    <div className="grid grid-cols-5 gap-1">
+                      <div className="font-bold text-sm sm:text-base">원산지</div>
+                      <div className="col-span-4 text-sm sm:text-base">완도군</div>
                     </div>
-                    {isSoldOut && (
-                        <div className="absolute top-0 left-0 w-full h-full bg-gray-500 bg-opacity-60  flex justify-center items-center">
-                            <div className="text-center">
-                                <p className="text-3xl font-bold text-white">상품 품절</p>
-                                <p className="text-lg text-white">죄송합니다. 이 상품은 현재 품절되었습니다.</p>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                <div className="my-8 w-full ">
-                    <h2 className="text-2xl font-bold my-4">오늘의 <strong className='text-blue-700'>추천</strong> 상품 !</h2>
-                    <div className="gap-4">
-                        <ImageGalleryComp items={products} size="275px" fontSize="7px" component={ProductListComp}/>
+                    <div className="grid grid-cols-5 gap-1">
+                      <div className="font-bold text-sm sm:text-base">배송</div>
+                      <div className="col-span-4 text-sm sm:text-base">택배</div>
                     </div>
+                    <div className="grid grid-cols-5 gap-1">
+                      <div className="font-bold text-sm sm:text-base">배송비</div>
+                      <div className="col-span-4 text-sm sm:text-base">
+                        {product!.shippingCost.toLocaleString()}원
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
-                <div className={"my-8 w-full"}>
-                    <DetailTabComp productId={product!.productId} />
+      
+                {/* 옵션 선택 */}
+                <div className="px-4 py-2">
+                  <label htmlFor="option-select" className="mb-2 block">
+                    <strong className="text-blue-700">[필수]</strong> 옵션 선택
+                  </label>
+                  <select
+                    id="option-select"
+                    className="w-full border-2 border-blue-700 rounded p-2 text-sm sm:text-base focus:ring-1 focus:ring-blue-700"
+                    onChange={handleOptionSelect}
+                    disabled={isSoldOut}
+                  >
+                    {options.map((option: Option) => (
+                      <option key={option.optionId} value={option.optionId}>
+                        {`${option.name} (+${option.addPrice.toLocaleString()}원)`}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-            </main>
-
-
+      
+                {/* 수량 및 구매 */}
+                <div className="rounded-lg shadow-md border mx-4 my-3 h-36 overflow-y-auto" ref={scrollContainerRef}>
+                    {showList(quantity, product!.maxQuantityPerDelivery)}
+                </div>
+      
+                <div className="flex justify-center space-x-2 py-4">
+                  <button
+                    className="bg-blue-700 text-sm sm:text-base text-white font-bold px-4 py-2 rounded"
+                    onClick={() => handleQuantityChange(-1)}
+                    disabled={isSoldOut}
+                  >
+                    -
+                  </button>
+                  <input
+                    type="text"
+                    value={quantity.toLocaleString()}
+                    onChange={handleQuantityInputChange}
+                    className="w-16 text-center text-sm sm:text-base border border-gray-300 rounded"
+                    disabled={isSoldOut}
+                  />
+                  <button
+                    className="bg-blue-700 text-sm sm:text-base text-white font-bold px-4 py-2 rounded"
+                    onClick={() => handleQuantityChange(1)}
+                    disabled={isSoldOut}
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="flex justify-between border-2 border-blue-700 rounded">
+                  <div className="text-base sm:text-2xl p-4 font-bold text-white bg-blue-700">최종 금액</div>
+                  <div className="text-base sm:text-2xl p-4 font-bold text-blue-700 text-end">
+                    {totalPrice.toLocaleString()} 원
+                  </div>
+                </div>
+                <div className="flex justify-center space-x-2 py-4">
+                  <button
+                    className="bg-blue-700 text-white text-sm sm:text-base font-bold px-4 py-2 rounded"
+                    disabled={isSoldOut}
+                    onClick={handleGoToOrder}
+                  >
+                    구매하기
+                  </button>
+                  <button
+                    className="bg-blue-700 text-white text-sm sm:text-base font-bold px-4 py-2 rounded"
+                    disabled={isSoldOut}
+                    onClick={handleAddToCart}
+                  >
+                    장바구니
+                  </button>
+                </div>
+              </div>
+      
+              {/* 품절 표시 */}
+              {isSoldOut && (
+                <div className="absolute top-0 left-0 w-full h-full bg-gray-500 bg-opacity-60 flex justify-center items-center">
+                  <div className="text-center">
+                    <p className="text-lg sm:text-2xl font-bold text-white">상품 품절</p>
+                    <p className="text-sm sm:text-lg text-white">
+                      죄송합니다. 이 상품은 현재 품절되었습니다.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+      
+            {/* 추천 상품 */}
+            <div className="my-8 w-full">
+              <h2 className="text-xl sm:text-2xl font-bold my-4">
+                오늘의 <strong className="text-blue-700">추천</strong> 상품!
+              </h2>
+              <div className="gap-4">
+                <ImageGalleryComp items={products} size="275px" fontSize="7px" component={ProductListComp} />
+              </div>
+            </div>
+      
+            {/* 상세 탭 */}
+            <div className="my-8 w-full">
+              <DetailTabComp productId={product!.productId} />
+            </div>
+          </main>
         </div>
-    );
+      );
+      
 }
