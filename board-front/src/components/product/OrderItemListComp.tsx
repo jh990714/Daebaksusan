@@ -76,7 +76,7 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({ orderItem }) => {
                         {orderItem.cartItem.product.name}
                     </div>
                     <div className={styles_m.orderOption}>
-                        옵션
+                        {orderItem.cartItem.option?.name}
                     </div>
                     <div className={styles_m.quantityContainer}>
                         수량: {orderItem.cartItem.quantity}
