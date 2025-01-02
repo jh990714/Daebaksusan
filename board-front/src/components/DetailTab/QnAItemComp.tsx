@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { QnA } from 'types';
 import styles from './QnAItemComp.module.css';
 
@@ -7,9 +7,19 @@ interface QnAItemCompProps {
 }
 
 export const QnAItemComp: React.FC<QnAItemCompProps> = ({ qnaList }) => {
+    // 각 질문에 대해 답변 보기/숨기기 상태를 관리
+    const [showAnswers, setShowAnswers] = useState<boolean[]>(new Array(qnaList.length).fill(false));
+
+    // 답변 보기/숨기기 토글 함수
+    const toggleAnswers = (index: number) => {
+        const newShowAnswers = [...showAnswers];
+        newShowAnswers[index] = !newShowAnswers[index];
+        setShowAnswers(newShowAnswers);
+    };
+
     return (
         <ul className={styles.qnaList}>
-            {qnaList.map((qna) => (
+            {qnaList.map((qna, index) => (
                 <li key={qna.question.questionId}>
                     {qna.question &&
                         <div className={styles.question}>
@@ -26,12 +36,24 @@ export const QnAItemComp: React.FC<QnAItemCompProps> = ({ qnaList }) => {
                                     </React.Fragment>
                                 ))}
                             </div>
-
                         </div>
                     }
 
-                    {qna.answers.map((answer) =>
-                        <div className={styles.answerContanier}>
+                    {/* 답변 보기/숨기기 버튼 (답변이 있을 경우에만 표시) */}
+                    {qna.answers.length > 0 && (
+                        <div className="flex justify-center">
+                            <button
+                                onClick={() => toggleAnswers(index)}
+                                className="w-full sm:w-auto px-4 py-2 mb-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out"
+                            >
+                                {showAnswers[index] ? `답변 숨기기 (${qna.answers.length})` : `답변 보기 (${qna.answers.length})`}
+                            </button>
+                        </div>
+                    )}
+
+                    {/* 답변 내용 */}
+                    {showAnswers[index] && qna.answers.map((answer, answerIndex) => (
+                        <div key={answerIndex} className={styles.answerContanier}>
                             <div className={styles.answerArrow}>⤷</div>
                             <div className={styles.answer}>
                                 <div className={styles.userInfo}>
@@ -46,13 +68,11 @@ export const QnAItemComp: React.FC<QnAItemCompProps> = ({ qnaList }) => {
                                         </React.Fragment>
                                     ))}
                                 </div>
-
                             </div>
                         </div>
-                   )}
+                    ))}
                 </li>
             ))}
-
         </ul>
-    )
-}
+    );
+};
