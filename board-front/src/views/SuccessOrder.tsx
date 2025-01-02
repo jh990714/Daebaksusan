@@ -18,7 +18,7 @@ export const SuccessOrder = () => {
 
     return (
         <div className='orderContainer md:px-4 lg:px-8 xl:px-16'>
-            <OrderFlow currentStep={2} />
+            <OrderFlow currentStep={3} />
             <div className="bg-white min-h-screen text-left">
                 <div className="max-w-5xl mx-auto px-4 py-8">
                     <h1 className="text-xl sm:text-3xl font-bold mb-8 text-center whitespace-nowrap">고객님의 주문이 완료되었습니다.</h1>

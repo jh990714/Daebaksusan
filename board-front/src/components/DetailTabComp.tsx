@@ -49,7 +49,7 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
     };
     // 버튼의 스타일을 결정하는 함수입니다.
     const buttonStyle = (tabName: string) => {
-        return `px-4 py-2 border-b hover:border-blue-700 ${activeTab === tabName ? 'text-blue-700 font-bold border-blue-700' : 'tab-inactive'}`;
+        return `px-4 py-2 flex justify-center items-center border-b hover:border-blue-700 ${activeTab === tabName ? 'text-blue-700 font-bold border-blue-700' : 'tab-inactive'}`;
     }
     const fixedbuttonStyle = (tabName: string) => {
         return `px-4 py-2 border-double border-r-[6px] hover:border-blue-700 text-end ${activeTab === tabName ? 'text-blue-700 font-bold border-blue-700' : 'tab-inactive'}`;
@@ -58,12 +58,13 @@ export const DetailTabComp:React.FC<{productId: number}> = ({ productId }) => {
     return (
 
         <div className="static">
-            <div className="flex justify-center space-x-2">
-                <button className={buttonStyle('상품정보')} onClick={() => setActiveTab('상품정보')}>상품정보</button>
-                <button className={buttonStyle('구매안내')} onClick={() => setActiveTab('구매안내')}>구매안내</button>
-                <button className={buttonStyle('후기')} onClick={() => setActiveTab('후기')}>후기</button>
-                <button className={buttonStyle('QnA')} onClick={() => setActiveTab('QnA')}>Q&A</button>
+            <div className="flex flex-wrap justify-start w-full">
+                <button className={`${buttonStyle('상품정보')} w-1/4` } onClick={() => setActiveTab('상품정보')}>상품정보</button>
+                <button className={`${buttonStyle('구매안내')} w-1/4`} onClick={() => setActiveTab('구매안내')}>구매안내</button>
+                <button className={`${buttonStyle('후기')} w-1/4`} onClick={() => setActiveTab('후기')}>후기</button>
+                <button className={`${buttonStyle('QnA')} w-1/4`} onClick={() => setActiveTab('QnA')}>Q&A</button>
             </div>
+
             <div className={containerClasses}>
                 <button className={fixedbuttonStyle('상품정보')} onClick={() => setActiveTab('상품정보')}>상품정보</button>
                 <button className={fixedbuttonStyle('구매안내')} onClick={() => setActiveTab('구매안내')}>구매안내</button>
