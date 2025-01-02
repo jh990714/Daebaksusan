@@ -6,7 +6,7 @@
     padding: 3rem; /* 기본 패딩 제거 */
     justify-content: center;
     background-color: #004393;
-    font-size: 30px;
+    font-size: 20px;
     margin-bottom: 3rem;
 }
 
@@ -42,11 +42,6 @@
     color: white;
 }
 
-
-.path {
-    padding: 3rem 0;
-}
-
 .path ul {
     padding: 0;
     margin: 0;
@@ -59,23 +54,21 @@
     color: #999;
 }
 
-.path li:not(:last-child)::after {
-    content: '>'; /* 가상 요소의 내용으로 '>' 추가 */
-    margin-left: 10px; /* '>'와 항목 사이의 간격 조정 */
-    margin-right: 10px; /* '>'와 다음 항목 사이의 간격 조정 */
-}
-
-@media (max-width: 768px) {
+@media (max-width: 1280px) {
     .orderFlow {
-        display: none;
-
+        font-size: 15px;
     }
     
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 768px) {
     .orderFlow {
-        font-size: 15px;
+        padding: 1rem;
+        font-size: 12px;
+    }
+
+    .activeArrow, .inactiveArrow {
+        margin: 0 1rem;
     }
     
 }
