@@ -7,6 +7,7 @@
 
 
 .selectAllContainer {
+    font-size: 15PX;
     text-align: start;
     margin-bottom: 1rem;
 }
@@ -39,7 +40,7 @@
 }
 
 .cartItemList li {
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
 }
 
 .orderContainer {
@@ -127,5 +128,13 @@
     .orderBtn {
         font-size: 14px;
         padding: 10px 16px;
+    }
+
+    .deleteSelectedBtn {
+        padding: 5px 10px;
+    }
+
+    .selectAllContainer {
+        font-size: 13px;
     }
 }
