@@ -42,6 +42,7 @@ export const NavigationBar = () => {
     const [searchResults, setSearchResults] = useState<SearchResults>([]);
     const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
     const debouncedQuery = useDebounce<string>(query, 300);
+    const menuRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
     const location = useLocation();
     // const [cartItems, setCartItems] = useState<Cart[]>([]);
@@ -106,6 +107,19 @@ export const NavigationBar = () => {
         fetchSearchResults();
         console.log(`API를 호출하여 검색 결과를 업데이트: ${debouncedQuery}`);
     }, [debouncedQuery]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false); // 메뉴 외부 클릭 시 메뉴 닫기
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside); // 마우스 클릭 이벤트 추가
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside); // 컴포넌트 언마운트 시 이벤트 제거
+        };
+    }, []);
 
     const handleSearchItemClick = useCallback((index: number) => {
         setSelectedItemIndex(index);
@@ -182,6 +196,10 @@ export const NavigationBar = () => {
         setSearchResults([]);
     }
 
+    const toggleMenue = () => {
+        setIsMenuOpen(!isMenuOpen);
+    }
+    
     return (
         <nav className={styles.navContainer} onMouseLeave={closeCategory} >
             <div className={`${styles.navBar} ${isNavVisible ? styles.open : styles.close}`} >
@@ -193,7 +211,7 @@ export const NavigationBar = () => {
                         <div className={styles.icon} onClick={() => toggleSearch(!isSearchOpen)}>
                             <img src={searchIcon} alt="검색" style={{ width: 30, height: 30 }} />
                         </div>
-                        <div className={styles.menuIcon} onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                        <div className={styles.menuIcon} onClick={toggleMenue}>
                             <img src={menuIcon} alt="메뉴" style={{ width: 30, height: 30 }} />
                         </div>
                     </div>
@@ -285,7 +303,10 @@ export const NavigationBar = () => {
                 </div>
             </div>
 
-            <div className={`${styles.categories} ${isMenuOpen ? styles.show : ''} ${isCategoriesOpen ? styles.show : ''}`} onMouseLeave={closeCategory}>
+            <div 
+                ref={menuRef} 
+                className={`${styles.categories} ${isMenuOpen ? styles.show : ''} ${isCategoriesOpen ? styles.show : ''}`}
+            >
                 {categories.map((category) => (
                     <div key={category.name} className={styles.categoryItem}>
                         <Link to={`/categoryProducts/${category.name}`} className={styles.categoryLink}>

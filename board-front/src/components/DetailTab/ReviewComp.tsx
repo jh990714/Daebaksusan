@@ -7,6 +7,8 @@ import CustomPrevArrowComp from 'components/ImageGallery/CustomPrevArrowComp';
 import CustomNextArrowComp from 'components/ImageGallery/CustomNextArrowComp';
 import ImageGalleryComp from 'components/ImageGallery/ImageGalleryComp';
 
+import talkIcon from '../../assets/talkIcon.png';
+
 interface ReviewCompProps {
     review: ReviewDTO;
 }
@@ -99,10 +101,12 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
                 <div className="content-center text-sm text-gray-400">{review.reviewDate}</div>
             </div>
             {review.imageUrls.length > 0 && (
-                <div className="w-[200px] sm:w-[350px] md:w-[500px] lg:w-[700px] xl:w-[1000px] h-[230px]">
-                    {review.imageUrls.length > 0 && (
-                        <ImageGalleryComp items={review.imageUrls} />
-                    )}
+                <div className="flex justify-center w-full">
+                    <div className="w-[200px] sm:w-[350px] md:w-[500px] lg:w-[700px] xl:w-[1000px] h-[230px]">
+                        {review.imageUrls.length > 0 && (
+                            <ImageGalleryComp items={review.imageUrls} />
+                        )}
+                    </div>
                 </div>
             )}
 
@@ -115,25 +119,14 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
 
             <div className="space-y-4">
                 {/* 답변 보기/숨기기 버튼, 답변이 있을 경우에만 표시 */}
-                {responseCount > 0 && (
-                    <button
-                        onClick={toggleAllResponses}
-                        className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out"
-                    >
-                        {showAllResponses
-                            ? `답변 숨기기 (${responseCount})`
-                            : `답변 보기 (${responseCount})`}
-                    </button>
-                )}
-
-                {/* 답변 내용 */}
-                {showAllResponses &&
-                    review.responses.map((response, index) => (
+                
+                {review.responses.map((response, index) => (
                         <div key={index} className="bg-gray-100 mt-4 p-2 text-sm rounded-md">
                             <div className="p-2 text-start text-black font-bold">대박수산</div>
                             <div className="p-2 text-start text-gray-600">{response.responseText}</div>
                         </div>
                     ))}
+                    
             </div>
         </div>
 
