@@ -53,7 +53,7 @@ export const Order: React.FC = () => {
     const remainingItemNames = orderItems.slice(1).map((item: { cartItem: { product: { name: any; }; }; }) => item.cartItem.product.name).join(', ');
     const [selectedPoint, setSelectedPoint] = useState<number>(0);
     const [selectedCoupon, setSelectedCoupon] = useState<number>(-1);
-   
+
 
 
     useEffect(() => {
@@ -221,7 +221,7 @@ export const Order: React.FC = () => {
                 coupon: ordererInfo?.coupons[selectedCoupon],
                 points: selectedPoint
             },
-            m_redirect_url : `${process.env.REACT_APP_FRONT_URL}/successOrder`
+            m_redirect_url: `${process.env.REACT_APP_FRONT_URL}/successOrder`
         };
 
         IMP.request_pay(paymentData, async function (rsp: any) {
@@ -253,7 +253,7 @@ export const Order: React.FC = () => {
             if (!regex.test(value)) {
                 return;
             }
-            
+
         } else {
             // 정규식을 사용하여 숫자만 입력되도록 유효성 검사
             const regex = /^[0-9]*$/;
@@ -302,7 +302,7 @@ export const Order: React.FC = () => {
             setSelectedCoupon(selectedIndex);
         }
     };
-    
+
 
     const handleSelectedPointChange: ChangeEventHandler<HTMLInputElement> = (event) => {
         const inputValue = event.target.value.trim(); // 입력값의 양 끝 공백 제거
@@ -322,11 +322,11 @@ export const Order: React.FC = () => {
                     setSelectedPoint(0);
                 }
             }
-   
+
         } else {
             setSelectedPoint(0);
         }
-        
+
     };
 
     // 할인 금액
@@ -457,16 +457,16 @@ export const Order: React.FC = () => {
                         className="coupon"
                     >
                         <option value={-1}>쿠폰을 선택하세요</option>
-                            {ordererInfo?.coupons.map((coupon, index) => (
-                                (totalItemPrice + totalShippingCost) >= coupon.minimumOrderAmount &&(
-                                    <option key={index} value={index}>
-                                        {coupon.couponName} (-{coupon.discount.toLocaleString()}원) 
-                                        <p>
-                                            (최소 주문 금액: {coupon.minimumOrderAmount.toLocaleString()}원)
-                                        </p>
-                                    </option>
-                                )
-                            ))}
+                        {ordererInfo?.coupons.map((coupon, index) => (
+                            (totalItemPrice + totalShippingCost) >= coupon.minimumOrderAmount && (
+                                <option key={index} value={index}>
+                                    {coupon.couponName} (-{coupon.discount.toLocaleString()}원)
+                                    <p>
+                                        (최소 주문 금액: {coupon.minimumOrderAmount.toLocaleString()}원)
+                                    </p>
+                                </option>
+                            )
+                        ))}
 
 
                     </select>
@@ -486,48 +486,45 @@ export const Order: React.FC = () => {
 
 
 
-                <div className='orderTitle'> 결제 수단 </div>
-                <div className='mt-4'>
-                    <div className='font-bold mb-2'> 간편결제 </div>
-                    <div className='flex flex-wrap gap-4 mb-4 pl-4'>
+                <div className="orderTitle text-lg md:text-xl"> 결제 수단 </div>
+                <div className="mt-4">
+                    <div className="font-bold text-sm md:text-base mb-2"> 간편결제 </div>
+                    <div className="flex flex-wrap gap-2 md:gap-4 mb-4 pl-2 md:pl-4">
                         <PayMethodButton
-                            label='kakao pay'
+                            label="kakao pay"
                             imageUrl={kakaoPayIcon}
                             onClick={() => handlePaymentMethodClick('kakaopay', 'point')}
                             selected={pg === 'kakaopay'}
                         />
                         <PayMethodButton
-                            label='toss pay'
+                            label="toss pay"
                             imageUrl={tossPayIcon}
                             onClick={() => handlePaymentMethodClick('tosspay', 'point')}
                             selected={pg === 'tosspay'}
-
                         />
-
                     </div>
 
-                    <div className='font-bold mb-2'> 카드결제●계좌이체 </div>
-                    <div className='flex flex-wrap gap-4 pl-4'>
+                    <div className="font-bold text-sm md:text-base mb-2"> 카드결제 ● 계좌이체 </div>
+                    <div className="flex flex-wrap gap-2 md:gap-4 pl-2 md:pl-4">
                         <PayMethodButton
-                            label='신용/체크 카드'
+                            label="신용/체크 카드"
                             imageUrl={cardIcon}
                             onClick={() => handlePaymentMethodClick('nice', 'card')}
-                            selected={pg === 'nice' && paymentMethod === 'card'} // 선택된 결제 수단에 따라 selected prop을 설정
+                            selected={pg === 'nice' && paymentMethod === 'card'}
                         />
                         <PayMethodButton
-                            label='무통장 입금'
+                            label="무통장 입금"
                             imageUrl={cardIcon}
                             onClick={() => handlePaymentMethodClick('nice', 'vbank')}
-                            selected={pg === 'nice' && paymentMethod === 'vbank'} // 선택된 결제 수단에 따라 selected prop을 설정
+                            selected={pg === 'nice' && paymentMethod === 'vbank'}
                         />
                         <PayMethodButton
-                            label='계좌이체'
+                            label="계좌이체"
                             imageUrl={cardIcon}
                             onClick={() => handlePaymentMethodClick('nice', 'trans')}
-                            selected={pg === 'nice' && paymentMethod === 'trans'} // 선택된 결제 수단에 따라 selected prop을 설정
+                            selected={pg === 'nice' && paymentMethod === 'trans'}
                         />
                     </div>
-
                 </div>
 
                 <div className='orderItems'>
@@ -558,14 +555,14 @@ export const Order: React.FC = () => {
                             <div className='priceTitle'>배송비/옵션 합계 금액</div>
                             <div className='price'>{totalShippingCost.toLocaleString()}원</div>
                         </li>
-                        
+
                         <li>
                             <div className='op'>-</div>
                         </li>
 
                         <li>
                             <div className='priceTitle'>쿠폰/적립금 할인 금액</div>
-                            <div className='price'>{(selectedPoint+couponDiscount()).toLocaleString()}원</div>
+                            <div className='price'>{(selectedPoint + couponDiscount()).toLocaleString()}원</div>
                         </li>
 
                         <li>

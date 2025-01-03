@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from "./Mypage.module.css";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { sendRequestWithToken } from 'apis/sendRequestWithToken';
-import { useAuthContext } from 'hook/AuthProvider'; 
+import { useAuthContext } from 'hook/AuthProvider';
 import { MyPageMenu } from 'components/MyPage/MyPageMenu';
 import Member from 'types/interface/member.interface';
 import { MyPageInfo } from 'components/MyPage/MyPageInfo';
@@ -45,7 +45,7 @@ export const Mypage: React.FC = () => {
     useEffect(() => {
 
     }, [currentPage])
-    
+
     const handlePageChange = (page: string, props?: string) => {
         setCurrentPage({ page, props });
     };
@@ -53,17 +53,17 @@ export const Mypage: React.FC = () => {
     const renderContent = () => {
         switch (currentPage.page) {
             case 'mypageInfo':
-                return <MyPageInfo userInfo={userInfo} handlePageChange={handlePageChange}/>;
+                return <MyPageInfo userInfo={userInfo} handlePageChange={handlePageChange} />;
             case 'paymentDetails':
-                return <PaymentDetails defaultSortBy={currentPage.props} /> ;
+                return <PaymentDetails defaultSortBy={currentPage.props} />;
             case 'myCoupon':
-                return <MyCoupons coupons={userInfo?.coupons}/>;
+                return <MyCoupons coupons={userInfo?.coupons} />;
             case 'myPoints':
                 return <MyPoints />;
             case 'updateInfo':
-                return <UpdateInfo userInfo={userInfo} isSocialAuthenticated={isSocialAuthenticated}/>;
+                return <UpdateInfo userInfo={userInfo} isSocialAuthenticated={isSocialAuthenticated} />;
             case 'memberDelete':
-                return <MemberDelete userInfo={userInfo} isSocialAuthenticated={isSocialAuthenticated} socialToken={token}/>;
+                return <MemberDelete userInfo={userInfo} isSocialAuthenticated={isSocialAuthenticated} socialToken={token} />;
             default:
                 return null;
         }
@@ -72,14 +72,14 @@ export const Mypage: React.FC = () => {
     return (
         <div className="lg:mx-16 xl:mx-56 2xl:mx-80 mt-10 p-2 md:p-5 rounded-lg whitespace-nowrap">
             <div className="sm:flex sm:gap-3 md:gap-10 lg:gap-20 2xl:gap-32 sm:border-b sm:p-4">
-                <div className="text-center sm:block text-2xl text-blue-600 font-semibold hover:cursor-pointer" onClick={()=>handlePageChange('mypageInfo')}>마이페이지</div>
+                <div className="text-center sm:block text-2xl text-blue-600 font-semibold hover:cursor-pointer" onClick={() => handlePageChange('mypageInfo')}>마이페이지</div>
                 <div className="hidden sm:flex gap-2 text-lg">
                     <div>적립금</div>
-                    <div className="text-blue-700 font-bold hover:cursor-pointer" onClick={()=>handlePageChange('myPoints')}>{userInfo?.points}원</div>
+                    <div className="text-blue-700 font-bold hover:cursor-pointer" onClick={() => handlePageChange('myPoints')}>{userInfo?.points}원</div>
                 </div>
                 <div className="hidden sm:flex gap-2 text-lg">
                     <div>쿠폰</div>
-                    <div className="text-blue-700 font-bold hover:cursor-pointer" onClick={()=>handlePageChange('myCoupon')}>{userInfo?.coupons.length}개</div>
+                    <div className="text-blue-700 font-bold hover:cursor-pointer" onClick={() => handlePageChange('myCoupon')}>{userInfo?.coupons.length}개</div>
                 </div>
                 <div className="hidden sm:block grow text-end">
                     <span className="text-gray-600 font-semibold">{userInfo?.name} </span>
@@ -89,9 +89,10 @@ export const Mypage: React.FC = () => {
             </div>
             <div className="sm:py-5">
                 <div className="sm:flex sm:justify-between">
-                    <div className="sm:block w-full sm:w-1/6 border-b border-t sm:border-b-0 sm:border-t-0 sm:border-r text-l font-semibold" >
+                    <div className="w-full sm:w-1/6 border-b border-t sm:border-b-0 sm:border-t-0 sm:border-r text-l font-semibold">
                         <MyPageMenu handlePageChange={handlePageChange} />
                     </div>
+
                     <div className="sm:w-4/5 sm:mt-5 md:ml-10">
                         {renderContent()}
                     </div>
