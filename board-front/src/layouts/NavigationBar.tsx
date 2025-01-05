@@ -237,14 +237,11 @@ export const NavigationBar = () => {
         };
     }, [isDragging, dragStart]);
 
-    useEffect(() => {
-        console.log(isCategoriesOpen);
-    }, [isCategoriesOpen]);
-
 
     const cartSize = cartItems.length;
     return (
-        <nav className={styles.navContainer} onMouseLeave={closeCategory}>
+        // <nav className={styles.navContainer} onMouseLeave={closeCategory}>
+        <nav className={styles.navContainer}>
             <div className={`${styles.navBar} ${isNavVisible ? styles.open : styles.close}`}>
                 {/* Left Section */}
                 <div className={styles.navLeft}>
