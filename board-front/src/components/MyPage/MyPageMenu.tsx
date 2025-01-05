@@ -34,7 +34,7 @@ export const MyPageMenu: React.FC<MyPageMenuProps> = ({ handlePageChange }) => {
             >
                 {/* 모바일 메뉴 버튼 */}
                 <button
-                    className={`block sm:hidden fixed bg-blue-500 text-white px-2 py-4 rounded-full z-50 transition-transform duration-300 ${isMenuOpen ? 'translate-x-full' : 'translate-x-10'
+                    className={`block sm:hidden fixed bg-blue-700 text-white px-2 py-4 rounded-full z-50 transition-transform duration-300 ${isMenuOpen ? 'translate-x-full' : 'translate-x-10'
                         }`}
                     style={{ top: '50%', right: '-20px', transform: 'translateY(-50%)' }} // 세로 중앙 정렬
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
