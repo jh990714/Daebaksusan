@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import styles from './MyCartListComp.module.css';
 import styles_m from './MyCartMobile.module.css';
 import { Cart } from 'types';
+import { Link } from 'react-router-dom';
 
 interface CartItemCompProps {
     cartItem: Cart;
@@ -77,11 +78,15 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
 
                         </td>
                         <td className={styles.orderImg} data-label="이미지">
-                            <img src={cartItem.cartItem.product.imageUrl} alt="사진" style={{ width: 140, height: 140 }}></img>
+                            <Link to={`/detail/${cartItem.cartItem.product.productId}`}>
+                                <img src={cartItem.cartItem.product.imageUrl} alt={cartItem.cartItem.product.imageUrl} style={{ width: 140, height: 140 }}></img>
+                            </Link>
                         </td>
                         <td className={styles.orderName} data-label="주문 상품 정보">
-                            <p className={styles.title}>{cartItem.cartItem.product.name}</p>
-                            <p className={styles.option}>{cartItem.cartItem.option!.name} + {cartItem.cartItem.option!.addPrice}</p>
+                            <Link to={`/detail/${cartItem.cartItem.product.productId}`} className={styles.linkWrapper}>
+                                <p className={styles.title}>{cartItem.cartItem.product.name}</p>
+                                <p className={styles.option}>{cartItem.cartItem.option!.name} + {cartItem.cartItem.option!.addPrice}</p>
+                            </Link>
                         </td>
                         <td className={styles.orderPrice} data-label="상품가격">
 
@@ -122,11 +127,15 @@ export const MyCartListComp: React.FC<CartItemCompProps> = ({ cartItem, onQuanti
                 </div>
 
                 <div className={styles_m.orderImg}>
-                    <img src={cartItem.cartItem.product.imageUrl} alt="사진" style={{ width: 200, height: 200, borderRadius: 10 }} />
+                    <Link to={`/detail/${cartItem.cartItem.product.productId}`}>
+                        <img src={cartItem.cartItem.product.imageUrl} alt="사진" />
+                    </Link>
                 </div>
                 <div className={styles_m.orderInfo}>
                     <div className={styles_m.orderName}>
-                        {cartItem.cartItem.product.name}
+                        <Link to={`/detail/${cartItem.cartItem.product.productId}`} className={styles.linkWrapper}>
+                            {cartItem.cartItem.product.name}
+                        </Link>
                     </div>
 
                     <div className={styles_m.orderOption}>

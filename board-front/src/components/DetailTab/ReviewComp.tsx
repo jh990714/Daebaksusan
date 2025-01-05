@@ -7,6 +7,8 @@ import CustomPrevArrowComp from 'components/ImageGallery/CustomPrevArrowComp';
 import CustomNextArrowComp from 'components/ImageGallery/CustomNextArrowComp';
 import ImageGalleryComp from 'components/ImageGallery/ImageGalleryComp';
 
+import talkIcon from '../../assets/talkIcon.png';
+
 interface ReviewCompProps {
     review: ReviewDTO;
 }
@@ -68,10 +70,18 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
         }
         return stars;
     };
+    const [showAllResponses, setShowAllResponses] = useState(false);
 
+    // 답변 보기/숨기기 토글 함수
+    const toggleAllResponses = () => {
+        setShowAllResponses((prevState) => !prevState);
+    };
+
+    // 답변 개수
+    const responseCount = review.responses.length;
 
     return (
-        <div className="p-10 border-t-2 border-blue-700">
+        <div className='p-3 sm:p-10 border-t-2 border-blue-700'>
             <div className='flex'>
                 <div className="text-6xl">ㅇ</div>
                 <div>
@@ -81,10 +91,9 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
                                 베스트리뷰
                             </div>
                         )}
-                        <div></div>
                     </div>
                     <div className="m-1 text-black text-start text-sm">{review.name}</div>
-                    <div className="text-xs text-gray-400">리뷰 77 · 사진 487 · 장소 68</div>
+                    {/* <div className="text-xs text-gray-400">리뷰 77 · 사진 487 · 장소 68</div> */}
                 </div>
             </div>
             <div className="flex m-2">
@@ -92,27 +101,33 @@ const ReviewComp: React.FC<ReviewCompProps> = ({ review }) => {
                 <div className="content-center text-sm text-gray-400">{review.reviewDate}</div>
             </div>
             {review.imageUrls.length > 0 && (
-                <div className="w-[200px] sm:w-[350px] md:w-[500px] lg:w-[700px] xl:w-[1000px] h-[230px]">
-                    {review.imageUrls.length > 0 && (
-                        <ImageGalleryComp items={review.imageUrls} />
-                    )}
+                <div className="flex justify-center w-full">
+                    <div className="w-[200px] sm:w-[350px] md:w-[500px] lg:w-[700px] xl:w-[1000px] h-[230px]">
+                        {review.imageUrls.length > 0 && (
+                            <ImageGalleryComp items={review.imageUrls} />
+                        )}
+                    </div>
                 </div>
             )}
 
 
-            <div className="m-2 text-start text-xs text-gray-500">{review.productName + review.optionName}</div>
+            <div className="m-2 text-start text-xs text-gray-500">
+                <div>{review.productName}</div>
+                <div>{review.optionName}</div>
+            </div>
             <div className="mt-4 m-2 text-start text-sm text-gray-600">{review.contents}</div>
 
-            {review.responses.map((response, index) => (
-                <div className="bg-gray-100 mt-4 p-2 text-sm rounded-md">
-                    <div key={index}>
-                        {/* <div className="p-2 text-start text-black font-bold">{response.name}</div> */}
-                        <div className="p-2 text-start text-black font-bold">대박수산</div>
-                        <div className="p-2 text-start text-gray-600">{response.responseText}</div>
-                    </div>
-                </div>
-            ))}
-
+            <div className="space-y-4">
+                {/* 답변 보기/숨기기 버튼, 답변이 있을 경우에만 표시 */}
+                
+                {review.responses.map((response, index) => (
+                        <div key={index} className="bg-gray-100 mt-4 p-2 text-sm rounded-md">
+                            <div className="p-2 text-start text-black font-bold">대박수산</div>
+                            <div className="p-2 text-start text-gray-600">{response.responseText}</div>
+                        </div>
+                    ))}
+                    
+            </div>
         </div>
 
     )

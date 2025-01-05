@@ -23,7 +23,7 @@ export const saveCartItemsToDatabase = async (cartItems: CartInput[], setIsLogge
 export const fetchCartItems = async (setCartItems: React.Dispatch<React.SetStateAction<Cart[]>>, setIsLoggedIn: (value: boolean) => void) => {
     try {
         const cartCookie = Cookies.get('cartItems');
-        console.log('aaaa', cartCookie)
+ 
         if (cartCookie) {
             const parsedCartItems: CartItem[] = JSON.parse(cartCookie);
 

@@ -10,13 +10,12 @@
 }
 .orderItems ul{
     margin: 0;
-    padding: 0;
+    padding: 0.5rem;
 
 }
 .orderItems li{
     margin: 0;
     padding: 0;
-    transform: scale(0.9);
 }
 
 .itemTotalPrice {
@@ -37,6 +36,7 @@
 .orderInfo {
     width: 100%;
     margin: 0;
+    font-size: 15px;
     margin-bottom: 1rem;
     border-bottom: 1px solid #ccc;
 }
@@ -49,7 +49,6 @@
 .userName {
     width: 20%;
     height: 40px;
-    font-size: 15px;
     padding: 10px 0 10px 1rem;
     border: 1px solid #ccc;
 }
@@ -58,13 +57,13 @@
     margin: 1rem 0;
     width: 100%;
     height: 40px;
+    font-size: 15px;
     justify-content: space-between;
 }
 
 .phoneNumFirst {
     width: 20%;
     height: 40px;
-    font-size: 15px;
     padding: 10px 0 10px 1rem;
     border: 1px solid #ccc;
     margin-right: 0.5rem;
@@ -73,7 +72,6 @@
 .phoneNum {
     width: 20%;
     height: 40px;
-    font-size: 15px;
     padding: 10px 0 10px 1rem;
     border: 1px solid #ccc;
     margin: 0 0.5rem;
@@ -165,6 +163,11 @@
     .userName {
         width: 25%;
     }
+
+    .orderPhonNum {
+        font-size: 12px;
+    }
+    
     .phoneNumFirst {
         width: 25%;
     }
@@ -172,6 +175,9 @@
         width: 25%
     }
     
+    .orderInfo {
+        font-size: 12px;
+    }
     .orderInfoContainer {
         width: 80%;
         
@@ -180,7 +186,13 @@
     .totalPriceContainer {
         position: relative;
         z-index: 0;
+        right: 0;
     }
+
+    .totalPriceContainer ul {
+        padding: 1rem;
+    }
+    
     .coupon {
         width: 80%;
     }

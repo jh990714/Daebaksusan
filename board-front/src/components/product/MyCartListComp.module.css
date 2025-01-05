@@ -91,6 +91,10 @@
     margin: 4px 0; /* 단락 간격 조절 */
 }
 
+.linkWrapper {
+    text-decoration: none;
+    color: inherit;
+}
 
 @media (max-width: 780px) {
     .myCartListComp table {

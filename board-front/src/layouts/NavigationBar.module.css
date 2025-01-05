@@ -6,19 +6,18 @@
     width: 100%;
     height: auto;
     align-items: center;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: bold;
     z-index: 50;
     opacity: 0.9;
-    
 }
 
 .navBar {
     width: 100%;
-    height: 120px;
+    height: 100px;
     display: flex;
     border-bottom: 3px solid #d9d9d9;
-    padding: 0 10rem;
+    padding: 0 5rem;
     background-color: white;
     opacity: 0.9;
     align-items: center;
@@ -46,6 +45,7 @@
     width: auto;
     display: flex;
     align-items: center;
+    gap: 1rem;
 }
 
 .logo {
@@ -88,6 +88,8 @@
 }
 
 .searchResults {
+    display: flex;
+    flex-direction: column;
     font-size: 13px;
     text-align: start;
     position: absolute;
@@ -100,18 +102,17 @@
     list-style: none;
     margin: 0;
     padding: 0;
-    z-index: 50;
-    
 }
+
 .searchResults li {
     padding: 10px;
     border-bottom: 1px solid #eee;
     white-space: nowrap; /* 텍스트가 줄 바꿈되지 않도록 설정 */
-    overflow: hidden; /* 내용이 넘칠 경우 숨김 처리 */
+    overflow: hidden;
     text-overflow: ellipsis; /* 넘친 텍스트에 대해 줄임표(...)로 표시 */
     cursor: pointer;
-    
 }
+
 .selectedItem {
     background-color: #f0f0f0; /* 선택된 항목의 배경색 */
     font-weight: bold; /* 선택된 항목의 글꼴 두껍게 */
@@ -120,19 +121,20 @@
 
 .searchInput {
     width: 100%;
-    background-color: white;
     border: 2px solid rgb(29, 78, 216);
+    background-color: white;
     border-radius: 50px;
     height: 50px;
     display: flex;
     align-items: center;
-    position: relative;
     padding: 0 22px;
+    position: relative;
 }
-
+.hidden {
+    display: none;
+}
 .searchInput input {
     width: 100%;
-    height: 30px;
     font-size: 16px;
     outline: none;
 }
@@ -166,11 +168,19 @@
     transform: scale(1.1);
 }
 
-.icon {
+.iconContainer {
     display: flex;
+    justify-content: flex-end;  /* 오른쪽으로 정렬 */
     align-items: center;
+    margin-right: 1rem;  /* 오른쪽에서 1rem 떨어지게 */
 }
-.icon:hover{
+
+.inputSearchicon {
+    width: 30px;
+    height: 30px;
+}
+
+.icon:hover {
     cursor: pointer;
 }
 
@@ -178,27 +188,14 @@
     margin-left: 0.5rem;
 }
 
-
 .categories {
-    overflow: hidden; /* 내부 요소들이 넘치는 부분은 숨김 */
-    max-height: 0px; /* 기본적으로 숨겨진 상태 */
-    transition: max-height 0.5s ease-in-out; /* 트랜지션 효과 설정 */
+    overflow: hidden; /* 기본적으로 숨김 처리 */
+    max-height: 0px; /* 기본적으로 메뉴 숨김 */
+    transition: max-height 0.5s ease-in-out; /* 트랜지션 효과 */
     text-align: start;
     display: flex;
     justify-content: space-around;
 }
-
-.searchMobileContainer {
-    width: 80%;
-    justify-content: center;
-    position: relative;
-    background-color: white;
-    z-index: 50;
-    max-height: 0;
-    overflow: hidden;
-   
-}
-
 
 .categoryTitle {
     color: #333;
@@ -214,7 +211,6 @@
     padding: 0;
 }
 
-
 .subcategoryItem {
     font-size: 15px;
     border-radius: 5px;
@@ -228,12 +224,12 @@
     transform: translateX(5px);
 }
 
-
 .categoryLink {
     display: flex;
     text-decoration: none;
     color: inherit;
 }
+
 .subcategoryLink {
     text-decoration: none; /* 링크의 밑줄 제거 */
     color: inherit; /* 링크의 색상을 상위 요소의 색상으로 상속 */
@@ -243,7 +239,6 @@
 .subcategoryLink:hover {
     color: inherit;
 }
-
 
 .open {
     max-height: 500px;
@@ -257,22 +252,28 @@
 
 .show {
     display: flex;
-    max-height: 300px;
+    max-height: 300px; /* 펼쳐졌을 때 최대 높이 */
     border-bottom: 1px solid #d9d9d9;
-}
-
-.searchOpen {
-    max-height: 500px;
-    overflow: inherit;
+    overflow-y: auto; /* 스크롤 활성화 */
 }
 
 .mobileBottomNav {
+    padding: 0.5rem 0;
+    position: relative;
     display: none;
+    background-color: white;
+    
+    border-top: 2px solid #d9d9d9;
+    justify-content: space-around;
+}
+
+.searchMobileContainer {
+    
 }
 
 .productUserCategory {
+    background-color: white;
     width: 100%;
-    justify-content: space-around;
 }
 
 .productUserCategory ul {
@@ -282,15 +283,30 @@
     margin: 0;
 }
 
-@media only screen and (max-width: 1650px) {
+.searchOpen {
+    max-height: 500px;
+    display: flex;
+}
+
+.searchIcon {
+    width: 40px;
+    height: 40px;
+}
+
+.categoryIcon {
+    width: 40px;
+    height: 40px;
+}
+
+
+@media only screen and (max-width: 1024px) {
     .navBar {
-        padding-left: 5rem;
-        padding-right: 5rem;
+        padding: 0 1re;
     }
 
     .productCategory,
     .userCategory {
-        margin-left: 50px;
+        margin-left: 10px;
     }
 
     .searchInput input {
@@ -301,15 +317,14 @@
     .iconTitle {
         display: none;
     }
-
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 768px) {
     .navContainer {
         position: fixed;
         opacity: 1;
     }
-    
+
     .navBar {
         padding: 0;
         flex-direction: column;
@@ -318,10 +333,11 @@
     }
 
     .navLeft {
-        width: 100%;
+        display: none;
+        /* width: 100%;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: space-between; */
     }
     .menuBar {
         display: flex;
@@ -333,12 +349,11 @@
     .navMenu {
        display: none;
     }
-    
-    .categories {  
+
+    .categories {
         flex-wrap: wrap; /* 요소들을 여러 줄에 걸쳐 표시 */
         flex-direction: row; /* 요소들을 가로로 배열 */
-        overflow-y: auto;
-        
+        justify-content: space-evenly
     }
 
     .categoryItem {
@@ -356,16 +371,51 @@
     }
 
     .mobileBottomNav {
-        font-size: 10px;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
-        border-top: 2px solid #d9d9d9;
-        background-color: white;
-        z-index: 50;
+    }
+
+    .searchResults {
+        top: auto;
+        bottom: 100%;
+        /* 약간 위로 간격 추가 */
+    }
+
+    .searchInput {
+        position: absolute;
+        top: -3rem;
+        right: 7rem;
+        width: 60%;
+        height: 35px;
+        margin: 3px;
+    }
+
+    .searchInput input {
+        font-size: 14px;
     }
     
+    .searchInput input::placeholder {
+        font-size: 14px;
+    }
+
+    .inputSearchicon {
+        width: 25px;
+        height: 25px;
+    }
+
+    .searchIcon {
+        position: absolute;
+        top: -3rem;
+        right: 1rem;
+    }
+
+    .categoryIcon {
+        position: absolute;
+        top: -6rem;
+        right: 1rem; 
+    }
 }

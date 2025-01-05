@@ -91,7 +91,7 @@ export const MyCart = () => {
                         checked={selectAll}
                         onChange={toggleSelectAll}
                     />
-                    전체 선택
+                    <span> 전체 선택</span>
                 </label>
                 <button onClick={deleteSelectedItems} className={styles.deleteSelectedBtn}>선택상품 삭제</button>
 
