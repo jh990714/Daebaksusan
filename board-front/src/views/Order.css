@@ -10,13 +10,12 @@
 }
 .orderItems ul{
     margin: 0;
-    padding: 0;
+    padding: 0.5rem;
 
 }
 .orderItems li{
     margin: 0;
     padding: 0;
-    transform: scale(0.9);
 }
 
 .itemTotalPrice {
@@ -189,6 +188,11 @@
         z-index: 0;
         right: 0;
     }
+
+    .totalPriceContainer ul {
+        padding: 1rem;
+    }
+    
     .coupon {
         width: 80%;
     }
