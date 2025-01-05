@@ -31,8 +31,8 @@ const TimeLimitedDeals: React.FC = () => {
     }
 
     return (
-        <div className="w-full my-20 p-3">
-            <Link to={"timeDeal"} className='text-2xl font-bold md:text-4xl no-underline text-black dark:text-white'>💣 타임특가 </Link>
+        <div className="w-full my-6 sm:my-8 md:my-8 lg:my-12 xl:16 p-3">
+            <Link to={"timeDeal"} className='text-2xl md:text-3xl lg:text-4xl font-bold no-underline text-black dark:text-white'>💣 타임특가 </Link>
             <ImageGalleryComp items={products} size='255px' fontSize='7px' component={TimeDealProductComp}/>
         </div>
     );

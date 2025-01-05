@@ -39,7 +39,7 @@ export const Home: React.FC = () => {
           <BestProduct category='best' />
         </div>
 
-        <div ref={ref4} className="HomeBanner">
+        <div ref={ref4} className="homeBanner">
           <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/kakao_plus.jpg`} title="대박수산 카카오톡 친구 추가" />
         </div>
 
@@ -47,7 +47,7 @@ export const Home: React.FC = () => {
           <BestProduct category='new' />
         </div>
 
-        <div ref={ref6} className="HomeBanner">
+        <div ref={ref6} className="homeBanner">
           <VideoPlayer />
         </div>
 
@@ -55,7 +55,7 @@ export const Home: React.FC = () => {
           <BestProduct category='all' />
         </div>
 
-        <div ref={ref8} className="HomeBanner">
+        <div ref={ref8} className="homeBanner">
           <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/review_event3.jpg`} title="리뷰 이벤트" />
         </div>
       </div>

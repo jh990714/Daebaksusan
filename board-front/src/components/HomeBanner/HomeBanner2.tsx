@@ -23,9 +23,11 @@ export const HomeBanner2 = () => {
   }, []);
 
   return (
-    <div className='w-full my-20 p-3'>
-      <Link to={"recommend"} className='text-2xl font-bold md:text-4xl no-underline text-black dark:text-white'>✨ 이달의 추천 상품 ✨</Link>
-      <ImageGalleryComp items={products} fontSize='8px' component={RcmndProductComp} rows={2} />
+    <div className='w-full my-6 sm:my-8 md:my-8 lg:my-12 xl:16 p-3'>
+      <Link to={"recommend"} className='text-2xl md:text-3xl lg:text-4xl font-bold no-underline text-black dark:text-white'>✨ 이달의 추천 상품 ✨</Link>
+      <div className='px-10 sm:px-32 md:px-24 lg:px-12 xl:px-24 2xl:px-44'>
+        <ImageGalleryComp items={products} fontSize='15' component={RcmndProductComp} rows={2} />
+      </div>
     </div>
   );
 };

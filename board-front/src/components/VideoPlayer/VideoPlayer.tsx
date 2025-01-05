@@ -26,7 +26,7 @@ export const VideoPlayer = () => {
 
     return (
         <div className="">
-            <div className="m-10 font-bold text-2xl">👀 대박수산 TV</div>
+            <div className="m-5 font-bold text-2xl">👀 대박수산 TV</div>
             <div className="text-sm">(추후 밀키트 영상으로 대체 가능)</div>
             <div className="rounded-lg grid grid-cols-10 gap-3 border-2">
                 <div className="col-span-10 xl:col-span-7">
@@ -70,13 +70,12 @@ export const VideoPlayer = () => {
                         videoItem.products.map((product, index, array) => (
                             <div
                                 key={index}
-                                className={index === array.length - 1 ? 'content-center' : 'border-b-2 content-center'}
+                                className={`${index === array.length - 1 ? 'content-center' : 'border-b-2 content-center'}`}
                             >
                                 <RcmndProductComp
                                     product={product}
-                                    imgSize_w_per={45}
-                                    imgSize_h_px={'120px'}
-                                    fontSize={'5px'}
+                                    imgSize_w_per={33}
+                                    fontSize={'16'}
                                     radius={50}
                                 />
                             </div>
