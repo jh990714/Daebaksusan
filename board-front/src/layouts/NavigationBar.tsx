@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, SetStateAction, useCallback, useEffect, useRef, useState } from 'react'
 import logo from '../assets/logo_sample.png'
 import styles from './NavigationBar.module.css'
 import cartIcon from '../assets/cart.png'
@@ -8,12 +8,14 @@ import bestIcon from '../assets/bestIcon.png'
 import allIcon from '../assets/allIcon.png'
 import menuIcon from '../assets/tabBar.png'
 import homeICon from '../assets/homeIcon.png'
+import categoryIcon from '../assets/categoryIcon.png'
 
 import newBlueIcon from '../assets/newBlueIcon.png'
 import bestBlueIcon from '../assets/bestBlueIcon.png'
 import allBlueIcon from '../assets/allBlueIcon.png'
 import cartBlueIcon from '../assets/cartBlue.png'
 import loginBlueIcon from '../assets/loginBlue.png'
+import searchButtonIcon from '../assets/searchButton.png'
 
 
 
@@ -23,6 +25,7 @@ import { Category } from 'types';
 import useDebounce from 'hook/useDebounce'
 import { useAuthContext } from 'hook/AuthProvider'
 import IconComp from 'components/NavigationBar/IconComp'
+import { useCart } from 'hook/CartProvider'
 
 type SearchResults = Array<any>
 
@@ -33,6 +36,9 @@ export const NavigationBar = () => {
     const inputMobileRef = useRef<HTMLInputElement>(null);
     const searchResultsMobileRef = useRef<HTMLUListElement>(null);
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+    const [isDragging, setIsDragging] = useState(false); // 드래그 상태
+    const [dragStart, setDragStart] = useState(0); // 드래그 시작 위치
+
     const [isNavVisible, setIsNavVisible] = useState<boolean>(true);
     const [prevScrollY, setPrevScrollY] = useState<number>(0);
     const [isCategoriesOpen, setIsCategoriesOpen] = useState<boolean>(false);
@@ -47,9 +53,11 @@ export const NavigationBar = () => {
     const location = useLocation();
     // const [cartItems, setCartItems] = useState<Cart[]>([]);
 
+    const { cartItems } = useCart();
+    
 
     useEffect(() => {
-        setIsMenuOpen(false);
+        setIsCategoriesOpen(false);
         toggleSearch(false);
     }, [location]);
 
@@ -72,10 +80,10 @@ export const NavigationBar = () => {
             const currentScrollY = window.scrollY;
             setIsNavVisible(currentScrollY <= prevScrollY || currentScrollY === 0);
             setPrevScrollY(currentScrollY);
-            setIsMenuOpen(false);
+            setIsCategoriesOpen(false);
             setSearchResults([]);
             setIsSearchOpen(false);
-           
+
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -111,11 +119,11 @@ export const NavigationBar = () => {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setIsMenuOpen(false); // 메뉴 외부 클릭 시 메뉴 닫기
+                closeCategory(); // 외부 클릭 시 카테고리 닫기
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside); // 마우스 클릭 이벤트 추가
+        document.addEventListener('mousedown', handleClickOutside); // 외부 클릭 이벤트 리스너
         return () => {
             document.removeEventListener('mousedown', handleClickOutside); // 컴포넌트 언마운트 시 이벤트 제거
         };
@@ -183,87 +191,108 @@ export const NavigationBar = () => {
         setQuery(event.target.value);
     }
 
-    const toggleCategory = () => {
-        setIsCategoriesOpen(true); // isOpen 상태를 토글
+    const openCategory = () => {
+        setIsCategoriesOpen(true); // 카테고리 메뉴 토글
     };
 
     const closeCategory = () => {
-        setIsCategoriesOpen(false); // 카테고리를 닫습니다.
+        setIsCategoriesOpen(false); // 카테고리 닫기
     };
+
+    const toggleCategory = () => {
+        setIsCategoriesOpen((prev) => !prev);
+    }
 
     const toggleSearch = (isOpen: boolean) => {
         setIsSearchOpen(isOpen);
         setSearchResults([]);
     }
 
-    const toggleMenue = () => {
-        setIsMenuOpen(!isMenuOpen);
-    }
-    
+    // 드래그 이벤트 처리
+    const handleMouseDown = (e: { clientY: SetStateAction<number> }) => {
+        setIsDragging(true);
+        setDragStart(e.clientY); // 드래그 시작 위치
+    };
+
+    const handleMouseMove = (e: { clientY: number }) => {
+        if (!isDragging) return;
+        const distance = e.clientY - dragStart; // 드래그한 거리
+        if (menuRef.current) {
+            menuRef.current.style.top = `${distance}px`; // 메뉴를 드래그 위치로 이동
+        }
+    };
+
+    const handleMouseUp = () => {
+        setIsDragging(false); // 드래그 종료
+    };
+
+    useEffect(() => {
+        // 드래그 이벤트 리스너
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            window.removeEventListener('mouseup', handleMouseUp);
+        };
+    }, [isDragging, dragStart]);
+
+    useEffect(() => {
+        console.log(isCategoriesOpen);
+    }, [isCategoriesOpen]);
+
+
+    const cartSize = cartItems.length;
     return (
-        <nav className={styles.navContainer} onMouseLeave={closeCategory} >
-            <div className={`${styles.navBar} ${isNavVisible ? styles.open : styles.close}`} >
+        <nav className={styles.navContainer} onMouseLeave={closeCategory}>
+            <div className={`${styles.navBar} ${isNavVisible ? styles.open : styles.close}`}>
+                {/* Left Section */}
                 <div className={styles.navLeft}>
-                    <Link to='' className={styles.logo}>
-                        <img src={logo} alt="로고" width="130" height="auto"></img>
+                    <Link to="" className={styles.logo}>
+                        <img src={logo} alt="로고" width="130" height="auto" />
                     </Link>
-                    <div className={styles.menuBar}>
-                        <div className={styles.icon} onClick={() => toggleSearch(!isSearchOpen)}>
-                            <img src={searchIcon} alt="검색" style={{ width: 30, height: 30 }} />
-                        </div>
-                        <div className={styles.menuIcon} onClick={toggleMenue}>
-                            <img src={menuIcon} alt="메뉴" style={{ width: 30, height: 30 }} />
-                        </div>
-                    </div>
-
-
-                </div>
-                <div className={`${styles.searchMobileContainer} ${styles.menuBar} ${isSearchOpen ? styles.searchOpen : ''}`}>
-                    <div className={styles.searchInput}>
-                        <input
-                            id='searchInput'
-                            type="text"
-                            placeholder="상품을 검색해보세요!"
-                            value={query}
-                            onChange={handleInputChange}
-                            onKeyDown={handleSearchKeyDown}
-                            ref={inputMobileRef}
+                    {/* <div className={styles.menuBar}>
+                        <img
+                            src={searchIcon}
+                            alt="검색"
+                            className={styles.icon}
+                            style={{ width: 30, height: 30 }}
+                            onClick={() => toggleSearch(!isSearchOpen)}
                         />
-                        <img src={searchIcon} alt='검색' className={styles.icon} style={{ width: 30, height: 30 }} onClick={handleSearch} />
-
-                        <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsMobileRef}>
-                        {searchResults && searchResults.map((result, index) =>
-                            result && result.name && (
-                                <li
-                                    className={index === selectedItemIndex ? styles.selectedItem : ''}
-                                    key={index} onClick={() => handleSearchItemClick(index)}>
-                                    {result.name}
-                                </li>
-                            )
-                        )}
-                    </ul>
-                    </div>
-                    {/* 검색 결과 리스트 */}
-                    
+                        <img
+                            src={menuIcon}
+                            alt="메뉴"
+                            className={styles.icon}
+                            style={{ width: 30, height: 30 }}
+                            onClick={toggleMenue}
+                        />
+                    </div> */}
                 </div>
 
-
+                {/* Navigation Menu */}
                 <div className={styles.navMenu}>
                     <div className={styles.productCategory}>
                         <ul>
-                            <IconComp defaultIcon={bestIcon} hoverIcon={bestBlueIcon} title={'인기 상품'} link={'/best'} />
-                            <IconComp defaultIcon={newIcon} hoverIcon={newBlueIcon} title={'최신 상품'} link={'/new'} />
-                            <div onMouseOver={toggleCategory}>
-                                <IconComp defaultIcon={allIcon} hoverIcon={allBlueIcon} title={'모든 상품'} link={'/all'} />
-                            </div>
+                            {[
+                                { icon: bestIcon, hoverIcon: bestBlueIcon, title: '인기 상품', link: '/best' },
+                                { icon: newIcon, hoverIcon: newBlueIcon, title: '최신 상품', link: '/new' },
+                                { icon: allIcon, hoverIcon: allBlueIcon, title: '모든 상품', link: '/all', hasHover: true },
+                            ].map(({ icon, hoverIcon, title, link, hasHover }, index) => (
+                                <li
+                                    key={index}
+                                    onMouseOver={hasHover ? openCategory : undefined}
+                                >
+                                    <IconComp defaultIcon={icon} hoverIcon={hoverIcon} title={title} link={link} />
+                                </li>
+                            ))}
                         </ul>
                     </div>
 
                     <div className={styles.navRight}>
-                        <div className={`${styles.searchContainer}`}>
+                        <div className={styles.searchContainer}>
                             <div className={styles.searchInput}>
                                 <input
-                                    id='searchInput'
+                                    id="searchInput"
                                     type="text"
                                     placeholder="상품을 검색해보세요!"
                                     value={query}
@@ -271,111 +300,150 @@ export const NavigationBar = () => {
                                     onKeyDown={handleSearchKeyDown}
                                     ref={inputRef}
                                 />
-                                <img src={searchIcon} alt='검색' className={styles.icon} style={{ width: 30, height: 30 }} onClick={handleSearch} />
-                                <ul id="searchResults" className={styles.searchResults} tabIndex={0} onKeyDown={handleKeyDown} ref={searchResultsRef}>
-                                    {searchResults && searchResults.map((result, index) =>
-                                        result && result.name && (
+                                <img
+                                    src={searchIcon}
+                                    alt="검색"
+                                    className={styles.inputSearchicon}
+                                    onClick={handleSearch}
+                                />
+                                <ul
+                                    id="searchResults"
+                                    className={styles.searchResults}
+                                    tabIndex={0}
+                                    onKeyDown={handleKeyDown}
+                                    ref={searchResultsRef}
+                                >
+                                    {searchResults?.map((result, index) =>
+                                        result?.name && (
                                             <li
+                                                key={index}
                                                 className={index === selectedItemIndex ? styles.selectedItem : ''}
-                                                key={index} onClick={() => handleSearchItemClick(index)}>
+                                                onClick={() => handleSearchItemClick(index)}
+                                            >
                                                 {result.name}
                                             </li>
                                         )
                                     )}
                                 </ul>
                             </div>
-                            {/* 검색 결과 리스트 */}
-                            
                         </div>
+
                         <div className={styles.userCategory}>
                             <ul>
-                                {!isLoggedIn ? (
-                                    // 로그인 되지 않았을 때 로그인 버튼 표시
-                                    <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'로그인'} link={'/login'} />
-                                ) : (
-                                    // 로그인 되었을 때 마이페이지 버튼 표시
-                                    <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'마이페이지'} link={'/myPage'} />
-                                )}
-                                <IconComp defaultIcon={cartIcon} hoverIcon={cartBlueIcon} title={'장바구니'} link={'/cart'} />
+                                {[
+                                    { icon: loginIcon, hoverIcon: loginBlueIcon, title: isLoggedIn ? '마이페이지' : '로그인', link: isLoggedIn ? '/myPage' : '/login' },
+                                    { icon: cartIcon, hoverIcon: cartBlueIcon, title: '장바구니', link: '/cart', badgeCount: cartSize },
+                                ].map(({ icon, hoverIcon, title, link, badgeCount = -1 }, index) => (
+                                    <li key={index}>
+                                        <IconComp defaultIcon={icon} hoverIcon={hoverIcon} title={title} link={link} badgeCount={badgeCount} />
+                                    </li>
+                                ))}
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div 
-                ref={menuRef} 
-                className={`${styles.categories} ${isMenuOpen ? styles.show : ''} ${isCategoriesOpen ? styles.show : ''}`}
+            {/* Categories Dropdown */}
+            <div
+                className={`${styles.categories} ${isCategoriesOpen ? styles.show : ''}`} // 상태에 따라 메뉴 표시 여부 조정
+                onMouseDown={handleMouseDown}
             >
                 {categories.map((category) => (
                     <div key={category.name} className={styles.categoryItem}>
                         <Link to={`/categoryProducts/${category.name}`} className={styles.categoryLink}>
-                            {category.imageUrl ? (
-                                <img src={category.imageUrl} alt={category.name} width="40" />
-                            ) : (
-                                <img
-                                src={`${process.env.PUBLIC_URL}/category/default.png`}
+                            <img
+                                src={category.imageUrl || `${process.env.PUBLIC_URL}/category/default.png`}
                                 alt={category.name}
                                 width="40"
-                                />
-                            )}
+                            />
                             <p className={styles.categoryTitle}>{category.name}</p>
                         </Link>
-
                         <ul className={styles.subcategoryList}>
-                            {category.subcategories.map((sub, index) => ( // 여기서 index를 사용하여 고유한 key prop을 생성합니다.
-                                <Link key={`${category.name}_${index}`} to={`/categoryProducts/${category.name}/${sub.name}`} className={styles.subcategoryLink}>
+                            {category.subcategories.map((sub, index) => (
+                                <Link
+                                    key={`${category.name}_${index}`}
+                                    to={`/categoryProducts/${category.name}/${sub.name}`}
+                                    className={styles.subcategoryLink}
+                                >
                                     <li className={styles.subcategoryItem}>{sub.name}</li>
                                 </Link>
                             ))}
                         </ul>
                     </div>
                 ))}
-
             </div>
 
-            <div className={styles.mobileBottomNav}> {/* 모바일 환경에서 화면 하단에 고정될 컨테이너 */}
-                <div className={styles.productUserCategory}> {/* productCategory와 userCategory를 함께 감싸는 컨테이너 */}
-
+            {/* Mobile Bottom Navigation */}
+            <div className={styles.mobileBottomNav}>
+                <div className={styles.productUserCategory}>
                     <ul>
-                        <div>
-                            <IconComp defaultIcon={bestIcon} hoverIcon={bestBlueIcon} title={'인기 상품'} link={'/best'} size={35} />
-                            <p>인기 상품</p>
-                        </div>
-                        <div>
-                            <IconComp defaultIcon={newIcon} hoverIcon={newBlueIcon} title={'최신 상품'} link={'/new'} size={35}/>
-                            <p>최신 상품</p>
-                        </div>
-                        <div>
-                            <IconComp defaultIcon={homeICon} hoverIcon={homeICon} title={'홈'} link={'/'} size={35}/>
-                            <p>홈</p>
-                        </div>
-
-
-                        {!isLoggedIn ? (
-                            // 로그인 되지 않았을 때 로그인 버튼 표시
-                            <div>
-                                <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'로그인'} link={'/login'} size={35} />
-                                <p>로그인</p>
-                            </div>
-                        ) : (
-                            // 로그인 되었을 때 마이페이지 버튼 표시
-                            <div>
-                                <IconComp defaultIcon={loginIcon} hoverIcon={loginBlueIcon} title={'마이페이지'} link={'/myPage'} size={35}/>
-                                <p>마이페이지</p>
-                            </div>
-                        )}
-                        <div>
-                            <IconComp defaultIcon={cartIcon} hoverIcon={cartBlueIcon} title={'장바구니'} link={'/cart'} size={35}/>
-                            <p>장바구니</p>
-                        </div>
+                        {[
+                            { icon: bestIcon, hoverIcon: bestBlueIcon, title: '인기 상품', link: '/best' },
+                            { icon: newIcon, hoverIcon: newBlueIcon, title: '최신 상품', link: '/new' },
+                            { icon: logo, hoverIcon: logo, title: '홈', link: '/' },
+                            { icon: loginIcon, hoverIcon: loginBlueIcon, title: isLoggedIn ? '마이페이지' : '로그인', link: isLoggedIn ? '/myPage' : '/login' },
+                            { icon: cartIcon, hoverIcon: cartBlueIcon, title: '장바구니', link: '/cart', badgeCount: cartSize },
+                        ].map(({ icon, hoverIcon, title, link, badgeCount = -1 }, index) => (
+                            <li key={index}>
+                                <IconComp defaultIcon={icon} hoverIcon={hoverIcon} title={title} link={link} size={35} badgeCount={badgeCount} />
+                            </li>
+                        ))}
                     </ul>
+
+                    <div className={`${styles.searchInput} ${styles.hidden} ${isSearchOpen ? styles.searchOpen : ''}`}>
+                        <input
+                            id="searchInput"
+                            type="text"
+                            placeholder="상품을 검색해보세요!"
+                            value={query}
+                            onChange={handleInputChange}
+                            onKeyDown={handleSearchKeyDown}
+                            ref={inputMobileRef}
+                        />
+                        <img
+                            src={searchIcon}
+                            alt="검색"
+                            className={styles.inputSearchicon}
+                            onClick={handleSearch}
+                        />
+                        <ul
+                            id="searchResults"
+                            className={styles.searchResults}
+                            tabIndex={0}
+                            onKeyDown={handleKeyDown}
+                            ref={searchResultsMobileRef}
+                        >
+                            {searchResults?.map((result, index) =>
+                                result?.name && (
+                                    <li
+                                        key={index}
+                                        className={index === selectedItemIndex ? styles.selectedItem : ''}
+                                        onClick={() => handleSearchItemClick(index)}
+                                    >
+                                        {result.name}
+                                    </li>
+                                )
+                            )}
+                        </ul>
+                    </div>
+
+                    <img
+                        src={categoryIcon}
+                        alt="메뉴"
+                        className={styles.categoryIcon}
+                        onClick={toggleCategory}
+                    />
+
+                    <img
+                        src={searchButtonIcon}
+                        alt="검색"
+                        className={styles.searchIcon}
+                        onClick={() => toggleSearch(!isSearchOpen)}
+                    />
                 </div>
             </div>
-
-
         </nav>
-
-    )
+    );
 
 }
