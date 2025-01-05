@@ -68,12 +68,12 @@ export const PaymentDetails: React.FC<PaymentDetailsProps> = ({ defaultSortBy = 
 
     return (
         <div ref={paymentShowListRef}>
-            <div className='mt-3 border-b flex justify-between'>
-                <div className='text-2xl font-semibold'>주문 내역</div>
+            <div className='py-3 border-b flex justify-between'>
+                <div className='text-xl xl:text-2xl font-semibold'>주문 내역</div>
                 <select
                     value={sortBy}
                     onChange={handleSortChange}
-                    className="border-2 border-gray-300 rounded-md px-4 py-2 text-sm outline-none bg-white text-gray-700 transition duration-300 ease-in-out focus:border-blue-500 hover:border-blue-500"
+                    className="border-2 border-gray-300 rounded-md px-2 py-1 xl:px-4 xl:py-2 text-xs xl:text-sm outline-none bg-white text-gray-700 transition duration-300 ease-in-out focus:border-blue-500 hover:border-blue-500"
                 >
                     <option value="all">모두보기</option>
                     <option value="paid">결제 완료</option>

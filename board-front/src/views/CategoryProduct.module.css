@@ -21,7 +21,11 @@
 .productListTitle {
   font-size: 30px;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;      
+  text-overflow: ellipsis; 
 }
+
 
 .sortSelect {
   padding: 8px 16px;
@@ -105,10 +109,17 @@
     grid-template-columns: repeat(3, 1fr);
     
   }
+  .homeContainer {
+    padding: 0;
+  }
 
 }
 
 @media (max-width: 768px) {
+  .productListTitle {
+    font-size: 18px;
+  }
+
   .productList {
     grid-template-columns: repeat(3, 1fr);
     
@@ -122,6 +133,11 @@
     margin: 10px;
 
   }
+  
+  .sortSelect {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -130,7 +146,7 @@
     
   }
   .productListTitle {
-    font-size: 20px;
+    font-size: 14px;
   }
   .homeContainer {
     width: 100%;

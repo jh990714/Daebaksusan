@@ -70,7 +70,7 @@ export const Mypage: React.FC = () => {
     };
 
     return (
-        <div className="lg:mx-16 xl:mx-56 2xl:mx-80 mt-10 p-2 md:p-5 rounded-lg whitespace-nowrap">
+        <div className="lg:mx-16 xl:mx-56 2xl:mx-80 mt-3 p-2 md:p-5 rounded-lg whitespace-nowrap">
             <div className="sm:flex sm:gap-3 md:gap-10 lg:gap-20 2xl:gap-32 sm:border-b sm:p-4">
                 <div className="text-center sm:block text-2xl text-blue-600 font-semibold hover:cursor-pointer" onClick={() => handlePageChange('mypageInfo')}>마이페이지</div>
                 <div className="hidden sm:flex gap-2 text-lg">
