@@ -1,4 +1,4 @@
-package com.seafood.back.respository;
+package com.seafood.back.repository;
 
 import java.util.List;
 import java.util.Optional;

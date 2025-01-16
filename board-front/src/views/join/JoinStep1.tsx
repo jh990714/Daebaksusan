@@ -42,9 +42,9 @@ export const JoinStep1: React.FC = () => {
                 <h1 className="text-2xl text-blue-600 font-semibold">회원가입</h1>
             </div>
             <div className="py-2">
-                <div className="md:flex md:justify-between">
-                    <div className="md:w-1/4 md:border-r md:text-l font-semibold">
-                        <div className="space-y-6 mt-10">
+                <div className="flex flex-col md:flex-row"> {/* 세로 정렬 후 가로 정렬 */}
+                    <div className="md:w-1/4 md:pr-4 md:mb-0 md:border-r md:text-l font-semibold"> {/* 적절한 패딩 추가 */}
+                        <div className="md:flex md:justify-center">
                             <JoinTimeLineComp currentStep={1} />
                         </div>
                     </div>

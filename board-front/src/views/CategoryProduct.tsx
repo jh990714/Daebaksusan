@@ -80,13 +80,7 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
 
     useEffect(() => {
         const handleResize = () => {
-            if (window.innerWidth < 480) {
-                setVisibleCount(2 * rows);
-                setColums(2);
-            } else if (window.innerWidth < 768) {
-                setVisibleCount(3 * rows);
-                setColums(3);
-            } else if (window.innerWidth < 1024) {
+            if (window.innerWidth <= 768) {
                 setVisibleCount(3 * rows);
                 setColums(3);
             } else {
@@ -147,12 +141,12 @@ export const CategoryProduct: React.FC<CategoryProductProp> = ({ path }) => {
                         <option value="priceDesc">높은가격순</option>
                     </select>
                 </div>
-                <div>
+                <div className={styles.productListBody}>
 					{products && 
 						<ul className={styles.productList}>
 							{sortedProducts().slice(0, visibleCount).map((product: Product, index: number) => (
 								<li key={product.productId} className={index >= visibleCount - colums && visibleCount < products.length ? `${styles.blurEffect}` : ''}>
-									<ProductListComp product={product} size='255px' fontSize='7px' />
+									<ProductListComp product={product} />
 								</li>
 							))}
 						</ul>

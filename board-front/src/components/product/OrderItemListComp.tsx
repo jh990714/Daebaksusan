@@ -67,7 +67,6 @@ export const OrderItemListComp: React.FC<OrderItemProps> = ({ orderItem }) => {
                 </tbody>
             </table>
             <div className={styles_m.mobileContainer}>
-                <div className="checkBox"></div>
                 <div>
                     <img src={orderItem.cartItem.product.imageUrl} alt="사진" style={{ width: 100, height: 100, borderRadius: 10 }} />
                 </div>

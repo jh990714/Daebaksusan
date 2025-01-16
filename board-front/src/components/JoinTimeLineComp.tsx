@@ -6,7 +6,6 @@ interface JoinTimeLineProps {
 }
 
 const JoinTimeLineComp: React.FC<JoinTimeLineProps> = ({ currentStep }) => {
-  // 스텝과 설명을 포함하는 객체 배열
   const steps = [
     { name: 'STEP.01', description: '본인 확인' },
     { name: 'STEP.02', description: '약관 동의' },
@@ -24,44 +23,48 @@ const JoinTimeLineComp: React.FC<JoinTimeLineProps> = ({ currentStep }) => {
     window.addEventListener('resize', handleResize);
     handleResize(); // 페이지가 처음 로드될 때 한 번 실행
 
-    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
     return () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
   const handleScroll = () => {
-    if (isMobile) return; // 모바일 환경에서는 스크롤 이벤트 무시
+    if (isMobile) {
+      const timeline = document.querySelector('.timeline-container') as HTMLElement;
+      if (timeline) {
+        timeline.style.position = 'relative';
+        timeline.style.bottom = '0px';
+      }
+      return;
+    }
 
     const footer = document.querySelector('footer'); // 푸터 요소 선택
     if (!footer) return;
-  
+
     const footerOffsetTop = footer.offsetTop;
     const timeline = document.querySelector('.timeline-container') as HTMLElement;
     if (!timeline) return;
-  
+
     const scrollPosition = window.pageYOffset + window.innerHeight; // 현재 스크롤 위치 계산
     if (scrollPosition >= footerOffsetTop) {
       // 스크롤 위치가 푸터를 침범할 경우
       timeline.style.position = 'absolute';
-      timeline.style.bottom = '20px'; // 여기서 '100px'는 예제 값으로, 실제 환경에 맞게 조정해야 합니다.
+      timeline.style.bottom = '20px';
     } else {
       // 그 외의 경우 원래대로 고정
       timeline.style.position = 'fixed';
-      timeline.style.bottom = '20px'; // 초기 고정 위치로 복귀
+      timeline.style.bottom = '20px';
     }
   };
 
   useEffect(() => {
-    if (!isMobile) {
-      window.addEventListener('scroll', handleScroll);
-    }
+    window.addEventListener('scroll', handleScroll);
 
-    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    // 이벤트 리스너를 항상 정리
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [isMobile]);
+  }, [isMobile]); // 모바일 여부에 따라 리스너 관리
 
   return (
     <div className={`timeline-container`}>

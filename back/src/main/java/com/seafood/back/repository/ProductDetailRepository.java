@@ -1,4 +1,4 @@
-package com.seafood.back.respository;
+package com.seafood.back.repository;
 
 import com.seafood.back.entity.ProductDetail;
 import org.springframework.data.jpa.repository.JpaRepository;

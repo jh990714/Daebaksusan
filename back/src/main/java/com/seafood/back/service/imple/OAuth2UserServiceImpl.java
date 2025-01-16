@@ -16,8 +16,8 @@ import com.seafood.back.controller.MemberController;
 import com.seafood.back.entity.CustomOAuth2User;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.MemberPointsEntity;
-import com.seafood.back.respository.MemberPointsRepository;
-import com.seafood.back.respository.MemberRepository;
+import com.seafood.back.repository.MemberPointsRepository;
+import com.seafood.back.repository.MemberRepository;
 import com.seafood.back.service.CouponService;
 import com.seafood.back.service.MemberService;
 

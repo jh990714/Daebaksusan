@@ -38,10 +38,9 @@ import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.PaymentDetailsEntity;
 import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
-
-import com.seafood.back.respository.OptionRepository;
-import com.seafood.back.respository.PaymentDetailsRepository;
-import com.seafood.back.respository.ProductRepository;
+import com.seafood.back.repository.OptionRepository;
+import com.seafood.back.repository.PaymentDetailsRepository;
+import com.seafood.back.repository.ProductRepository;
 import com.seafood.back.service.CartService;
 import com.seafood.back.service.CouponService;
 import com.seafood.back.service.MemberService;
@@ -107,9 +106,9 @@ public class PaymentServiceImple implements PaymentService {
 
                 if (remainingStock < 0) {
                     logger.error("Order Item - Message: {}, ProductId: {}, ProductName: {}",
-                             "주문 수량이 재고보다 많습니다",
-                             productDTO.getProductId(),
-                             productDTO.getName());
+                            "주문 수량이 재고보다 많습니다",
+                            productDTO.getProductId(),
+                            productDTO.getName());
                     cancelPayment(imp_uid);
                     throw new IllegalArgumentException("주문 수량이 재고보다 많습니다. 상품명: " + productDTO.getName());
                 }
@@ -134,7 +133,7 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String savePaymentDetails(Long memberId, String impUid, String mid, String password, String status){
+    public String savePaymentDetails(Long memberId, String impUid, String mid, String password, String status) {
         try {
             PaymentDetailsEntity paymentDetails = new PaymentDetailsEntity();
 
@@ -183,7 +182,8 @@ public class PaymentServiceImple implements PaymentService {
 
     @Transactional
     @Override
-    public String processSuccessfulPayment(Long memberId, String id, List<CartDTO> orderItems, String impUid, String mid, String password, CouponDTO coupon, BigDecimal points, String status) {
+    public String processSuccessfulPayment(Long memberId, String id, List<CartDTO> orderItems, String impUid,
+            String mid, String password, CouponDTO coupon, BigDecimal points, String status) {
         try {
             // 결제가 성공하면 상품 수량 변경
             productService.updateProductQuantities(orderItems);
@@ -194,11 +194,10 @@ public class PaymentServiceImple implements PaymentService {
                         .map(CartDTO::getCartId)
                         .collect(Collectors.toList());
 
-                
                 cartService.deleteSelectedCartItems(memberId, cartItemIdsToDelete);
 
                 if (points != BigDecimal.ZERO) {
-                    
+
                     BigDecimal subTotal = memberService.deductPoints(memberId, points);
                     pointsTransactionService.createTransaction(memberId, "상품 구매", points.negate(), subTotal);
                 }
@@ -213,11 +212,11 @@ public class PaymentServiceImple implements PaymentService {
 
             return orderNumber;
         } catch (Exception e) {
-            logger.error("Order - Message: {}, ImpUid: {}", 
-                        "결제 실패",
-                        memberId,
-                        id,
-                        impUid);
+            logger.error("Order - Message: {}, ImpUid: {}",
+                    "결제 실패",
+                    memberId,
+                    id,
+                    impUid);
             cancelPayment(impUid);
             throw new RuntimeException("Error processing successful payment", e);
         }
@@ -237,17 +236,17 @@ public class PaymentServiceImple implements PaymentService {
         Map<String, Object> jsonMap = objectMapper.readValue(iamportResponse.getResponse().getCustomData(),
                 new TypeReference<Map<String, Object>>() {
                 });
-        
+
         Number memberIdNumber = (Number) jsonMap.get("id");
         Long memberId = null;
         String id = null;
         if (memberIdNumber != null) {
             MemberDTO memberDto = memberService.getMemberInfo(memberIdNumber.longValue());
-            
+
             memberId = memberDto.getMemberId();
             id = memberDto.getId();
         }
-                
+
         List<CartDTO> orderItems = objectMapper.convertValue(jsonMap.get("orderItems"),
                 new TypeReference<List<CartDTO>>() {
                 });
@@ -269,11 +268,11 @@ public class PaymentServiceImple implements PaymentService {
         CouponAmountResult couponAmountResult = couponService.couponAmount(memberId, coupon);
 
         if (orderAmount.compareTo(couponAmountResult.getMinimumOrderAmount()) < 0) {
-            logger.error("Order - Message: {}, ImpUid: {}", 
-                        "주문 금액이 쿠폰의 최소 주문 금액을 충족하지 않습니다.",
-                        memberId,
-                        id,
-                        imp_uid);
+            logger.error("Order - Message: {}, ImpUid: {}",
+                    "주문 금액이 쿠폰의 최소 주문 금액을 충족하지 않습니다.",
+                    memberId,
+                    id,
+                    imp_uid);
             cancelPayment(imp_uid);
             throw new IllegalArgumentException("주문 금액이 쿠폰의 최소 주문 금액을 충족하지 않습니다.");
         }
@@ -283,7 +282,7 @@ public class PaymentServiceImple implements PaymentService {
             pointsUsed = points;
             BigDecimal availablePoint = memberService.getAvailablePoints(memberId);
             if (points.compareTo(availablePoint) > 0) {
-                logger.error("Order - Message: {}, ImpUid: {}", 
+                logger.error("Order - Message: {}, ImpUid: {}",
                         "사용 가능한 포인트보다 더 많은 포인트를 사용하려고 합니다.",
                         memberId,
                         id,
@@ -298,41 +297,45 @@ public class PaymentServiceImple implements PaymentService {
         if (expectedAmount.compareTo(paidAmount) == 0) {
             String mid = iamportResponse.getResponse().getMerchantUid();
             String status = iamportResponse.getResponse().getStatus();
-            String orderNumber = processSuccessfulPayment(memberId, id, orderItems, imp_uid, mid, password, coupon, pointsUsed, status);
-            
+            String orderNumber = processSuccessfulPayment(memberId, id, orderItems, imp_uid, mid, password, coupon,
+                    pointsUsed, status);
+
             for (CartDTO item : orderItems) {
                 int quantity = item.getCartItem().getQuantity();
                 BigDecimal regularPrice = item.getCartItem().getProduct().getRegularPrice();
                 BigDecimal salePrice = item.getCartItem().getProduct().getSalePrice();
                 BigDecimal optionPrice = item.getCartItem().getOption().getAddPrice();
                 BigDecimal shippingCost = item.getCartItem().getProduct().getShippingCost();
-            
+
                 BigDecimal pricePerUnit = regularPrice.subtract(salePrice);
                 BigDecimal totalPricePerUnit = pricePerUnit.add(optionPrice);
                 BigDecimal totalAmount = totalPricePerUnit.multiply(BigDecimal.valueOf(quantity));
-            
+
                 int boxCnt = item.getCartItem().getBoxCnt();
-            
+
                 BigDecimal optionTotalPrice = optionPrice.multiply(BigDecimal.valueOf(boxCnt));
                 BigDecimal shippingTotalCost = shippingCost.multiply(BigDecimal.valueOf(boxCnt));
-            
+
                 totalAmount = totalAmount.add(optionTotalPrice).add(shippingTotalCost);
-            
-                logger.info("Order Item - Message: {}, OrderNumber: {}, ProductId: {}, ProductName: {}, Quantity: {}, Amount: {}",
-                            "주문 항목 처리",
-                            orderNumber,
-                            item.getCartItem().getProduct().getProductId(),
-                            item.getCartItem().getProduct().getName(),
-                            quantity,
-                            totalAmount );
-            }
-            logger.info("Order - Message: {}, MemberId: {}, Id: {}, OrderNumber: {}, ImpUid: {}", 
-                        "결제 성공",
+
+                logger.info(
+                        "Order Item - Message: {}, MemberId: {}, Id: {}, OrderNumber: {}, ProductId: {}, ProductName: {}, Quantity: {}, Amount: {}",
+                        "주문 항목 처리",
                         memberId,
                         id,
                         orderNumber,
-                        imp_uid);
-            
+                        item.getCartItem().getProduct().getProductId(),
+                        item.getCartItem().getProduct().getName(),
+                        quantity,
+                        totalAmount);
+            }
+            logger.info("Order - Message: {}, MemberId: {}, Id: {}, OrderNumber: {}, ImpUid: {}",
+                    "결제 성공",
+                    memberId,
+                    id,
+                    orderNumber,
+                    imp_uid);
+
             Map<String, Object> response = new HashMap<>();
             response.put("orderNumber", orderNumber);
             response.put("iamportResponse", iamportResponse);
@@ -340,11 +343,11 @@ public class PaymentServiceImple implements PaymentService {
 
             return response;
         } else {
-            logger.error("Order - Message: {}, ImpUid: {}", 
-                        "주문 가격과 결제된 금액이 일치하지 않습니다.",
-                        memberId,
-                        id,
-                        imp_uid);
+            logger.error("Order - Message: {}, ImpUid: {}",
+                    "주문 가격과 결제된 금액이 일치하지 않습니다.",
+                    memberId,
+                    id,
+                    imp_uid);
             cancelPayment(imp_uid);
             throw new IllegalArgumentException("주문 가격과 결제된 금액이 일치하지 않습니다.");
         }
@@ -359,7 +362,7 @@ public class PaymentServiceImple implements PaymentService {
 
             String status = cancelResponse.getResponse().getStatus();
             if (status.equals("cancelled")) {
-                PaymentDetailsEntity paymentDetailsEntity = paymentDetailsRepository.findByImpUid(imp_uid); 
+                PaymentDetailsEntity paymentDetailsEntity = paymentDetailsRepository.findByImpUid(imp_uid);
 
                 if (paymentDetailsEntity == null) {
                     logger.error("Cancel - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
@@ -385,18 +388,18 @@ public class PaymentServiceImple implements PaymentService {
                 return cancelResponse;
             } else {
                 logger.error("Cancel - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
-                            "취소가 이루어지지 않았습니다.",
-                            null,
-                            null,
-                            imp_uid);
+                        "취소가 이루어지지 않았습니다.",
+                        null,
+                        null,
+                        imp_uid);
                 throw new IllegalAccessError(cancelResponse.getResponse().getFailReason());
             }
         } catch (IamportResponseException | IOException e) {
             logger.error("Cancel - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
-                            "환불 처리 중 오류 발생",
-                            null,
-                            null,
-                            imp_uid);
+                    "환불 처리 중 오류 발생",
+                    null,
+                    null,
+                    imp_uid);
             throw new IllegalAccessError();
         }
     }
@@ -404,29 +407,42 @@ public class PaymentServiceImple implements PaymentService {
     @Transactional
     @Override
     public ResponseEntity<?> refundIamport(Long memberId, String orderNumber) {
-        PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByMemberIdAndOrderNumber(memberId, orderNumber);
+        PaymentDetailsEntity paymentDetail = paymentDetailsRepository.findByMemberIdAndOrderNumber(memberId,
+                orderNumber);
         MemberDTO memberDTO = memberService.getMemberInfo(memberId);
-        try {
 
-            if (paymentDetail.getIsCancel() == false) {
+        try {
+            if (!paymentDetail.getIsCancel()) {
                 logger.error("Cancel - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
                         "취소가 불가능합니다.",
-                        memberId,
+                        memberDTO.getMemberId(),
                         memberDTO.getId(),
                         paymentDetail.getImpUid());
-                
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("취소가 불가능합니다.");
             }
+
             IamportResponse<Payment> cancelResponse = cancelPayment(paymentDetail.getImpUid());
             PaymentDetailDTO paymentDetailDTO = mapToPaymentDetailDTO(cancelResponse);
 
-            productService.addProductQuantities(orderNumber, paymentDetailDTO.getOrderItems());
-            // 사용된 포인트를 돌려주기
-            BigDecimal pointsUsed = paymentDetailDTO.getPoints();
+            // 개별 항목 처리
+            for (PaymentItemDTO orderItem : paymentDetailDTO.getOrderItems()) {
+                productService.addProductQuantity(orderItem);
+                logger.info(
+                        "Cancel Item - Message: {}, MemberId: {}, ID: {}, OrderNumber: {}, ProductId: {}, ProductName: {}, Quantity: {}",
+                        "취소 항목 처리",
+                        memberDTO.getMemberId(),
+                        memberDTO.getId(),
+                        orderNumber,
+                        orderItem.getCartItem().getProduct().getProductId(),
+                        orderItem.getCartItem().getProduct().getName(),
+                        orderItem.getCartItem().getQuantity());
+            }
 
+            // 추가 로직
+            BigDecimal pointsUsed = paymentDetailDTO.getPoints();
             if (pointsUsed != BigDecimal.ZERO) {
-                BigDecimal subTotal = memberService.deductPoints(memberId, pointsUsed.negate()); 
+                BigDecimal subTotal = memberService.deductPoints(memberId, pointsUsed.negate());
                 pointsTransactionService.createTransaction(memberId, "결제취소", pointsUsed, subTotal);
             }
 
@@ -435,10 +451,10 @@ public class PaymentServiceImple implements PaymentService {
             return ResponseEntity.ok(cancelResponse);
         } catch (Exception e) {
             logger.error("Cancel - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
-                "환불 처리 중 오류 발생.",
-                memberId,
-                memberDTO.getId(),
-                paymentDetail.getImpUid());
+                    "환불 처리 중 오류 발생.",
+                    memberDTO.getMemberId(),
+                    memberDTO.getId(),
+                    paymentDetail.getImpUid());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("환불 처리 중 오류 발생");
         }

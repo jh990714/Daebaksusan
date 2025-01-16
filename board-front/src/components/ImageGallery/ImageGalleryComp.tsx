@@ -28,7 +28,7 @@ function CustomArrow(props: any) {
     );
 }
 
-const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", fontSize = "12", component: Component, rows = 1 }) => {
+const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", fontSize, component: Component, rows = 1 }) => {
     const [slidesToShow, setSlidesToShow] = useState(4);
     const [r, setR] = useState(rows);
     const [dots, setDots] = useState(true);
@@ -88,7 +88,7 @@ const ImageGalleryComp: React.FC<ImageGalleryProps> = ({ items, size = "275px", 
             {items.map((item, index) => (
                 <div key={index} className={`${Component ? '' : 'h-[200px]'}`}>
                     {Component ? (
-                        <Component product={item} fontSize={fontSize} border="1" shadow={true} />
+                        <Component product={item} border="1" shadow={true} />
                     ) : (
                         <img src={`${item}`} alt={`Review ${index}`} className="w-full h-full object-cover rounded-md" />
                     )}

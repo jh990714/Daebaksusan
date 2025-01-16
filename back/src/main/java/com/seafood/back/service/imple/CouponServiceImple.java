@@ -16,9 +16,9 @@ import com.seafood.back.dto.CouponDTO;
 import com.seafood.back.entity.CouponEntity;
 import com.seafood.back.entity.MemberCouponEntity;
 import com.seafood.back.entity.MemberEntity;
-import com.seafood.back.respository.CouponRepository;
-import com.seafood.back.respository.MemberCouponRepository;
-import com.seafood.back.respository.MemberRepository;
+import com.seafood.back.repository.CouponRepository;
+import com.seafood.back.repository.MemberCouponRepository;
+import com.seafood.back.repository.MemberRepository;
 import com.seafood.back.service.CouponService;
 
 import jakarta.transaction.Transactional;

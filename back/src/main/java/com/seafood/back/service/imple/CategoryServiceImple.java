@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.seafood.back.dto.CategoryDTO;
 import com.seafood.back.dto.CategoryDTO.SubcategoryDTO;
 import com.seafood.back.entity.CategoryEntity;
-import com.seafood.back.respository.CategoryRepository;
+import com.seafood.back.repository.CategoryRepository;
 import com.seafood.back.service.CategoryService;
 
 import lombok.RequiredArgsConstructor;
