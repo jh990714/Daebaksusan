@@ -19,20 +19,18 @@ export const JoinStep2: React.FC = () => {
     };
 
     return (
-        <div className="container mt-10 py-5 rounded-lg">
+        <div className="container py-5 rounded-lg">
             <div className="flex justify-between items-center border-b pb-4">
                 <h1 className="text-2xl text-blue-600 font-semibold">회원가입</h1>
             </div>
-            <div className="">
-                <div className="md:flex md:justify-between">
-                    <div className="md:w-1/5 md:border-r md:text-l font-semibold">
-                        <div className="mt-10">
-                            <div className="">
-                                <JoinTimeLineComp currentStep={2} />
-                            </div>
+            <div className="py-2">
+                <div className="flex flex-col md:flex-row"> {/* 세로 정렬 후 가로 정렬 */}
+                    <div className="md:w-1/4 md:pr-4 md:mb-0 md:border-r md:text-l font-semibold"> {/* 적절한 패딩 추가 */}
+                        <div className="md:flex md:justify-center">
+                            <JoinTimeLineComp currentStep={1} />
                         </div>
                     </div>
-                    <div className="bg-white text-gray-800 container">
+                    <div className="flex-grow bg-white text-gray-800 container">
                         <div className="flex flex-col items-center">
                             <div className="flex flex-col w-full space-y-4">
                                 <TermsOfServiceComp
@@ -61,7 +59,6 @@ export const JoinStep2: React.FC = () => {
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

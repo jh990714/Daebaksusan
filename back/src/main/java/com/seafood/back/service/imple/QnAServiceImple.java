@@ -13,8 +13,8 @@ import com.seafood.back.dto.QnADTO;
 import com.seafood.back.dto.QuestionDTO;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.QuestionEntity;
-import com.seafood.back.respository.MemberRepository;
-import com.seafood.back.respository.QuestionRepository;
+import com.seafood.back.repository.MemberRepository;
+import com.seafood.back.repository.QuestionRepository;
 import com.seafood.back.service.QnAService;
 
 import lombok.RequiredArgsConstructor;

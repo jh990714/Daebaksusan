@@ -22,6 +22,7 @@ import Member from "./interface/member.interface";
 import { QnA } from "./interface/qna.interface";
 import CarouselItem from "./interface/carousel.interface";
 import VideoItem from "./interface/video.interface";
+import AdData from "./interface/advertisement-item.interface";
 
 
 export type{
@@ -49,4 +50,5 @@ export type{
     QnA,
     CarouselItem,
     VideoItem,
+    AdData,
 }

@@ -20,12 +20,12 @@ import com.seafood.back.entity.ProductEntity;
 import com.seafood.back.entity.ReviewEntity;
 import com.seafood.back.entity.ReviewImageEntity;
 import com.seafood.back.entity.ReviewResponseEntity;
-import com.seafood.back.respository.MemberRepository;
-import com.seafood.back.respository.OptionRepository;
-import com.seafood.back.respository.ProductRepository;
-import com.seafood.back.respository.ReviewImageRepository;
-import com.seafood.back.respository.ReviewRepository;
-import com.seafood.back.respository.ReviewResponseRepository;
+import com.seafood.back.repository.MemberRepository;
+import com.seafood.back.repository.OptionRepository;
+import com.seafood.back.repository.ProductRepository;
+import com.seafood.back.repository.ReviewImageRepository;
+import com.seafood.back.repository.ReviewRepository;
+import com.seafood.back.repository.ReviewResponseRepository;
 import com.seafood.back.service.ReviewService;
 import com.seafood.back.service.S3Service;
 

@@ -307,26 +307,32 @@ export const Order: React.FC = () => {
     const handleSelectedPointChange: ChangeEventHandler<HTMLInputElement> = (event) => {
         const inputValue = event.target.value.trim(); // 입력값의 양 끝 공백 제거
         const value = Number(inputValue); // 입력된 값을 숫자로 변환
-
+    
         if (isNaN(value) || value < 0) {
             return;
         }
-
+    
         if (typeof ordererInfo !== 'undefined' && typeof ordererInfo.points !== 'undefined') {
-            if (value > ordererInfo.points) {
-                setSelectedPoint(ordererInfo.points);
-            } else {
-                if (totalItemPrice + totalShippingCost - value - couponDiscount() >= 0) {
-                    setSelectedPoint(value);
-                } else {
-                    setSelectedPoint(0);
-                }
+            const maxPoint = ordererInfo.points;
+    
+            // 적립금이 최대 포인트보다 크지 않도록 설정
+            let adjustedPoint = value;
+    
+            // 적립금 적용 후 총 금액이 0보다 작으면, 최대 사용할 수 있는 포인트로 설정
+            const newTotal = totalItemPrice + totalShippingCost - adjustedPoint - couponDiscount();
+            if (newTotal < 0) {
+                adjustedPoint = totalItemPrice + totalShippingCost - couponDiscount();
             }
-
+    
+            // 최대로 사용할 수 있는 포인트로 설정
+            if (adjustedPoint <= maxPoint) {
+                setSelectedPoint(adjustedPoint);
+            } else {
+                setSelectedPoint(maxPoint); // 최대 포인트 사용
+            }
         } else {
-            setSelectedPoint(0);
+            setSelectedPoint(0); // 포인트 정보가 없으면 0으로 설정
         }
-
     };
 
     // 할인 금액

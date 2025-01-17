@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.PointsDetailsEntity;
-import com.seafood.back.respository.MemberRepository;
-import com.seafood.back.respository.PointsTransactionRepository;
+import com.seafood.back.repository.MemberRepository;
+import com.seafood.back.repository.PointsTransactionRepository;
 import com.seafood.back.service.PointsTransactionService;
 
 import jakarta.transaction.Transactional;

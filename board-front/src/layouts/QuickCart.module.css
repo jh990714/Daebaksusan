@@ -15,6 +15,7 @@
     color: #ffffff;
     text-align: center;
     text-decoration: none;
+    font-size: 14px;
     font-weight: bold;
     transition: background-color 0.3s;
 }
@@ -27,7 +28,7 @@
     border-radius: 50%;
     position: absolute;
     top: -25px;
-    left: 150px;
+    left: 5rem;
 }
 
 
@@ -62,31 +63,44 @@
 
 .cartListContainer, .moveButton {
     display: flex;
-    align-items: center;
+    align-items: center; /* 세로 정렬 */
+    justify-content: center; /* 가로 정렬 */
     cursor: pointer;
 }
 
 .cartItemContainer {
     display: flex;
+   
+    width: 100%; /* 전체 너비 사용 */
+    padding: 0.5rem; /* 내부 여백 추가 */
 }
 
 .checkboxContainer {
-    margin-right: 10px;
+    margin-right: 0.5rem;
 }
 
 .productList {
     margin: 0;
     padding: 0;
     list-style: none;
-    margin-right: 2rem;
     display: flex;
-    gap: 20px;
 }
 
 .productList li {
     display: inline-block;
 }
 
+.productListContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr)); /* 열의 최소 크기는 10rem, 남는 공간은 균등 배분 */
+    gap: 0.2rem; /* 항목 간 간격 */
+    width: 100px; /* 전체 부모 컨테이너 크기를 기준으로 설정 */
+}
+
+.productListContainer li {
+    width: 100%; /* 그리드 셀 내부에서 최대 너비 */
+    box-sizing: border-box;
+}
 
 .quantityContainer {
     text-align: center;
@@ -129,11 +143,11 @@
 }
 
 .totalPriceTitle {
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .totalPrice {
-    font-size: 25px;
+    font-size: 21px;
 }
 
 .quickOrderbutton {
@@ -155,7 +169,35 @@
 }
 
 @media (max-width: 1440px) {
+    /* .quickCartBar {
+        display: none;
+    } */
+    .totalPriceTitle {
+        font-size: 14px;
+    }
+    
+    .totalPrice {
+        font-size: 20px;
+    }
+    
+    .quickOrderbutton, .quickCartbutton {
+        font-size: 14px;
+    }
+}
+@media (max-width: 1010px) {
     .quickCartBar {
         display: none;
+    }
+    
+    .totalPriceTitle {
+        font-size: 12px;
+    }
+    
+    .totalPrice {
+        font-size: 18px;
+    }
+    
+    .quickOrderbutton, .quickCartbutton {
+        font-size: 12px;
     }
 }

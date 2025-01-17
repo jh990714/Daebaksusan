@@ -1,4 +1,4 @@
-package com.seafood.back.respository;
+package com.seafood.back.repository;
 
 import java.time.LocalDateTime;
 import java.util.Date;

@@ -118,7 +118,7 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                 <>
                     <td className="py-2 px-0 md:px-4">
                         <div style={{ position: 'relative', width: 100, height: 100, margin: '0 auto' }}>
-                            <img src={process.env.PUBLIC_URL + `/upload/${orderItem.cartItem.product.imageUrl}`} alt={orderItem.cartItem.product.name} style={{ width: '100%', height: '100%' }} />
+                            <img src={orderItem.cartItem.product.imageUrl} alt={orderItem.cartItem.product.name} style={{ width: '100%', height: '100%' }} />
                             {isCancelled && <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(128, 128, 128, 0.6)', zIndex: 1 }}></div>}
                         </div>
                         {!isCancelled && (
@@ -130,8 +130,8 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                             </button>
                         )}
 
-                        <div className="mt-5 max-w-[120px] m-auto">
-                            <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.product.name}</p>
+                        <div className="mt-5 max-w-[120px] m-auto overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p className={`text-sm font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.product.name}</p>
                             <p className={`text-xs text-gray-500 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.option?.name} +{orderItem.cartItem.option?.addPrice.toLocaleString()}원</p>
                             <p className={`text-xs font-bold ${isCancelled ? 'line-through' : ''}`}>
                                 {(totalPrice + shippingCost + optionCost).toLocaleString()}원 / {orderItem.cartItem.quantity}개

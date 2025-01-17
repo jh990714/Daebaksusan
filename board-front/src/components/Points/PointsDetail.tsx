@@ -31,7 +31,7 @@ export const PointsDetail: React.FC<PointsDetailProps> = ({ pointsTransactions }
                   </>
                 ) : '-'}
               </td>
-              <td>{transaction.description}</td>
+              <td className="max-w-[100px] overflow-hidden overflow-ellipsis whitespace-nowrap">{transaction.description}</td>
               <td style={{ color: transaction.usageAmount > 0 ? 'blue' : 'red' }}>
                 {transaction.usageAmount > 0 ? '+' : '' }{transaction.usageAmount.toLocaleString()}
               </td>

@@ -22,12 +22,12 @@ import com.seafood.back.entity.ProductDetail;
 import com.seafood.back.entity.ProductEntity;
 import com.seafood.back.entity.PromotionalProductEntity;
 import com.seafood.back.entity.PromotionalVideoEntity;
-import com.seafood.back.respository.CategoryRepository;
-import com.seafood.back.respository.OptionRepository;
-import com.seafood.back.respository.ProductDealsRepository;
-import com.seafood.back.respository.ProductDetailRepository;
-import com.seafood.back.respository.ProductRepository;
-import com.seafood.back.respository.PromotionalProductRepository;
+import com.seafood.back.repository.CategoryRepository;
+import com.seafood.back.repository.OptionRepository;
+import com.seafood.back.repository.ProductDealsRepository;
+import com.seafood.back.repository.ProductDetailRepository;
+import com.seafood.back.repository.ProductRepository;
+import com.seafood.back.repository.PromotionalProductRepository;
 import com.seafood.back.service.ProductService;
 import com.seafood.back.service.S3Service;
 
@@ -280,48 +280,36 @@ public class ProductServiceImple implements ProductService {
 
     @Override
     @Transactional
-    public void addProductQuantities(String orderNumber, List<PaymentItemDTO> orderItems) {
-        for (PaymentItemDTO orderItem : orderItems) {
-            Long productId = orderItem.getCartItem().getProduct().getProductId();
-            Optional<ProductEntity> productOptional = productRepository.findById(productId);
-            if (productOptional.isPresent()) {
-                ProductEntity product = productOptional.get();
-                int currentStock = product.getStockQuantity();
-                int orderedQuantity = orderItem.getCartItem().getQuantity();
-                product.setStockQuantity(currentStock + orderedQuantity);
+    public void addProductQuantity(PaymentItemDTO orderItem) {
+        Long productId = orderItem.getCartItem().getProduct().getProductId();
+        Optional<ProductEntity> productOptional = productRepository.findById(productId);
+        if (productOptional.isPresent()) {
+            ProductEntity product = productOptional.get();
+            int currentStock = product.getStockQuantity();
+            int orderedQuantity = orderItem.getCartItem().getQuantity();
+            product.setStockQuantity(currentStock + orderedQuantity);
 
-                productRepository.save(product);
+            productRepository.save(product);
 
-                // 주문 항목의 총 금액 계산
-                int quantity = orderItem.getCartItem().getQuantity();
+            // 계산 로직
+            int quantity = orderItem.getCartItem().getQuantity();
+            BigDecimal regularPrice = orderItem.getCartItem().getProduct().getRegularPrice();
+            BigDecimal salePrice = orderItem.getCartItem().getProduct().getSalePrice();
+            BigDecimal optionPrice = orderItem.getCartItem().getOption().getAddPrice();
+            BigDecimal shippingCost = orderItem.getCartItem().getProduct().getShippingCost();
 
-                BigDecimal regularPrice = orderItem.getCartItem().getProduct().getRegularPrice();
-                BigDecimal salePrice = orderItem.getCartItem().getProduct().getSalePrice();
-                BigDecimal optionPrice = orderItem.getCartItem().getOption().getAddPrice();
-                BigDecimal shippingCost = orderItem.getCartItem().getProduct().getShippingCost();
+            BigDecimal pricePerUnit = regularPrice.subtract(salePrice);
+            BigDecimal totalPricePerUnit = pricePerUnit.add(optionPrice);
+            BigDecimal totalAmount = totalPricePerUnit.multiply(BigDecimal.valueOf(quantity));
 
-                BigDecimal pricePerUnit = regularPrice.subtract(salePrice);
-                BigDecimal totalPricePerUnit = pricePerUnit.add(optionPrice);
-                BigDecimal totalAmount = totalPricePerUnit.multiply(BigDecimal.valueOf(quantity));
+            int boxCnt = orderItem.getCartItem().getBoxCnt();
+            BigDecimal optionTotalPrice = optionPrice.multiply(BigDecimal.valueOf(boxCnt));
+            BigDecimal shippingTotalCost = shippingCost.multiply(BigDecimal.valueOf(boxCnt));
+            totalAmount = totalAmount.add(optionTotalPrice).add(shippingTotalCost);
 
-                int boxCnt = orderItem.getCartItem().getBoxCnt();
-            
-                BigDecimal optionTotalPrice = optionPrice.multiply(BigDecimal.valueOf(boxCnt));
-                BigDecimal shippingTotalCost = shippingCost.multiply(BigDecimal.valueOf(boxCnt));
-
-                totalAmount = totalAmount.add(optionTotalPrice).add(shippingTotalCost);
-                
-                logger.info("Cancel Item - Message: {}, OrderNumber: {}, ProductId: {}, ProductName: {}, Quantity: {}, Amount: {}",
-                            "취소 항목 처리",
-                            orderNumber,
-                            orderItem.getCartItem().getProduct().getProductId(),
-                            orderItem.getCartItem().getProduct().getName(),
-                            quantity,
-                            totalAmount );
-            } else {
-                // 상품을 찾을 수 없는 경우의 예외 처리를 수행합니다.
-                throw new RuntimeException("상품을 찾을 수 없습니다.");
-            }
+            // 로그는 호출한 쪽에서 처리
+        } else {
+            throw new RuntimeException("상품을 찾을 수 없습니다.");
         }
     }
 
@@ -345,7 +333,7 @@ public class ProductServiceImple implements ProductService {
     public ProductDTO findProduct(Long productId) {
         ProductEntity productEntity = productRepository.findByProductId(productId);
         if (productEntity == null) {
-            logger.error("Product - Message: {}, Product Id: {}",
+            logger.error("Product - Message: {}, ProductId: {}",
                     "존재하지 않는 상품",
                     productId);
 
@@ -355,10 +343,10 @@ public class ProductServiceImple implements ProductService {
 
         ProductDTO productDTO = convertToProductDTO(productEntity, productDeals);
 
-        logger.info("Product - Message: {}, Product Id: {}, Product Name: {}",
-                    "상품 클릭",
-                    productDTO.getProductId(),
-                    productDTO.getName());
+        logger.info("Product - Message: {}, ProductId: {}, ProductName: {}",
+                "상품 클릭",
+                productDTO.getProductId(),
+                productDTO.getName());
         return productDTO;
     }
 

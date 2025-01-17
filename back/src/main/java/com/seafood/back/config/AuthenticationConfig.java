@@ -47,7 +47,7 @@ public class AuthenticationConfig {
                 // ROLE_은 붙이면 안 된다. hasRole()을 사용할 때 자동으로 ROLE_이 붙기 때문이다.
                 .hasRole("ADMIN");
                             
-                authorizeRequests.requestMatchers("/api/v1/members/**", "/api/v1/product/**", "/api/v1/refreshToken", "/api/v1/categories", "/api/v1/oauth2/**", "/api/v1/payment/**", "/api/v1/reviews/**", "/api/v1/guest/**", "/api/v1/qna/**", "/api/v1/home/**", "/api/v1/authorize/**", "/api/v1/callback/**").permitAll();
+                authorizeRequests.requestMatchers("/api/v1/ad/**", "/api/v1/members/**", "/api/v1/product/**", "/api/v1/refreshToken", "/api/v1/categories", "/api/v1/oauth2/**", "/api/v1/payment/**", "/api/v1/reviews/**", "/api/v1/guest/**", "/api/v1/qna/**", "/api/v1/home/**", "/api/v1/authorize/**", "/api/v1/callback/**").permitAll();
             })
             
             .oauth2Login(oauth2 -> oauth2

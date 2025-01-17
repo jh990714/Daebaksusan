@@ -13,9 +13,9 @@ import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.OptionEntity;
 import com.seafood.back.entity.ProductDealsEntity;
 import com.seafood.back.entity.ProductEntity;
-import com.seafood.back.respository.CartRepository;
-import com.seafood.back.respository.MemberRepository;
-import com.seafood.back.respository.ProductRepository;
+import com.seafood.back.repository.CartRepository;
+import com.seafood.back.repository.MemberRepository;
+import com.seafood.back.repository.ProductRepository;
 import com.seafood.back.service.CartService;
 import com.seafood.back.service.ProductService;
 

@@ -23,7 +23,6 @@ const CarouselComp = () => {
   }, []);
 
   const currentUrl = window.location.origin; // Use window.location.origin to get the base URL
-  console.log(currentUrl);
 
   return (
     <Carousel>

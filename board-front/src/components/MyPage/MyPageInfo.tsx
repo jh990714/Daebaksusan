@@ -25,7 +25,7 @@ export const MyPageInfo: React.FC<MyPageInfoProps> = ({ userInfo, handlePageChan
                     </div>
                 </div>
             </div>
-            <div className="my-16 sm:my-2">
+            <div className="sm:my-2">
                 <div className="flex justify-center mb-8">
                     <div className="text-xl md:text-2xl font-semibold">주문처리 현황</div>
                     <div className="ml-2 text-xs mt-2">(최근 3개월 기준)</div>

@@ -15,6 +15,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1rem;
+  border-bottom: 2px solid blue;
 }
 
 .productListTitle {
@@ -48,18 +49,21 @@
   overflow: hidden;
 }
 
+.productListBody {
+  padding: 1rem;
+}
 .productList {
-  border-top: 2px solid blue;
   list-style: none;
   display: grid;
-  padding: 0;
-  grid-template-columns: repeat(4, 1fr); /* 4열의 그리드를 생성 */
+  gap: 0.5rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .productList li {
-  display: inline-block;
-  margin-left: 2rem;
-  margin-top: 2rem;
+  display: block;
+  margin-left: 0;
+  margin-top: 0;
+  width: 100%; /* 부모 그리드 셀의 너비에 맞게 설정 */
 }
 
 .blurEffect {
@@ -105,7 +109,7 @@
 
 @media (max-width: 1024px) {
   .productList {
-    grid-template-columns: repeat(3, 1fr);
+    /* grid-template-columns: repeat(3, 1fr); */
     
   }
   .homeContainer {
@@ -120,7 +124,7 @@
   }
 
   .productList {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     
   }
 
@@ -128,10 +132,10 @@
     width: 100%;
     margin: 0;
   }
-  .productList li{
+  /* .productList li{
     margin: 10px;
 
-  }
+  } */
   
   .sortSelect {
     font-size: 12px;
@@ -141,7 +145,7 @@
 
 @media screen and (max-width: 480px) {
   .productList {
-    grid-template-columns: repeat(2, 1fr);
+    /* grid-template-columns: repeat(2, 1fr); */
     
   }
   .productListTitle {

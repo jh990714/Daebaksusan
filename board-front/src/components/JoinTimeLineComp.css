@@ -52,7 +52,7 @@
 }
 
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 767px) {
   .timeline-container {
     position: relative;
     flex-direction: row;

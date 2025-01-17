@@ -38,8 +38,8 @@ import com.seafood.back.dto.MemberDTO;
 import com.seafood.back.dto.MemberUpdateDTO;
 import com.seafood.back.entity.MemberEntity;
 import com.seafood.back.entity.MemberPointsEntity;
-import com.seafood.back.respository.MemberPointsRepository;
-import com.seafood.back.respository.MemberRepository;
+import com.seafood.back.repository.MemberPointsRepository;
+import com.seafood.back.repository.MemberRepository;
 import com.seafood.back.service.CouponService;
 import com.seafood.back.service.MailService;
 import com.seafood.back.service.MemberService;
@@ -112,15 +112,15 @@ public class MemberServiceImple implements MemberService {
         MemberEntity member = memberRepository.findById(id);
 
         if (member == null) {
-            logger.error("Login - Message: {}, MemberId: {}, ID: {}, Type: {}", "아이디 불일치", null, id, "sign");
+            logger.error("Login - Message: {}, MemberId: {}, Id: {}, Type: {}", "아이디 불일치", null, id, "sign");
             throw new RuntimeException("해당 아이디가 존재하지 않습니다.");
         }
         if (!passwordEncoder.matches(password, member.getPassword())) {
-            logger.error("Login - Message: {}, MemberId: {}, ID: {}, Type: {}", "비밀번호 불일치", member.getMemberId(), member.getId(), member.getType());
+            logger.error("Login - Message: {}, MemberId: {}, Id: {}, Type: {}", "비밀번호 불일치", member.getMemberId(), member.getId(), member.getType());
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        logger.info("Login - Message: {}, MemberId: {}, ID: {}, Type: {}",  "로그인 성공", member.getMemberId(), member.getId(), member.getType());
+        logger.info("Login - Message: {}, MemberId: {}, Id: {}, Type: {}",  "로그인 성공", member.getMemberId(), member.getId(), member.getType());
         return member;
     }
 
@@ -143,15 +143,15 @@ public class MemberServiceImple implements MemberService {
 
             couponService.createMemberCoupon(member.getMemberId(), (long) 3);
 
-            logger.info("Register - Message: {}, MemberId: {}, ID: {}, Type: {}",  "회원가입 성공", savedMember.getMemberId(), savedMember.getId(), savedMember.getType());
+            logger.info("Register - Message: {}, MemberId: {}, Id: {}, Type: {}",  "회원가입 성공", savedMember.getMemberId(), savedMember.getId(), savedMember.getType());
             return savedMember;
         } catch (DataIntegrityViolationException e) {
             // 중복된 아이디가 있을 경우에 대한 예외 처리
-            logger.error("Register - Message: {}, ID: {}, Type: {}",  "중복된 아이디", member.getId(), member.getType());
+            logger.error("Register - Message: {}, Id: {}, Type: {}",  "중복된 아이디", member.getId(), member.getType());
             throw new DataIntegrityViolationException("중복된 아이디입니다.");
         } catch (Exception e) {
             // 그 외 예외에 대한 예외 처리
-            logger.error("Register - Message: {}, ID: {}, Type: {}",  "회원가입 오류"+ e, member.getId(), member.getType());
+            logger.error("Register - Message: {}, Id: {}, Type: {}",  "회원가입 오류"+ e, member.getId(), member.getType());
             throw new RuntimeException("회원 가입 중 오류가 발생했습니다.", e);
         }
     }
@@ -205,7 +205,7 @@ public class MemberServiceImple implements MemberService {
             BigDecimal currentPoints = memberPoints.getPoints();
             BigDecimal updatedPoints = currentPoints.subtract(points);
             if (updatedPoints.compareTo(BigDecimal.ZERO) < 0) {
-                logger.error("Point - Message: {}, Deduction Amount: {}, Current Points: {}, Member ID: {}, Id: {}",
+                logger.error("Point - Message: {}, Deduction Amount: {}, Current Points: {}, MemberId: {}, Id: {}",
                         "차감할 포인트보다 회원의 보유 포인트가 적습니다.",
                         points,
                         currentPoints,
@@ -223,7 +223,7 @@ public class MemberServiceImple implements MemberService {
             } else {
                 message = "포인트가 추가되었습니다.";
             }
-            logger.info("Point - Message: {}, Deduction Amount: {}, Current Points: {}, Updated Points: {}, Member ID: {}, Id: {}",
+            logger.info("Point - Message: {}, Deduction Amount: {}, Current Points: {}, Updated Points: {}, MemberId: {}, Id: {}",
                         message,
                         points,
                         currentPoints,
@@ -232,7 +232,7 @@ public class MemberServiceImple implements MemberService {
                         member.getId());
             return memberPoints.getPoints();
         } else {
-            logger.error("Point - Message: {}, Deduction Amount: {}, Current Points: {}, Member ID: {}, Id: {}",
+            logger.error("Point - Message: {}, Deduction Amount: {}, Current Points: {}, MemberId: {}, Id: {}",
                         points,
                         null,
                         member.getMemberId(),

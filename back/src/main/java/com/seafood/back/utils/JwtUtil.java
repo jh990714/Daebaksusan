@@ -53,8 +53,7 @@ public class JwtUtil {
 
     public static String generateAccessTokenFromRefreshToken(String refreshToken, String refreshSecretKey, String accessSecretKey, Long expiredMs) {
         if (isExpired(refreshToken, refreshSecretKey)) {
-            // Token expired, handle accordingly
-            return null;
+            throw new RuntimeException("Refresh token is expired.");
         }
         Long id = getId(refreshToken, refreshSecretKey);
         return createJwt(id, accessSecretKey, expiredMs);

@@ -35,6 +35,7 @@ export const NavigationBar = () => {
     const searchResultsRef = useRef<HTMLUListElement>(null);
     const inputMobileRef = useRef<HTMLInputElement>(null);
     const searchResultsMobileRef = useRef<HTMLUListElement>(null);
+    const searchRef = useRef<HTMLInputElement>(null);
     const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
     const [isDragging, setIsDragging] = useState(false); // 드래그 상태
     const [dragStart, setDragStart] = useState(0); // 드래그 시작 위치
@@ -49,86 +50,33 @@ export const NavigationBar = () => {
     const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(null);
     const debouncedQuery = useDebounce<string>(query, 300);
     const menuRef = useRef<HTMLDivElement | null>(null);
+    const searchButtonIconRef = useRef<HTMLImageElement | null>(null);
+    const categoryIconRef = useRef<HTMLImageElement | null>(null);
     const navigate = useNavigate();
     const location = useLocation();
     // const [cartItems, setCartItems] = useState<Cart[]>([]);
 
     const { cartItems } = useCart();
-    
 
-    useEffect(() => {
-        setIsCategoriesOpen(false);
-        toggleSearch(false);
-    }, [location]);
+    const handleOutsideClick = (event: MouseEvent) => {
+        const target = event.target as Node;
+        // 검색창 외부 클릭 시 닫기
+        if (
+            searchButtonIconRef.current?.contains(target) || // 검색 버튼 아이콘 클릭 시
+            categoryIconRef.current?.contains(target)      // 카테고리 아이콘 클릭 시
+        ) {
+            return;
+        }
 
+        if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+          setIsSearchOpen(false);
+        }
 
-    useEffect(() => {
-        // API 호출
-        fetch(`${process.env.REACT_APP_API_URL}/categories`)
-            .then(response => response.json())
-            .then(data => setCategories(data))
-            .catch(error => console.error('Error fetching categories:', error));
-    }, []);
-
-
-    useEffect(() => {
-        console.log('로그인 상태가 변경되었습니다:', isLoggedIn);
-    }, [isLoggedIn]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            setIsNavVisible(currentScrollY <= prevScrollY || currentScrollY === 0);
-            setPrevScrollY(currentScrollY);
+        if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
             setIsCategoriesOpen(false);
-            setSearchResults([]);
-            setIsSearchOpen(false);
-
-        };
-
-        window.addEventListener('scroll', handleScroll);
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, [prevScrollY]);
-
-    useEffect(() => {
-        const fetchSearchResults = async () => {
-            if (!debouncedQuery) {
-                setSearchResults([]);
-                return;
-            }
-            try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/product/search/sub?query=${debouncedQuery}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch search results');
-                }
-                const data = await response.json();
-                setSelectedItemIndex(null);
-                setSearchResults(data.slice(0, 5));
-            } catch (error) {
-                console.error('Error fetching search results:', error);
-                setSearchResults([]);
-            }
-        };
-        fetchSearchResults();
-        console.log(`API를 호출하여 검색 결과를 업데이트: ${debouncedQuery}`);
-    }, [debouncedQuery]);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                closeCategory(); // 외부 클릭 시 카테고리 닫기
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside); // 외부 클릭 이벤트 리스너
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside); // 컴포넌트 언마운트 시 이벤트 제거
-        };
-    }, []);
-
+        }
+      };
+      
     const handleSearchItemClick = useCallback((index: number) => {
         setSelectedItemIndex(index);
         setQuery(searchResults[index].name);
@@ -214,34 +162,132 @@ export const NavigationBar = () => {
         setDragStart(e.clientY); // 드래그 시작 위치
     };
 
-    const handleMouseMove = (e: { clientY: number }) => {
-        if (!isDragging) return;
-        const distance = e.clientY - dragStart; // 드래그한 거리
-        if (menuRef.current) {
-            menuRef.current.style.top = `${distance}px`; // 메뉴를 드래그 위치로 이동
-        }
-    };
+    // const handleMouseMove = (e: { clientY: number }) => {
+    //     if (!isDragging) return;
+    //     const distance = e.clientY - dragStart; // 드래그한 거리
+    //     if (menuRef.current) {
+    //         menuRef.current.style.top = `${distance}px`; // 메뉴를 드래그 위치로 이동
+    //     }
+    // };
 
-    const handleMouseUp = () => {
-        setIsDragging(false); // 드래그 종료
-    };
+    // const handleMouseUp = () => {
+    //     setIsDragging(false); // 드래그 종료
+    // };
+
 
     useEffect(() => {
-        // 드래그 이벤트 리스너
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
+        setIsCategoriesOpen(false);
+        toggleSearch(false);
+    }, [location]);
+
+    useEffect(() => {
+        // API 호출
+        fetch(`${process.env.REACT_APP_API_URL}/categories`)
+            .then(response => response.json())
+            .then(data => setCategories(data))
+            .catch(error => console.error('Error fetching categories:', error));
+    }, []);
+
+
+    useEffect(() => {
+        console.log('로그인 상태가 변경되었습니다:', isLoggedIn);
+    }, [isLoggedIn]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            setIsNavVisible(currentScrollY <= prevScrollY || currentScrollY === 0);
+            setPrevScrollY(currentScrollY);
+            setIsCategoriesOpen(false);
+            setSearchResults([]);
+            setIsSearchOpen(false);
+
+        };
+
+        window.addEventListener('scroll', handleScroll);
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('scroll', handleScroll);
         };
-    }, [isDragging, dragStart]);
+    }, [prevScrollY]);
+
+    useEffect(() => {
+        const fetchSearchResults = async () => {
+            if (!debouncedQuery) {
+                setSearchResults([]);
+                return;
+            }
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/product/search/sub?query=${debouncedQuery}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch search results');
+                }
+                const data = await response.json();
+                setSelectedItemIndex(null);
+                setSearchResults(data.slice(0, 5));
+            } catch (error) {
+                console.error('Error fetching search results:', error);
+                setSearchResults([]);
+            }
+        };
+        fetchSearchResults();
+        console.log(`API를 호출하여 검색 결과를 업데이트: ${debouncedQuery}`);
+    }, [debouncedQuery]);
+
+    useEffect(() => {
+        // const handleClickOutside = (event: MouseEvent) => {
+        //     if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        //         closeCategory(); // 외부 클릭 시 카테고리 닫기
+        //     }
+        // };
+
+        document.addEventListener('mousedown', handleOutsideClick); // 외부 클릭 이벤트 리스너
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick); // 컴포넌트 언마운트 시 이벤트 제거
+        };
+    }, []);
+
+    // useEffect(() => {
+    //     if (isSearchOpen) {
+    //       document.addEventListener("mousedown", handleOutsideClick); // 클릭 이벤트 리스너 추가
+    //     } else {
+    //       document.removeEventListener("mousedown", handleOutsideClick); // 클릭 이벤트 리스너 제거
+    //     }
+    
+    //     return () => {
+    //       document.removeEventListener("mousedown", handleOutsideClick); // 정리(clean-up)
+    //     };
+    //   }, [isSearchOpen]);
+    
+
+    // useEffect(() => {
+    //     // 드래그 이벤트 리스너
+    //     window.addEventListener('mousemove', handleMouseMove);
+    //     window.addEventListener('mouseup', handleMouseUp);
+
+    //     return () => {
+    //         window.removeEventListener('mousemove', handleMouseMove);
+    //         window.removeEventListener('mouseup', handleMouseUp);
+    //     };
+    // }, [isDragging, dragStart]);
 
 
     const cartSize = cartItems.length;
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+    
+        const updateIsMobile = () => setIsMobile(window.innerWidth <= 768);
+        updateIsMobile(); // 초기 설정
+        window.addEventListener("resize", updateIsMobile); // 윈도우 크기 변경 시 업데이트
+
+        return () => window.removeEventListener("resize", updateIsMobile);
+    }, []);
+
     return (
-        // <nav className={styles.navContainer} onMouseLeave={closeCategory}>
-        <nav className={styles.navContainer}>
+        <nav className={styles.navContainer} onMouseLeave={!isMobile ? closeCategory : undefined} >
+        {/* <nav className={styles.navContainer}> */}
             <div className={`${styles.navBar} ${isNavVisible ? styles.open : styles.close}`}>
                 {/* Left Section */}
                 <div className={styles.navLeft}>
@@ -343,6 +389,7 @@ export const NavigationBar = () => {
 
             {/* Categories Dropdown */}
             <div
+                ref={menuRef}
                 className={`${styles.categories} ${isCategoriesOpen ? styles.show : ''}`} // 상태에 따라 메뉴 표시 여부 조정
                 onMouseDown={handleMouseDown}
             >
@@ -388,7 +435,7 @@ export const NavigationBar = () => {
                         ))}
                     </ul>
 
-                    <div className={`${styles.searchInput} ${styles.hidden} ${isSearchOpen ? styles.searchOpen : ''}`}>
+                    <div ref={searchRef} className={`${styles.searchInput} ${styles.hidden} ${isSearchOpen ? styles.searchOpen : ''}`}>
                         <input
                             id="searchInput"
                             type="text"
@@ -426,6 +473,7 @@ export const NavigationBar = () => {
                     </div>
 
                     <img
+                        ref={categoryIconRef}
                         src={categoryIcon}
                         alt="메뉴"
                         className={styles.categoryIcon}
@@ -433,6 +481,7 @@ export const NavigationBar = () => {
                     />
 
                     <img
+                        ref={searchButtonIconRef}
                         src={searchButtonIcon}
                         alt="검색"
                         className={styles.searchIcon}
