@@ -1,5 +1,6 @@
 package com.seafood.back.service.imple;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,8 @@ public class AdServiceImple implements AdService {
 
     @Override
     public List<AdDTO> getAds() {
-        List<AdEntity> ads = adRepository.findAll();
+        LocalDate currentDate = LocalDate.now();
+        List<AdEntity> ads = adRepository.findActiveAds(currentDate);
 
         return ads.stream()
                   .map(AdDTO::fromEntity)

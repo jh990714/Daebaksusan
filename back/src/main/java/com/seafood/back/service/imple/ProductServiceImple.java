@@ -333,7 +333,7 @@ public class ProductServiceImple implements ProductService {
     public ProductDTO findProduct(Long productId) {
         ProductEntity productEntity = productRepository.findByProductId(productId);
         if (productEntity == null) {
-            logger.error("Product - Message: {}, Product Id: {}",
+            logger.error("Product - Message: {}, ProductId: {}",
                     "존재하지 않는 상품",
                     productId);
 
@@ -343,7 +343,7 @@ public class ProductServiceImple implements ProductService {
 
         ProductDTO productDTO = convertToProductDTO(productEntity, productDeals);
 
-        logger.info("Product - Message: {}, Product Id: {}, Product Name: {}",
+        logger.info("Product - Message: {}, ProductId: {}, ProductName: {}",
                 "상품 클릭",
                 productDTO.getProductId(),
                 productDTO.getName());

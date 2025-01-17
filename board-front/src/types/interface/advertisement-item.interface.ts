@@ -1,5 +1,5 @@
 export default interface AdData {
   id: number;
-  rinkUrl: string;
+  linkUrl: string;
   imageUrl: string;
 };

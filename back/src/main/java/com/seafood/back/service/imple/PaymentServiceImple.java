@@ -212,7 +212,7 @@ public class PaymentServiceImple implements PaymentService {
 
             return orderNumber;
         } catch (Exception e) {
-            logger.error("Order - Message: {}, ImpUid: {}",
+            logger.error("Order - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
                     "결제 실패",
                     memberId,
                     id,
@@ -268,7 +268,7 @@ public class PaymentServiceImple implements PaymentService {
         CouponAmountResult couponAmountResult = couponService.couponAmount(memberId, coupon);
 
         if (orderAmount.compareTo(couponAmountResult.getMinimumOrderAmount()) < 0) {
-            logger.error("Order - Message: {}, ImpUid: {}",
+            logger.error("Order - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
                     "주문 금액이 쿠폰의 최소 주문 금액을 충족하지 않습니다.",
                     memberId,
                     id,
@@ -282,7 +282,7 @@ public class PaymentServiceImple implements PaymentService {
             pointsUsed = points;
             BigDecimal availablePoint = memberService.getAvailablePoints(memberId);
             if (points.compareTo(availablePoint) > 0) {
-                logger.error("Order - Message: {}, ImpUid: {}",
+                logger.error("Order - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
                         "사용 가능한 포인트보다 더 많은 포인트를 사용하려고 합니다.",
                         memberId,
                         id,
@@ -343,7 +343,7 @@ public class PaymentServiceImple implements PaymentService {
 
             return response;
         } else {
-            logger.error("Order - Message: {}, ImpUid: {}",
+            logger.error("Order - Message: {}, MemberId: {}, Id: {}, ImpUid: {}",
                     "주문 가격과 결제된 금액이 일치하지 않습니다.",
                     memberId,
                     id,
@@ -429,7 +429,7 @@ public class PaymentServiceImple implements PaymentService {
             for (PaymentItemDTO orderItem : paymentDetailDTO.getOrderItems()) {
                 productService.addProductQuantity(orderItem);
                 logger.info(
-                        "Cancel Item - Message: {}, MemberId: {}, ID: {}, OrderNumber: {}, ProductId: {}, ProductName: {}, Quantity: {}",
+                        "Cancel Item - Message: {}, MemberId: {}, Id: {}, OrderNumber: {}, ProductId: {}, ProductName: {}, Quantity: {}",
                         "취소 항목 처리",
                         memberDTO.getMemberId(),
                         memberDTO.getId(),

@@ -130,8 +130,8 @@ export const PaymentItemComp: React.FC<PaymentItemCompProps> = ({ orderNumber, o
                             </button>
                         )}
 
-                        <div className="mt-5 max-w-[120px] m-auto">
-                            <p className={`overflow-hidden overflow-ellipsis whitespace-nowrap text-sm font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.product.name}</p>
+                        <div className="mt-5 max-w-[120px] m-auto overflow-hidden overflow-ellipsis whitespace-nowrap">
+                            <p className={`text-sm font-bold mb-1 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.product.name}</p>
                             <p className={`text-xs text-gray-500 ${isCancelled ? 'line-through' : ''}`}>{orderItem.cartItem.option?.name} +{orderItem.cartItem.option?.addPrice.toLocaleString()}원</p>
                             <p className={`text-xs font-bold ${isCancelled ? 'line-through' : ''}`}>
                                 {(totalPrice + shippingCost + optionCost).toLocaleString()}원 / {orderItem.cartItem.quantity}개

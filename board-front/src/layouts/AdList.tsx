@@ -57,14 +57,18 @@ const AdList: React.FC = () => {
         }
     }, [adsData]);
 
-    const handleClose = (adId: number) => {
-        // 다음 광고로 이동
-        const currentIndex = adsData.findIndex((ad) => ad.id === adId);
-        const nextAd = adsData[currentIndex + 1];
-        if (nextAd) {
-            setCurrentAdId(nextAd.id);
+    const handleClose = (adId: number | null) => {
+        if (adId === null) {
+            setCurrentAdId(null); // 모든 광고를 닫음
         } else {
-            setCurrentAdId(null); // 광고가 더 이상 없으면 모두 닫기
+            // 다음 광고로 이동
+            const currentIndex = adsData.findIndex((ad) => ad.id === adId);
+            const nextAd = adsData[currentIndex + 1];
+            if (nextAd) {
+                setCurrentAdId(nextAd.id);
+            } else {
+                setCurrentAdId(null); // 광고가 더 이상 없으면 모두 닫기
+            }
         }
     };
 
@@ -76,7 +80,7 @@ const AdList: React.FC = () => {
                         <AdModal
                             key={ad.id}
                             visible={true} // 현재 광고만 표시
-                            onClose={() => handleClose(ad.id)} // 현재 광고 닫기 핸들러
+                            onClose={(isDayClose) => handleClose(isDayClose === null ? null : ad.id)} // 현재 광고 닫기 핸들러
                             closable={true}
                             data={ad} // Modal에 데이터 전달
                         />

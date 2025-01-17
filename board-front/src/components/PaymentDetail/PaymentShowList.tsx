@@ -105,8 +105,6 @@ export const PaymentShowList: React.FC<PaymentShowListProps> = ({ paymentDetails
 
                             {paymentDetail.orderItems.map((orderItem, innerIndex) => (
 
-
-
                                 <PaymentItemComp
                                     key={innerIndex}
                                     orderItem={orderItem}
