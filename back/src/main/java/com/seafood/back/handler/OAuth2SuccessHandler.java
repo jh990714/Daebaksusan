@@ -56,6 +56,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
 
         response.sendRedirect(frontendUrl + "/auth/oauth-response/" + token + "&" + refreshToken);
         
-        logger.info("Login - Message: {}, MemberId: {}, ID: {}, Type: {}",  "로그인 성공", memberId, oAuth2User.getId(), oAuth2User.getLoginType());
+        logger.info("Login - Message: {}, MemberId: {}, Id: {}, Type: {}",  "로그인 성공", memberId, oAuth2User.getId(), oAuth2User.getLoginType());
     }
 }

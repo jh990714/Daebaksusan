@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import CarouselComp from 'components/CarouselComp';
 import { BestProduct } from 'components/BestProduct';
@@ -9,6 +9,7 @@ import { HomeBanner2 } from 'components/HomeBanner/HomeBanner2';
 import TimeLimitedDeals from 'components/Deals/TimeLimitedDeals';
 import { AdBanner } from 'components/HomeBanner/AdBanner';
 import { VideoPlayer } from 'components/VideoPlayer/VideoPlayer';
+import AdList from 'layouts/AdList';
 
 export const Home: React.FC = () => {
   const ref1 = useAnimateOnScroll();
@@ -19,7 +20,6 @@ export const Home: React.FC = () => {
   const ref6 = useAnimateOnScroll();
   const ref7 = useAnimateOnScroll();
   const ref8 = useAnimateOnScroll();
-
 
   return (
     <>
@@ -58,6 +58,9 @@ export const Home: React.FC = () => {
         <div ref={ref8} className="homeBanner">
           <AdBanner imageUrl={process.env.PUBLIC_URL + `/banner/review_event3.jpg`} title="리뷰 이벤트" />
         </div>
+
+        {/* Modal */}
+        <AdList />
       </div>
     </>
   );

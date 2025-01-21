@@ -4,7 +4,7 @@ import { AdData } from "types";
 
 type AdModalProps = {
     visible: boolean; // 모달 표시 여부
-    onClose: (isDayClose?: boolean | null) => void;// 닫기 핸들러
+    onClose: () => void
     closable?: boolean; // 닫기 버튼 표시 여부
     data: AdData;
 };
@@ -25,7 +25,7 @@ const AdModal: React.FC<AdModalProps> = ({ visible, onClose, closable = true, da
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black bg-opacity-50">
             <div className="relative w-full sm:max-w-sm bg-white rounded-lg shadow-lg">
                 {/* 광고 이미지 */}
-                <Link to={data.linkUrl.replace(currentUrl, '')} onClick={() => onClose(null)}>
+                <Link to={data.linkUrl.replace(currentUrl, '')} onClick={() => onClose()}>
                     <img
                         src={data.imageUrl} // 이미지 경로를 수정하세요
                         alt="광고 이미지"

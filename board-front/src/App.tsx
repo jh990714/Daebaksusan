@@ -11,9 +11,7 @@ import { AuthProvider } from 'hook/AuthProvider';
 import AdList from 'layouts/AdList';
 
 const App: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(true);
 
-  const closeModal = () => setIsModalOpen(false);
 
   return (
     <div className="APP">
@@ -28,9 +26,6 @@ const App: React.FC = () => {
             <Footer />
           </div>
           <QuickCart />
-
-          {/* Modal */}
-          <AdList />
         </CartProvider>
       </AuthProvider>
     </div>
